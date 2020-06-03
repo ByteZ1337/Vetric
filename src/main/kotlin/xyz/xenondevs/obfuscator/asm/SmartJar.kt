@@ -1,6 +1,6 @@
 package xyz.xenondevs.obfuscator.asm
 
-import xyz.xenondevs.obfuscator.tansformer.Transformer
+import xyz.xenondevs.obfuscator.transformer.Transformer
 import xyz.xenondevs.obfuscator.util.FileUtils
 import java.io.File
 import java.io.IOException

@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.tansformer
+package xyz.xenondevs.obfuscator.transformer
 
 import xyz.xenondevs.obfuscator.asm.SmartJar
 

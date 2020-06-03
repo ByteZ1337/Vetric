@@ -1,13 +1,13 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package xyz.xenondevs.obfuscator.tansformer.string
+package xyz.xenondevs.obfuscator.transformer.string
 
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.asm.SmartClass
 import xyz.xenondevs.obfuscator.asm.SmartJar
 import xyz.xenondevs.obfuscator.asm.dump.CryptDump
-import xyz.xenondevs.obfuscator.tansformer.ClassTransformer
+import xyz.xenondevs.obfuscator.transformer.ClassTransformer
 import xyz.xenondevs.obfuscator.util.StringUtils.ALPHA
 import xyz.xenondevs.obfuscator.util.StringUtils.randomString
 

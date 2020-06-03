@@ -1,9 +1,9 @@
-package xyz.xenondevs.obfuscator.tansformer.renamer
+package xyz.xenondevs.obfuscator.transformer.renamer
 
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.asm.SmartClass
-import xyz.xenondevs.obfuscator.tansformer.ClassTransformer
+import xyz.xenondevs.obfuscator.transformer.ClassTransformer
 import xyz.xenondevs.obfuscator.util.StringUtils.ALPHA
 import xyz.xenondevs.obfuscator.util.StringUtils.randomString
 

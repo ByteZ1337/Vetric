@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.tansformer.string
+package xyz.xenondevs.obfuscator.transformer.string
 
 import org.objectweb.asm.Opcodes.INVOKESTATIC
 import org.objectweb.asm.tree.FieldNode
@@ -6,7 +6,7 @@ import org.objectweb.asm.tree.LdcInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.asm.SmartClass
-import xyz.xenondevs.obfuscator.tansformer.ClassTransformer
+import xyz.xenondevs.obfuscator.transformer.ClassTransformer
 import xyz.xenondevs.obfuscator.util.CryptUtils
 import xyz.xenondevs.obfuscator.util.StringUtils
 import xyz.xenondevs.obfuscator.util.StringUtils.ALPHA_NUMERIC

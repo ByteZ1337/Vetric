@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.tansformer.number
+package xyz.xenondevs.obfuscator.transformer.number
 
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.FieldNode
@@ -6,7 +6,7 @@ import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.InsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.asm.SmartClass
-import xyz.xenondevs.obfuscator.tansformer.ClassTransformer
+import xyz.xenondevs.obfuscator.transformer.ClassTransformer
 import xyz.xenondevs.obfuscator.util.AsmUtils
 import xyz.xenondevs.obfuscator.util.MathUtils.randomInt
 

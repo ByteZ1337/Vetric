@@ -1,7 +1,7 @@
 package xyz.xenondevs.obfuscator
 
 import xyz.xenondevs.obfuscator.asm.SmartJar
-import xyz.xenondevs.obfuscator.tansformer.TransformerRegistry
+import xyz.xenondevs.obfuscator.transformer.TransformerRegistry
 import java.io.File
 import java.io.IOException
 
@@ -12,7 +12,7 @@ class Obfuscator {
         INSTANCE = this
     }
 
-    public val transformerRegistry = TransformerRegistry()
+    val transformerRegistry = TransformerRegistry()
     private var currentJar: SmartJar = SmartJar()
 
     fun run(path: String) {
@@ -26,7 +26,7 @@ class Obfuscator {
     }
 
     companion object {
-        var INSTANCE: Obfuscator? = null
+        lateinit var INSTANCE: Obfuscator
     }
 
 }

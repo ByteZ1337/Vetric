@@ -1,13 +1,13 @@
-package xyz.xenondevs.obfuscator.tansformer
+package xyz.xenondevs.obfuscator.transformer
 
-import xyz.xenondevs.obfuscator.tansformer.number.ArithmeticConverter
-import xyz.xenondevs.obfuscator.tansformer.number.LogicalConverter
-import xyz.xenondevs.obfuscator.tansformer.renamer.ClassRenamer
-import xyz.xenondevs.obfuscator.tansformer.renamer.Cleaner
-import xyz.xenondevs.obfuscator.tansformer.renamer.FieldRenamer
-import xyz.xenondevs.obfuscator.tansformer.renamer.UpdateResourceContents
-import xyz.xenondevs.obfuscator.tansformer.string.EncryptionInjector
-import xyz.xenondevs.obfuscator.tansformer.string.StringEncrypter
+import xyz.xenondevs.obfuscator.transformer.number.ArithmeticConverter
+import xyz.xenondevs.obfuscator.transformer.number.LogicalConverter
+import xyz.xenondevs.obfuscator.transformer.renamer.ClassRenamer
+import xyz.xenondevs.obfuscator.transformer.renamer.Cleaner
+import xyz.xenondevs.obfuscator.transformer.renamer.FieldRenamer
+import xyz.xenondevs.obfuscator.transformer.renamer.UpdateResourceContents
+import xyz.xenondevs.obfuscator.transformer.string.EncryptionInjector
+import xyz.xenondevs.obfuscator.transformer.string.StringEncrypter
 
 @ExperimentalStdlibApi
 class TransformerRegistry {

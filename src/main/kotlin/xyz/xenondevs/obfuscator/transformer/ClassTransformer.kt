@@ -1,6 +1,6 @@
 @file:Suppress("UNUSED_PARAMETER")
 
-package xyz.xenondevs.obfuscator.tansformer
+package xyz.xenondevs.obfuscator.transformer
 
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
