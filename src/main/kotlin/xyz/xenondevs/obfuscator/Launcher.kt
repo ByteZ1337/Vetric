@@ -8,7 +8,6 @@ object Launcher {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val node = ClassNode()
         OBFUSCATOR = Obfuscator()
         OBFUSCATOR.run(args.joinToString(" "))
     }
