@@ -19,7 +19,7 @@ class TransformerRegistry {
         transformers.add(LogicalConverter())
         transformers.add(ArithmeticConverter())
         transformers.add(Cleaner())
-        //transformers.add(LocalRenamer())
+//        transformers.add(LocalRenamer())
         transformers.add(FieldRenamer())
         transformers.add(ClassRenamer())
         transformers.add(UpdateResourceContents())
