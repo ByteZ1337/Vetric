@@ -1,9 +1,6 @@
 package xyz.xenondevs.obfuscator
 
-import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
-import java.io.File
 
 @ExperimentalStdlibApi
 object Launcher {
