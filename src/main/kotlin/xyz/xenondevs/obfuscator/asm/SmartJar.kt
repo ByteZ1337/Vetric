@@ -62,7 +62,7 @@ class SmartJar {
     private fun parseFiles() {
         files.forEach { (name, content) ->
             run {
-                if (FileUtils.getExtenstion(name) != "class")
+                if (FileUtils.getExtension(name) != "class")
                     resources.add(Resource(name, content, this))
                 else classes.add(SmartClass(name, content, this))
             }

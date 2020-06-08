@@ -10,7 +10,7 @@ class Resource(var name: String, var content: ByteArray, val jar: SmartJar) {
 
     override fun toString(): String = content.decodeToString()
 
-    fun getExtension(): String = FileUtils.getExtenstion(name)
+    fun getExtension(): String = FileUtils.getExtension(name)
 
     fun apply(consumer: Consumer<ByteArray>) = consumer.accept(this.content)
 
