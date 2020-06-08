@@ -15,8 +15,8 @@ class Resource(var name: String, var content: ByteArray, val jar: SmartJar) {
     fun apply(consumer: Consumer<ByteArray>) = consumer.accept(this.content)
 
     fun update() {
-        jar.files.remove(originalName);
-        jar.files.remove(name);
+        jar.files.remove(originalName)
+        jar.files.remove(name)
         jar.files[name] = content
     }
 }
