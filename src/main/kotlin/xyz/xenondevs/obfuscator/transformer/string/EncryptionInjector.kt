@@ -8,7 +8,8 @@ import xyz.xenondevs.obfuscator.asm.SmartClass
 import xyz.xenondevs.obfuscator.asm.SmartJar
 import xyz.xenondevs.obfuscator.asm.dump.CryptDump
 import xyz.xenondevs.obfuscator.transformer.ClassTransformer
-import xyz.xenondevs.obfuscator.util.StringUtils.ALPHA
+import xyz.xenondevs.obfuscator.util.AsmUtils
+import xyz.xenondevs.obfuscator.util.StringUtils
 import xyz.xenondevs.obfuscator.util.StringUtils.randomString
 
 @ExperimentalStdlibApi
@@ -18,17 +19,18 @@ class EncryptionInjector : ClassTransformer("EncryptionInjector") {
         val methods = HashMap<String, String>()
     }
 
+
     override fun transform(jar: SmartJar) {
         val list = ArrayList<SmartClass>()
-        val available: ArrayList<SmartClass> = jar.classes.clone() as ArrayList<SmartClass>
-        for (i in 1..(if (jar.classes.size < 4) 1 else 4)) {
+        val available = jar.classes.filter { !AsmUtils.isInterface(it.node.access) } as ArrayList<SmartClass>
+        for (i in 1..(if (jar.classes.count { !AsmUtils.isInterface(it.node.access) } < 4) 1 else 4)) {
             val clazz = available.random()
             available.remove(clazz)
             list.add(clazz)
         }
         list.forEach {
             val method = MethodNode()
-            val encryptName = randomString(10..40, ALPHA)
+            val encryptName = "decrypt" + randomString(2, StringUtils.NUMERIC)
             CryptDump.dump(encryptName, method)
             it.addMethod(method)
             println("Injected decryption method into ${it.fileName} as $encryptName")
@@ -38,14 +40,10 @@ class EncryptionInjector : ClassTransformer("EncryptionInjector") {
         }
     }
 
-    override fun transform(smartClass: SmartClass) {
+    override fun transform(smartClass: SmartClass) = Unit
 
-    }
+    override fun transform(field: FieldNode) = Unit
 
-    override fun transform(field: FieldNode) {
-    }
-
-    override fun transform(method: MethodNode) {
-    }
+    override fun transform(method: MethodNode) = Unit
 
 }

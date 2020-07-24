@@ -4,8 +4,6 @@ import xyz.xenondevs.obfuscator.transformer.Transformer
 import xyz.xenondevs.obfuscator.util.FileUtils
 import java.io.File
 import java.io.IOException
-import java.net.URL
-import java.net.URLClassLoader
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -34,11 +32,7 @@ class SmartJar {
         }
         parseFiles()
         println("${classes.size} Classes, ${resources.size} Resources, ${directories.size} Directories, Total: ${files.size + directories.size}")
-        // Loading Jar as library
-        val classLoader = ClassLoader.getSystemClassLoader() as URLClassLoader
-        val method = URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java)
-        method.isAccessible = true
-        method.invoke(classLoader, file.toURI().toURL())
+        FileUtils.loadLibrary(file)
     }
 
     fun writeFile(file: File) {
@@ -76,6 +70,7 @@ class SmartJar {
         transformer.transform(this)
     }
 
-    fun findClass(name: String): SmartClass = classes.stream().filter { it.fileName == name }.findFirst().orElse(null)
+    fun findClass(name: String): SmartClass? =
+            classes.firstOrNull { it.fileName == name }
 
 }

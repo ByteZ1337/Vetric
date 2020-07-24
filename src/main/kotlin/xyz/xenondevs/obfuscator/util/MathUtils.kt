@@ -7,12 +7,11 @@ object MathUtils {
 
     val random = SecureRandom().asKotlinRandom()
 
-    fun randomInt(min: Int, max: Int): Int {
-        return if (max < min) max else random.nextInt(min, max)
-    }
+    fun randomInt(min: Int, max: Int) =
+            if (max < min) max else random.nextInt(min, max)
 
-    fun randomInt(range: IntRange): Int = randomInt(range.first, range.last)
+    fun randomInt(range: IntRange) = randomInt(range.first, range.last)
 
-    fun randomInt(): Int = random.nextInt()
+    fun randomInt() = random.nextInt()
 
 }

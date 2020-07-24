@@ -9,29 +9,40 @@ object StringUtils {
     val ALPHA = ALPHA_LOWER + ALPHA_UPPER
     val ALPHA_NUMERIC = ALPHA + NUMERIC
 
-    fun randomString(len: Int, dir: String): String =
-            (1..len).map { dir.random() }.joinToString("")
+    val generated = HashSet<String>()
 
-    fun randomString(min: Int, max: Int, dir: String): String =
+    fun randomString(length: Int, dir: String) =
+            (1..length).map { dir.random() }.joinToString("")
+
+    fun randomString(min: Int, max: Int, dir: String) =
             randomString(randomInt(min..max), dir)
 
-    fun randomString(range: IntRange, dir: String): String =
+    fun randomString(range: IntRange, dir: String) =
             randomString(randomInt(range), dir)
 
-    fun String.onlyContains(dir: String): Boolean =
-            this.none { !dir.toCharArray().contains(it) }
+    fun randomString(length: Int): String {
+        val out = StringBuffer()
+        while (out.length < length) {
+            val rdm = randomInt() % /*'z'.toInt()*/Character.MAX_CODE_POINT
+            if (rdm != '$'.toInt() && Character.isDefined(rdm) && Character.isJavaIdentifierPart(rdm) && Character.isJavaIdentifierStart(rdm))
+                out.appendCodePoint(rdm)
+        }
+        return out.toString()
+    }
 
-    fun String.onlyContainsIgnoreCase(dir: String): Boolean =
-            this.toLowerCase().onlyContains(dir.toLowerCase())
+    fun randomString(range: IntRange) =
+            randomString(randomInt(range))
 
-    fun String.containsIgnoreCase(other: String): Boolean =
-            this.toLowerCase().contains(other.toLowerCase())
+    fun randomStringUnique(range: IntRange): String {
+        var random: String
+        do {
+            random = randomString(range)
+        } while (generated.contains(random))
+        generated.add(random)
+        return random
+    }
 
-    fun String.reverseSubstring(start: Int, end: Int): String =
-            this.substring(start, this.length - end)
+    fun randomStringUnique() = randomString(10..20)
 
-    fun String.reverseSubstring(amount: Int): String =
-            this.substring(0, this.length - amount)
 }
-
 

@@ -6,12 +6,21 @@ import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.InsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.asm.SmartClass
+import xyz.xenondevs.obfuscator.asm.SmartJar
 import xyz.xenondevs.obfuscator.transformer.ClassTransformer
 import xyz.xenondevs.obfuscator.util.AsmUtils
 import xyz.xenondevs.obfuscator.util.MathUtils.randomInt
 
 @ExperimentalStdlibApi
 class LogicalConverter : ClassTransformer("Logical Converter") {
+
+    var count = 0
+
+    override fun transform(jar: SmartJar) {
+        count = 0
+        super.transform(jar)
+        println("Injected $count instructions")
+    }
 
     override fun transform(method: MethodNode) {
         method.instructions.forEach {
@@ -50,12 +59,11 @@ class LogicalConverter : ClassTransformer("Logical Converter") {
         }
         instructions.add(AsmUtils.getInsn(current xor number))
         instructions.add(InsnNode(IXOR))
+        count += instructions.size()
         return instructions
     }
 
-    override fun transform(smartClass: SmartClass) {
-    }
+    override fun transform(smartClass: SmartClass) = Unit
 
-    override fun transform(field: FieldNode) {
-    }
+    override fun transform(field: FieldNode) = Unit
 }

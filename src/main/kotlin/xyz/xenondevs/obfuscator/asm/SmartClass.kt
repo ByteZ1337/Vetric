@@ -15,9 +15,17 @@ class SmartClass(var fileName: String, byteCode: ByteArray, val jar: SmartJar) {
 
     var node: ClassNode = ClassNode()
 
-    fun getMethods(): MutableList<MethodNode>? = node.methods
+    var methods: List<MethodNode>?
+        get() = node.methods
+        set(value) {
+            node.methods = value
+        }
 
-    fun getFields(): MutableList<FieldNode>? = node.fields
+    var fields: List<FieldNode>?
+        get() = node.fields
+        set(value) {
+            node.fields = value
+        }
 
     init {
         val reader = ClassReader(byteCode)
@@ -35,7 +43,7 @@ class SmartClass(var fileName: String, byteCode: ByteArray, val jar: SmartJar) {
     }
 
     fun toByteCode(): ByteArray {
-        val cw = ClassWriter(ClassWriter.COMPUTE_MAXS)
+        val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES)
         node.accept(cw)
         return cw.toByteArray()
     }

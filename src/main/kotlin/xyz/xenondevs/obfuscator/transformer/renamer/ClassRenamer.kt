@@ -1,87 +1,105 @@
 package xyz.xenondevs.obfuscator.transformer.renamer
 
 import org.objectweb.asm.Type
-import org.objectweb.asm.Type.OBJECT
+import org.objectweb.asm.Type.*
 import org.objectweb.asm.tree.*
 import xyz.xenondevs.obfuscator.asm.SmartClass
 import xyz.xenondevs.obfuscator.asm.SmartJar
 import xyz.xenondevs.obfuscator.transformer.ClassTransformer
 import xyz.xenondevs.obfuscator.util.AsmUtils
 import xyz.xenondevs.obfuscator.util.StringUtils
-import xyz.xenondevs.obfuscator.util.StringUtils.ALPHA
+import xyz.xenondevs.obfuscator.util.between
 
 @ExperimentalStdlibApi
-class ClassRenamer : ClassTransformer("ClassRenamer") {
+class ClassRenamer : ClassTransformer("Classrenamer") {
 
     var nameMap = HashMap<String, String>()
 
     override fun transform(jar: SmartJar) {
-        jar.classes.forEach(this::provideNewName)
+        jar.classes.forEach(this::provideName)
         super.transform(jar)
-        nameMap.forEach { (old, new) -> println("Renamed $old to $new") }
     }
 
-    fun provideNewName(smartClass: SmartClass) {
-        val newName = StringUtils.randomString(10..30, ALPHA)
+    override fun transform(smartClass: SmartClass) {
+        smartClass.node.superName = processDescriptor(smartClass.node.superName)
+        processIntefaces(smartClass)
+    }
+
+    override fun transform(field: FieldNode) {
+        field.desc = processDescriptor(field.desc)
+    }
+
+    override fun transform(method: MethodNode) {
+        method.desc = processMethodDescriptor(method.desc)
+        processInstructions(method.instructions)
+    }
+
+    private fun provideName(smartClass: SmartClass) {
+        val newName = StringUtils.randomStringUnique()
+        println("${smartClass.node.name} -> $newName")
         nameMap[smartClass.node.name] = newName
         smartClass.fileName = "$newName.class"
         smartClass.node.name = newName
     }
 
-    override fun transform(smartClass: SmartClass) {
-        if (nameMap.containsKey(smartClass.node.superName))
-            smartClass.node.superName = nameMap[smartClass.node.superName]
-        if (smartClass.node.interfaces != null) {
-            val toAdd = ArrayList<String>()
-            nameMap.forEach { (old, new) ->
-                run {
-                    if (smartClass.node.interfaces.contains(old)) {
-                        toAdd.add(new)
-                        smartClass.node.interfaces.remove(old)
-                    }
+    private fun processDescriptor(desc: String): String {
+        if (desc.first() != '[' && desc.last() != ';')
+            return nameMap.getOrDefault(desc, desc)
+        val type = getType(desc)
+        if (type.sort == OBJECT) {
+            if (nameMap.containsKey(type.internalName))
+                return "L${nameMap[type.internalName]};"
+        } else if (type.sort == ARRAY)
+            return processArrayDesc(type)
+        return desc
+    }
+
+    private fun processArrayDesc(type: Type): String {
+        type.internalName.between("L", ";")
+        val name = type.internalName.substring(type.internalName.lastIndexOf('[') + 2, type.internalName.length - 1)
+        return if (nameMap.containsKey(name))
+            "${type.internalName.substringBefore('L')}L${nameMap[name]};"
+        else type.descriptor
+    }
+
+    private fun processIntefaces(smartClass: SmartClass) {
+        val node = smartClass.node
+        if (node.interfaces != null)
+            node.interfaces.forEach {
+                if (nameMap.containsKey(it)) {
+                    node.interfaces.remove(it)
+                    node.interfaces.add(nameMap[it])
                 }
             }
-            smartClass.node.interfaces.addAll(toAdd)
+    }
+
+    private fun processMethodDescriptor(desc: String): String {
+        val type = getType(desc)
+        if (type.sort == METHOD) {
+            val returnType = getType(processDescriptor(type.returnType.descriptor))
+            val params = type.argumentTypes.map { getType(processDescriptor(it.descriptor)) }
+            return AsmUtils.buildMethodDesc(returnType, params)
         }
+        return desc
     }
 
-    override fun transform(field: FieldNode) {
-        val name = Type.getType(field.desc).internalName
-        field.desc = "L${nameMap.getOrDefault(name, name)};"
-    }
-
-    override fun transform(method: MethodNode) {
-        method.desc = getMethodDescriptor(method.desc)
-        method.instructions.forEach {
-            run {
-                if (it is FieldInsnNode) {
-                    val typeName = Type.getType(it.desc).internalName
-                    if (nameMap.containsKey(typeName))
-                        it.desc = nameMap[typeName]
-                    it.owner = nameMap.getOrDefault(it.owner, it.owner)
-                } else if (it is MethodInsnNode) {
-                    it.desc = getMethodDescriptor(it.desc)
-                    it.owner = nameMap.getOrDefault(it.owner, it.owner)
-                } else if (it is TypeInsnNode) {
-                    if (nameMap.containsKey(it.desc))
-                        it.desc = nameMap[it.desc]
-                }
+    private fun processInstructions(instructions: InsnList) {
+        instructions.forEach {
+            if (it is TypeInsnNode)
+                it.desc = processDescriptor(it.desc)
+            else if (it is FieldInsnNode) {
+                it.owner = processDescriptor(it.owner)
+                it.desc = processDescriptor(it.desc)
+            } else if (it is MethodInsnNode) {
+                it.owner = processDescriptor(it.owner)
+                it.desc = processMethodDescriptor(it.desc)
+            } else if (it is LdcInsnNode && it.cst is Type)
+                it.cst = getType(processDescriptor((it.cst as Type).descriptor))
+            else if (it is FrameNode && it.local != null) {
+                val list = ArrayList<Any?>()
+                it.local.forEach { obj -> list += if (obj is String) processDescriptor(obj) else obj }
+                it.local = list
             }
         }
     }
-
-    fun getMethodDescriptor(desc: String): String {
-        val parameters = Type.getArgumentTypes(desc)
-        var returnType = Type.getReturnType(desc)
-        val newParams = parameters.map {
-            when (it.sort) {
-                OBJECT -> Type.getType("L${nameMap.getOrDefault(it.internalName, it.internalName)};")
-                else -> it
-            }
-        }
-        if (nameMap.containsKey(returnType.internalName))
-            returnType = Type.getType("L${nameMap[returnType.internalName]};")
-        return AsmUtils.buildMethodDesc(returnType, newParams)
-    }
-
 }

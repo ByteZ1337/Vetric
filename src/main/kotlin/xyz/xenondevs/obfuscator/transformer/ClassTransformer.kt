@@ -8,22 +8,20 @@ import xyz.xenondevs.obfuscator.asm.SmartClass
 import xyz.xenondevs.obfuscator.asm.SmartJar
 
 @ExperimentalStdlibApi
-abstract class ClassTransformer(name: String, private val fieldsFirst: Boolean) : Transformer(name) {
+abstract class ClassTransformer(name: String, private val fieldsFirst: Boolean = false) : Transformer(name) {
 
-    constructor(name: String) : this(name, false)
-
-    var currentClass: SmartClass? = null
+    lateinit var currentClass: SmartClass
 
     override fun transform(jar: SmartJar) {
         jar.classes.forEach {
             currentClass = it
             transform(it)
             if (fieldsFirst) {
-                it.getFields()?.forEach(this::transform)
-                it.getMethods()?.forEach(this::transform)
+                it.fields?.forEach(this::transform)
+                it.methods?.forEach(this::transform)
             } else {
-                it.getMethods()?.forEach(this::transform)
-                it.getFields()?.forEach(this::transform)
+                it.methods?.forEach(this::transform)
+                it.fields?.forEach(this::transform)
             }
             jar.files.remove(it.originalName)
             jar.files.remove(it.fileName)

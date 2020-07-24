@@ -3,7 +3,6 @@ package xyz.xenondevs.obfuscator.asm.dump
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.MethodNode
-import xyz.xenondevs.obfuscator.util.StringUtils.ALPHA
 import xyz.xenondevs.obfuscator.util.StringUtils.randomString
 
 object CryptDump {
@@ -69,10 +68,10 @@ object CryptDump {
         method.visitInsn(ARETURN)
         val label6 = Label()
         method.visitLabel(label6)
-        method.visitLocalVariable(randomString(5..30, ALPHA), "I", null, label2, label3, 3)
-        method.visitLocalVariable(randomString(5..30, ALPHA), "Ljava/lang/String;", null, label0, label6, 0)
-        method.visitLocalVariable(randomString(5..30, ALPHA), "Ljava/lang/String;", null, label0, label6, 1)
-        method.visitLocalVariable(randomString(5..30, ALPHA), "Ljava/lang/String;", null, label1, label6, 2)
+        method.visitLocalVariable(randomString(5..30), "I", null, label2, label3, 3)
+        method.visitLocalVariable(randomString(5..30), "Ljava/lang/String;", null, label0, label6, 0)
+        method.visitLocalVariable(randomString(5..30), "Ljava/lang/String;", null, label0, label6, 1)
+        method.visitLocalVariable(randomString(5..30), "Ljava/lang/String;", null, label1, label6, 2)
         method.visitMaxs(5, 4)
         method.visitEnd()
     }

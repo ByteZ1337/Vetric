@@ -1,11 +1,9 @@
 package xyz.xenondevs.obfuscator.transformer
 
+import xyz.xenondevs.obfuscator.transformer.misc.Cleaner
 import xyz.xenondevs.obfuscator.transformer.number.ArithmeticConverter
 import xyz.xenondevs.obfuscator.transformer.number.LogicalConverter
-import xyz.xenondevs.obfuscator.transformer.renamer.ClassRenamer
-import xyz.xenondevs.obfuscator.transformer.renamer.Cleaner
-import xyz.xenondevs.obfuscator.transformer.renamer.FieldRenamer
-import xyz.xenondevs.obfuscator.transformer.renamer.UpdateResourceContents
+import xyz.xenondevs.obfuscator.transformer.renamer.*
 import xyz.xenondevs.obfuscator.transformer.string.EncryptionInjector
 import xyz.xenondevs.obfuscator.transformer.string.StringEncrypter
 
@@ -14,18 +12,19 @@ class TransformerRegistry {
     var transformers = ArrayList<Transformer>()
 
     init {
-        transformers.add(EncryptionInjector())
-        transformers.add(StringEncrypter())
-        transformers.add(LogicalConverter())
-        transformers.add(ArithmeticConverter())
-        transformers.add(Cleaner())
-//        transformers.add(LocalRenamer())
-        transformers.add(FieldRenamer())
-        transformers.add(ClassRenamer())
-        transformers.add(UpdateResourceContents())
+        addTransformers(
+                EncryptionInjector(), StringEncrypter(),
+                LogicalConverter(), ArithmeticConverter(),
+                Cleaner(), MethodRenamer(), FieldRenamer(),
+                ClassRenamer(), UpdateResourceContents()
+        )
     }
 
-    fun <T> getTransformer(clazz: Class<T>): Transformer? =
-            transformers.firstOrNull { it::class.java == clazz }
+    private fun addTransformers(vararg transformer: Transformer) {
+        transformers.addAll(transformer)
+    }
+
+    inline fun <reified T> getTransformer(): T =
+            transformers.firstOrNull { it::class.java == T::class.java } as T
 
 }
