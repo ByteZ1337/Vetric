@@ -2,13 +2,11 @@
 Proof of concept Obfuscator written entirely in Kotlin
 
 ## Included Features
-* Class Renaming
-* Field Renaming
+* Class, Field, Method Renaming
 * Local Variable renamer/remover
 * Number Obfuscator
 * String Obfuscator
 
 ## TODO
-* Method renaming
 * Flow Obfuscation
 * More options for different transformers
