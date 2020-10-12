@@ -1,8 +1,12 @@
 package xyz.xenondevs.obfuscator.util
 
-import xyz.xenondevs.obfuscator.util.MathUtils.randomInt
+import java.security.SecureRandom
+import kotlin.random.asKotlinRandom
 
 object StringUtils {
+
+    val RANDOM = SecureRandom().asKotlinRandom()
+
     val ALPHA_LOWER = ('a'..'z').joinToString("")
     val ALPHA_UPPER = ('A'..'Z').joinToString("")
     val NUMERIC = ('0'..'9').joinToString("")
@@ -11,38 +15,50 @@ object StringUtils {
 
     val generated = HashSet<String>()
 
-    fun randomString(length: Int, dir: String) =
-            (1..length).map { dir.random() }.joinToString("")
+    // Dictionary randoms
 
-    fun randomString(min: Int, max: Int, dir: String) =
-            randomString(randomInt(min..max), dir)
+    fun randomString(length: Int, dict: String) =
+        (1..length).map { dict.random() }.joinToString("")
 
-    fun randomString(range: IntRange, dir: String) =
-            randomString(randomInt(range), dir)
+    fun randomString(min: Int, max: Int, dict: String) =
+        randomString((min..max).random(), dict)
+
+    fun randomString(range: IntRange, dict: String) =
+        randomString(range.random(), dict)
+
+    // Actual randoms
 
     fun randomString(length: Int): String {
-        val out = StringBuffer()
-        while (out.length < length) {
-            val rdm = randomInt() % /*'z'.toInt()*/Character.MAX_CODE_POINT
-            if (rdm != '$'.toInt() && Character.isDefined(rdm) && Character.isJavaIdentifierPart(rdm) && Character.isJavaIdentifierStart(rdm))
-                out.appendCodePoint(rdm)
+        val builder = StringBuilder()
+        while (builder.length < length) {
+            val codePoint = RANDOM.nextInt(Character.MAX_CODE_POINT)
+            if (codePoint != '$'.toInt() && Character.isDefined(codePoint)
+                && Character.isJavaIdentifierStart(codePoint) && Character.isJavaIdentifierPart(codePoint)
+            ) {
+                builder.appendCodePoint(codePoint)
+            }
         }
-        return out.toString()
+        return builder.toString()
     }
 
     fun randomString(range: IntRange) =
-            randomString(randomInt(range))
+        randomString(range.random())
 
-    fun randomStringUnique(range: IntRange): String {
+    fun randomStringUnique(length: Int, set: HashSet<String> = generated): String {
         var random: String
-        do {
-            random = randomString(range)
-        } while (generated.contains(random))
-        generated.add(random)
+        do random = randomString(length) while (set.contains(random))
+        set += random
         return random
     }
 
-    fun randomStringUnique() = randomString(10..20)
+    fun randomStringUnique(range: IntRange, set: HashSet<String> = generated) = randomStringUnique(range.random(), set)
+
+    fun randomStringUnique(set: HashSet<String> = generated) = randomStringUnique(10..20, set)
+
+    fun encrypt(text: String, key: String) = text.mapIndexed { index, c ->
+        (c.toInt() xor key[index % key.length].toInt()).toChar()
+    }.joinToString("")
 
 }
 
+fun String.between(start: Char, end: Char) = this.substringAfter(start).substringBeforeLast(end)

@@ -37,6 +37,9 @@
                 </executions>
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
+                    <args>
+                        <arg>-Xopt-in=kotlin.ExperimentalUnsignedTypes</arg>
+                    </args>
                 </configuration>
             </plugin>
             <plugin>
@@ -71,25 +74,25 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>8.0.1</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-commons -->
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>8.0.1</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-util -->
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
-            <version>8.0.1</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-tree -->
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-tree</artifactId>
-            <version>8.0.1</version>
+            <version>LATEST</version>
         </dependency>
         <!-- Kotlin -->
         <dependency>

@@ -1,32 +1,19 @@
 package xyz.xenondevs.obfuscator
 
-import xyz.xenondevs.obfuscator.asm.SmartJar
+import xyz.xenondevs.obfuscator.jvm.ClassPath
+import xyz.xenondevs.obfuscator.jvm.JavaArchive
 import xyz.xenondevs.obfuscator.transformer.TransformerRegistry
 import java.io.File
-import java.io.IOException
 
-@ExperimentalStdlibApi
-class Obfuscator {
+object Obfuscator {
 
-    init {
-        INSTANCE = this
+    lateinit var jar: JavaArchive
+
+    fun run() {
+        ClassPath.reset()
+        jar = JavaArchive(File("in.jar"), true)
+        TransformerRegistry.transformers.forEach { it.transformJar(jar) }
+        println("Writing file...")
+        jar.writeFile(File("out.jar"))
     }
-
-    val transformerRegistry = TransformerRegistry()
-    private var currentJar: SmartJar = SmartJar()
-
-    fun run(path: String) {
-        try {
-            currentJar.readFile(File(path))
-        } catch (ex: IOException) {
-            ex.printStackTrace()
-        }
-        transformerRegistry.transformers.forEach(currentJar::apply)
-        currentJar.writeFile(File("out.jar"))
-    }
-
-    companion object {
-        lateinit var INSTANCE: Obfuscator
-    }
-
 }

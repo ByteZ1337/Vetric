@@ -3,31 +3,31 @@ package xyz.xenondevs.obfuscator.transformer.misc
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.LineNumberNode
 import org.objectweb.asm.tree.MethodNode
-import xyz.xenondevs.obfuscator.asm.SmartClass
-import xyz.xenondevs.obfuscator.asm.SmartJar
+import xyz.xenondevs.obfuscator.jvm.ClassWrapper
+import xyz.xenondevs.obfuscator.jvm.JavaArchive
 import xyz.xenondevs.obfuscator.transformer.ClassTransformer
 
-@ExperimentalStdlibApi
-class Cleaner : ClassTransformer("Cleaner") {
+object Cleaner : ClassTransformer("Cleaner") {
 
-    override fun transform(jar: SmartJar) {
-        super.transform(jar)
-        println("Junk instructions and other useless information has been removed.")
+    override fun transformJar(jar: JavaArchive) {
+        super.transformJar(jar)
+        println("Removed useless instructions and debug info.")
     }
 
-    override fun transform(smartClass: SmartClass) {
-        smartClass.node.sourceDebug = null
-        smartClass.node.sourceFile = null
-        smartClass.node.signature = null
+    override fun transformClass(clazz: ClassWrapper) {
+        clazz.sourceDebug = null
+        clazz.sourceFile = null
+        clazz.signature = null
     }
 
-    override fun transform(field: FieldNode) {
+    override fun transformField(field: FieldNode) {
         field.signature = null
     }
 
-    override fun transform(method: MethodNode) {
+    override fun transformMethod(method: MethodNode) {
         method.signature = null
-        method.localVariables = null
+        method.localVariables = null // Local variable obfuscation is bypassed easily and is just a waste of space
         method.instructions.filterIsInstance<LineNumberNode>().forEach(method.instructions::remove)
     }
+
 }
