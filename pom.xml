@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
-            <version>LATEST</version>
+            <version>9.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-tree -->
         <dependency>
