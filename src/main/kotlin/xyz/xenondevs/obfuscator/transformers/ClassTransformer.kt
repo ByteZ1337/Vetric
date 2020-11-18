@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.transformer
+package xyz.xenondevs.obfuscator.transformers
 
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode

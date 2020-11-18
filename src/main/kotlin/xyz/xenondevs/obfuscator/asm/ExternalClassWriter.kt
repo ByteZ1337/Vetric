@@ -2,8 +2,8 @@ package xyz.xenondevs.obfuscator.asm
 
 import org.objectweb.asm.ClassWriter
 import xyz.xenondevs.obfuscator.jvm.ClassPath
-import xyz.xenondevs.obfuscator.util.ASMUtils
-import xyz.xenondevs.obfuscator.util.ASMUtils.OBJECT_TYPE
+import xyz.xenondevs.obfuscator.utils.ASMUtils
+import xyz.xenondevs.obfuscator.utils.ASMUtils.OBJECT_TYPE
 
 /**
  * ASM insists on having some classes loaded in the current classpath... So we bypass it
@@ -11,8 +11,7 @@ import xyz.xenondevs.obfuscator.util.ASMUtils.OBJECT_TYPE
  * Concept by ItzSomebody
  */
 class ExternalClassWriter(flags: Int = COMPUTE_FRAMES) : ClassWriter(flags) {
-
-
+    
     override fun getCommonSuperClass(type1: String, type2: String): String {
         if (OBJECT_TYPE == type1 || OBJECT_TYPE == type2)
             return OBJECT_TYPE
@@ -39,8 +38,7 @@ class ExternalClassWriter(flags: Int = COMPUTE_FRAMES) : ClassWriter(flags) {
 
         if (first.isInterface() || second.isInterface())
             return OBJECT_TYPE
-
-
+        
         var new: String
         do {
             new = first.superName

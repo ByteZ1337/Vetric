@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.util
+package xyz.xenondevs.obfuscator.utils
 
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type

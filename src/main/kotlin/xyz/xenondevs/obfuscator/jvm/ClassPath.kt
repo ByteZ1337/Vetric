@@ -1,22 +1,32 @@
 package xyz.xenondevs.obfuscator.jvm
 
 import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassReader.EXPAND_FRAMES
+import org.objectweb.asm.ClassReader.SKIP_FRAMES
+import xyz.xenondevs.obfuscator.Obfuscator
 
+// TODO rework library loading
 object ClassPath {
 
-    val libraries = ArrayList<JavaArchive>()
+    val libraries = ArrayList<Library>()
     val wrappers = HashMap<String, ClassWrapper>()
     val inheritanceTree = HashMap<String, InheritanceTree>()
 
     fun loadJar(jar: JavaArchive) {
-        libraries += jar
         // Note: this does not waste a lot of memory because the jvm just
         // saves a reference of the ClassWrapper and doesn't copy the object.
         jar.classes.forEach { wrappers[it.name] = it }
     }
 
-    fun reset() = libraries.clear()
+
+    fun loadLibrary(library: Library) {
+        libraries += library
+        loadJar(library)
+    }
+
+    fun reset() {
+        libraries.clear()
+        reload()
+    }
 
     fun reload() {
         wrappers.clear()
@@ -24,6 +34,8 @@ object ClassPath {
         libraries.forEach { jar ->
             jar.classes.forEach { wrappers[it.name] = it }
         }
+        loadJar(Obfuscator.input)
+        System.gc()
     }
 
     fun getClassWrapper(name: String): ClassWrapper {
@@ -32,7 +44,7 @@ object ClassPath {
 
             // The ClassWrapper was not found in the cache.
             val wrapper = ClassWrapper("${name.replace('.', '/')}.class").also {
-                ClassReader(name).accept(it, EXPAND_FRAMES)
+                ClassReader(name).accept(it, SKIP_FRAMES)
             }
             wrappers[wrapper.name] = wrapper
             return wrapper
@@ -48,7 +60,7 @@ object ClassPath {
     }
 
     fun getTree(name: String, vararg knownSubClasses: String = emptyArray()) =
-        getTree(getClassWrapper(name), *knownSubClasses)
+            getTree(getClassWrapper(name), *knownSubClasses)
 
     fun getTree(wrapper: ClassWrapper, vararg knownSubClasses: String = emptyArray()): InheritanceTree {
         if (!inheritanceTree.containsKey(wrapper.name)) {

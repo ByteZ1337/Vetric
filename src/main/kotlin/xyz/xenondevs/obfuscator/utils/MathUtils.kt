@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.util
+package xyz.xenondevs.obfuscator.utils
 
 import java.security.SecureRandom
 import kotlin.random.asKotlinRandom

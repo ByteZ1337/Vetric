@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.transformer.renamer
+package xyz.xenondevs.obfuscator.transformers.renamer
 
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.tree.MethodNode
@@ -6,18 +6,16 @@ import xyz.xenondevs.obfuscator.asm.DescriptorBasedRemapper
 import xyz.xenondevs.obfuscator.jvm.ClassPath
 import xyz.xenondevs.obfuscator.jvm.ClassWrapper
 import xyz.xenondevs.obfuscator.jvm.JavaArchive
-import xyz.xenondevs.obfuscator.supplier.AlphaNumericSupplier
-import xyz.xenondevs.obfuscator.supplier.DotsSupplier
-import xyz.xenondevs.obfuscator.transformer.Transformer
-import xyz.xenondevs.obfuscator.util.ASMUtils
-import xyz.xenondevs.obfuscator.util.StringUtils
-import xyz.xenondevs.obfuscator.util.flushClose
+import xyz.xenondevs.obfuscator.suppliers.CombiningSupplier
+import xyz.xenondevs.obfuscator.transformers.Transformer
+import xyz.xenondevs.obfuscator.utils.ASMUtils
+import xyz.xenondevs.obfuscator.utils.flushClose
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 // TODO options: SameName, Dictionary, Mix
-// TODO fix
 // TODO Search for Reflection calls
+// TODO Package renaming
 object Renamer : Transformer("Renamer") {
 
     val mappings = HashMap<String, String>()
@@ -31,24 +29,17 @@ object Renamer : Transformer("Renamer") {
         writer.flushClose()
     }
 
+
     private fun generateMappings(jar: JavaArchive) {
         ClassPath.buildJarTree(jar)
         mappings.clear()
 
-        val mainClass = findMainClass(jar)
         jar.classes.forEach { clazz ->
             clazz.fields?.let { generateFieldMappings(clazz) }
             clazz.methods?.let { generateMethodMappings(clazz) }
-            mappings[clazz.name] = if (clazz != mainClass) DotsSupplier.randomStringUnique() else AlphaNumericSupplier.randomStringUnique()
+            mappings[clazz.name] = CombiningSupplier().randomStringUnique()
             println("Generated mappings for " + clazz.name)
         }
-    }
-
-    private fun findMainClass(jar: JavaArchive): ClassWrapper? {
-        val pluginYaml = jar.getResource("plugin.yml") ?: return null
-        val content = pluginYaml.content.decodeToString()
-        val className = content.lines().first { it.startsWith("main:", true) }.substring(5).trim()
-        return ClassPath.getClassWrapper(className)
     }
 
     private fun applyMappings(jar: JavaArchive) {
@@ -56,8 +47,8 @@ object Renamer : Transformer("Renamer") {
         val newClasses = ArrayList<ClassWrapper>()
 
         jar.classes.forEach { clazz ->
-            val newClass = ClassWrapper(clazz.fileName, jar)
-            // FIXME
+            val newClass = ClassWrapper(clazz.fileName)
+            // FIXME?
             clazz.accept(ClassRemapper(newClass, remapper))
             newClass.fileName = "${newClass.name}.class"
             newClasses.add(newClass)
@@ -120,7 +111,7 @@ object Renamer : Transformer("Renamer") {
         // Search the amount of needed names and fill the HashSet
         val count = list.groupingBy(mapper).eachCount().values.maxOrNull()!!
         // TODO increase length when no names are left
-        repeat(count) { names += DotsSupplier.randomStringUnique(100..200, names) }
+        repeat(count) { names += CombiningSupplier().randomStringUnique(500, names) }
         // Fill the HashMap
         list.map(mapper).distinct().forEach { indexMap[it] = AtomicInteger() }
 

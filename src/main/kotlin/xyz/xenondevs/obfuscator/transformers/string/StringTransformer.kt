@@ -1,11 +1,11 @@
-package xyz.xenondevs.obfuscator.transformer.string
+package xyz.xenondevs.obfuscator.transformers.string
 
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.LdcInsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.jvm.ClassWrapper
-import xyz.xenondevs.obfuscator.transformer.ClassTransformer
-import xyz.xenondevs.obfuscator.util.filterTypeAnd
+import xyz.xenondevs.obfuscator.transformers.ClassTransformer
+import xyz.xenondevs.obfuscator.utils.filterTypeAnd
 
 abstract class StringTransformer(name: String, val stringFilter: (String) -> Boolean = { true }) :
     ClassTransformer(name) {

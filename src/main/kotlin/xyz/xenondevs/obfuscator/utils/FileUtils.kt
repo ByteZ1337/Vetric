@@ -1,33 +1,16 @@
-package xyz.xenondevs.obfuscator.util
+package xyz.xenondevs.obfuscator.utils
 
-import xyz.xenondevs.obfuscator.jvm.ClassPath
-import xyz.xenondevs.obfuscator.jvm.JavaArchive
 import java.io.File
-import java.lang.reflect.Method
-import java.net.URL
-import java.net.URLClassLoader
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 object FileUtils {
 
-    val classLoader = ClassLoader.getSystemClassLoader() as URLClassLoader
-    val method: Method = URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java)
-
-    init {
-        method.isAccessible = true
-    }
-
     const val ZIP_PREFIX = 0x504B0304u
     const val CLASS_PREFIX = 0xCAFEBABEu
 
     fun getFileExtension(path: String) = path.substringAfterLast('.')
-
-    fun loadLibrary(file: File, jar: JavaArchive? = null) {
-        method.invoke(classLoader, file.toURI().toURL())
-        jar?.let { ClassPath.loadJar(it) }
-    }
 
 }
 

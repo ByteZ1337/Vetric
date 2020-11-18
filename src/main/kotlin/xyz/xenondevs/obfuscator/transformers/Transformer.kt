@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.transformer
+package xyz.xenondevs.obfuscator.transformers
 
 import xyz.xenondevs.obfuscator.jvm.JavaArchive
 

@@ -1,8 +1,8 @@
 package xyz.xenondevs.obfuscator.jvm
 
-import xyz.xenondevs.obfuscator.util.FileUtils
+import xyz.xenondevs.obfuscator.utils.FileUtils
 
-class Resource(var fileName: String, var content: ByteArray, val jar: JavaArchive? = null) {
+class Resource(var fileName: String, var content: ByteArray) {
 
     val originalName = fileName
 

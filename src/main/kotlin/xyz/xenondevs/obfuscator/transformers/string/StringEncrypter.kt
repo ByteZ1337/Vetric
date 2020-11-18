@@ -1,4 +1,4 @@
-package xyz.xenondevs.obfuscator.transformer.string
+package xyz.xenondevs.obfuscator.transformers.string
 
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
@@ -7,8 +7,8 @@ import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.jvm.ClassWrapper
 import xyz.xenondevs.obfuscator.jvm.JavaArchive
-import xyz.xenondevs.obfuscator.util.ASMUtils
-import xyz.xenondevs.obfuscator.util.StringUtils
+import xyz.xenondevs.obfuscator.utils.ASMUtils
+import xyz.xenondevs.obfuscator.utils.StringUtils
 import kotlin.math.ln
 import kotlin.math.roundToInt
 

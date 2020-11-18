@@ -1,19 +1,18 @@
-package xyz.xenondevs.obfuscator.util
+package xyz.xenondevs.obfuscator.utils
 
 import java.io.Flushable
 import java.lang.reflect.Modifier
 
-fun UInt.toByteArray(): ByteArray {
-    return byteArrayOf(
+fun UInt.toByteArray() =
+    byteArrayOf(
         (this shr 24).toByte(),
         (this shr 16).toByte(),
         (this shr 8).toByte(),
         this.toByte()
     )
-}
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T> Iterable<*>.filterTypeAnd(block: (T) -> Boolean): List<T> =
+inline fun <reified T> Iterable<*>.filterTypeAnd(block: (T) -> Boolean) =
     filter { it is T && block(it) } as List<T>
 
 fun <T> T.copyTo(obj: T) =
@@ -35,3 +34,5 @@ fun IntRange.toIntArray(): IntArray {
 }
 
 val Class<*>.internalName get() = canonicalName.replace('.', '/')
+
+typealias BigInt = java.math.BigInteger

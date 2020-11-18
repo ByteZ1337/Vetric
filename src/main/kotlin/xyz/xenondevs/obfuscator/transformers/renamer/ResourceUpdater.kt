@@ -1,7 +1,7 @@
-package xyz.xenondevs.obfuscator.transformer.renamer
+package xyz.xenondevs.obfuscator.transformers.renamer
 
 import xyz.xenondevs.obfuscator.jvm.Resource
-import xyz.xenondevs.obfuscator.transformer.ResourceTransformer
+import xyz.xenondevs.obfuscator.transformers.ResourceTransformer
 
 object ResourceUpdater : ResourceTransformer("ResourceUpdater") {
 

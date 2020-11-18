@@ -1,5 +1,6 @@
-package xyz.xenondevs.obfuscator.util
+package xyz.xenondevs.obfuscator.utils
 
+import xyz.xenondevs.obfuscator.suppliers.CombiningSupplier
 import java.security.SecureRandom
 import kotlin.random.asKotlinRandom
 
@@ -14,6 +15,8 @@ object StringUtils {
     val ALPHA_NUMERIC = ALPHA + NUMERIC
 
     val generated = HashSet<String>()
+
+    val SUPPLIER = CombiningSupplier()
 
     // Dictionary randoms
 
@@ -31,7 +34,7 @@ object StringUtils {
     fun randomString(length: Int): String {
         val builder = StringBuilder()
         while (builder.length < length) {
-            val codePoint = RANDOM.nextInt(Character.MAX_CODE_POINT)
+            val codePoint = RANDOM.nextInt('z'.toInt())
             if (codePoint != '$'.toInt() && Character.isDefined(codePoint)
                 && Character.isJavaIdentifierStart(codePoint) && Character.isJavaIdentifierPart(codePoint)
             ) {
@@ -42,7 +45,7 @@ object StringUtils {
     }
 
     fun randomString(range: IntRange) =
-        randomString(range.random())
+        SUPPLIER.randomString(range.random())
 
     fun randomStringUnique(length: Int, set: HashSet<String> = generated): String {
         var random: String
@@ -51,9 +54,10 @@ object StringUtils {
         return random
     }
 
-    fun randomStringUnique(range: IntRange, set: HashSet<String> = generated) = randomStringUnique(range.random(), set)
+    fun randomStringUnique(range: IntRange, set: HashSet<String> = generated) =
+        SUPPLIER.randomStringUnique(range.random(), set)
 
-    fun randomStringUnique(set: HashSet<String> = generated) = randomStringUnique(10..20, set)
+    fun randomStringUnique(set: HashSet<String> = generated) = SUPPLIER.randomStringUnique(10..20, set)
 
     fun encrypt(text: String, key: String) = text.mapIndexed { index, c ->
         (c.toInt() xor key[index % key.length].toInt()).toChar()

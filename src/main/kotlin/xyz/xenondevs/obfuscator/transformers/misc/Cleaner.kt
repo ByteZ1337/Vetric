@@ -1,11 +1,11 @@
-package xyz.xenondevs.obfuscator.transformer.misc
+package xyz.xenondevs.obfuscator.transformers.misc
 
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.LineNumberNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.jvm.ClassWrapper
 import xyz.xenondevs.obfuscator.jvm.JavaArchive
-import xyz.xenondevs.obfuscator.transformer.ClassTransformer
+import xyz.xenondevs.obfuscator.transformers.ClassTransformer
 
 object Cleaner : ClassTransformer("Cleaner") {
 
