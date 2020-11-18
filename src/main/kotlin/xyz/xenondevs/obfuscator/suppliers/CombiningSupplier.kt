@@ -1,8 +1,12 @@
 package xyz.xenondevs.obfuscator.suppliers
 
+import kotlin.random.Random
+
 // Breaks RSyntaxTextArea font rendering used by lots of decompilers
 // WARNING: This Supplier skyrockets the file size! A single field name can take up to 5kb!
-class CombiningSupplier(val defaultLength: Int = 10) : StringSupplier("Combining") {
+class CombiningSupplier(val min: Int, val max: Int) : StringSupplier("Combining") {
+    
+    constructor(defaultLength: Int = 5) : this(defaultLength, defaultLength)
     
     private companion object {
         val ALPHA_SUPPLIER by lazy { AlphaSupplier(1) }
@@ -19,9 +23,9 @@ class CombiningSupplier(val defaultLength: Int = 10) : StringSupplier("Combining
     }
     
     override fun randomString(length: Int) =
-        ALPHA_SUPPLIER.randomString().map {
+        ALPHA_SUPPLIER.randomString(length).map {
             it + COMBINING.shuffled().take(10).joinToString("")
         }.joinToString("")
     
-    fun randomString() = randomString(defaultLength)
+    override fun randomString() = randomString(Random.nextInt(min, max + 1))
 }

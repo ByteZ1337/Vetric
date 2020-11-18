@@ -2,8 +2,10 @@ package xyz.xenondevs.obfuscator.suppliers
 
 import kotlin.random.Random
 
-object UnicodeSupplier : StringSupplier("Unicode") {
-
+class UnicodeSupplier(val max: Int, val min: Int) : StringSupplier("Unicode") {
+    
+    constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
+    
     override fun randomString(length: Int): String {
         val builder = StringBuilder()
         while (builder.length < length) {
@@ -13,5 +15,7 @@ object UnicodeSupplier : StringSupplier("Unicode") {
         }
         return builder.toString()
     }
-
+    
+    override fun randomString() = randomString(Random.nextInt(min, max + 1))
+    
 }

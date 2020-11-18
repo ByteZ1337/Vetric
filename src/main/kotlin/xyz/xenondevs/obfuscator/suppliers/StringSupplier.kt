@@ -6,6 +6,8 @@ abstract class StringSupplier(val name: String) {
 
     abstract fun randomString(length: Int): String
 
+    abstract fun randomString(): String
+    
     open fun randomString(range: IntRange = 10..20) = randomString(range.random())
 
     open fun randomStringUnique(length: Int, exclude: HashSet<String> = generated): String {

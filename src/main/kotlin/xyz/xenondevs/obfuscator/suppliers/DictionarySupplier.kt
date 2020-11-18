@@ -4,7 +4,7 @@ open class DictionarySupplier(name: String, val dictionary: List<String>) : Stri
 
     private var index = 0
 
-    fun randomString(): String {
+    override fun randomString(): String {
         if (index >= dictionary.size) index = 0
         return dictionary[index++]
     }
