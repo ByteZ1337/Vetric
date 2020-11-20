@@ -2,6 +2,10 @@ package xyz.xenondevs.obfuscator.suppliers
 
 open class DictionarySupplier(name: String, val dictionary: List<String>) : StringSupplier(name) {
 
+    companion object {
+        val DEFAULT = listOf<DictionarySupplier>()
+    }
+    
     private var index = 0
 
     override fun randomString(): String {

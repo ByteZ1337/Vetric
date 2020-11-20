@@ -1,9 +1,11 @@
 package xyz.xenondevs.obfuscator.suppliers
 
 import xyz.xenondevs.obfuscator.utils.toIntArray
+import java.lang.reflect.Constructor
 import kotlin.random.Random
+import kotlin.reflect.KClass
 
-open class CharSupplier(name: String, val max: Int, val min: Int, val chars: List<Char>) : StringSupplier(name) {
+open class CharSupplier(name: String, val min: Int, val max: Int, val chars: List<Char>) : StringSupplier(name) {
     
     constructor(name: String, defaultLength: Int = 20, chars: List<Char>) : this(name, defaultLength, defaultLength, chars)
     
@@ -28,4 +30,29 @@ class DotsSupplier(min: Int, max: Int) : CharSupplier(
     "Dots", min, max, intArrayOf(*(0x2cc..0x355).toIntArray(), 0x10a788, 0x10abec).map(Int::toChar)
 ) {
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
+}
+
+// TODO Use registry instead of enum
+enum class Supplier(val clazz: KClass<out StringSupplier>) {
+    ALPHA(AlphaSupplier::class),
+    ALPHANUMERIC(AlphaNumericSupplier::class),
+    INVISIBLE(InvisibleSupplier::class),
+    DOTS(DotsSupplier::class),
+    COMBINING(CombiningSupplier::class),
+    UNICODE(UnicodeSupplier::class);
+    
+    companion object {
+        val VALUES = values()
+        
+        operator fun get(name: String) = VALUES.firstOrNull { it.toString().equals(name, true) }
+    }
+    
+    val constructor: Constructor<out StringSupplier> by lazy {
+        clazz.java.getConstructor(Int::class.java, Int::class.java)
+    }
+    
+    fun newInstance(min: Int, max: Int): StringSupplier {
+        return constructor.newInstance(min, max)
+    }
+    
 }

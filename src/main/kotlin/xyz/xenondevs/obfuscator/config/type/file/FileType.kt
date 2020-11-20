@@ -7,7 +7,7 @@ import java.io.File
 
 object FileType : SettingType<File>() {
     
-    override fun isValid(element: JsonElement) = element is JsonPrimitive && element.isString
+    override fun isValid(element: JsonElement, silent: Boolean) = element is JsonPrimitive && element.isString
     
     override fun parseElement(element: JsonElement) = File(element.asString)
     

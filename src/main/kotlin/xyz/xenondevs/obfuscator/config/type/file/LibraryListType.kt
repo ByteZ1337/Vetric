@@ -12,7 +12,7 @@ import java.io.File
 
 object LibraryListType : SettingType<List<Library>>() {
     
-    override fun isValid(element: JsonElement) = element.isJsonArray
+    override fun isValid(element: JsonElement, silent: Boolean) = element.isJsonArray
     
     override fun parseElement(element: JsonElement): List<Library> {
         println("Loading libraries...")

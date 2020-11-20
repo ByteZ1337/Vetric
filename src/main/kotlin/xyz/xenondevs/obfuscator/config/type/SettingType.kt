@@ -6,9 +6,10 @@ import xyz.xenondevs.obfuscator.utils.json.JsonConfig
 
 abstract class SettingType<T> {
     
-    abstract fun isValid(element: JsonElement): Boolean
+    abstract fun isValid(element: JsonElement, silent: Boolean = false): Boolean
     
-    fun isValid(path: String, config: JsonConfig) = config[path]?.let { isValid(it) } ?: false
+    fun isValid(path: String, config: JsonConfig, silent: Boolean = false) =
+        config[path]?.let { isValid(it, silent) } ?: false
     
     internal abstract fun parseElement(element: JsonElement): T
     

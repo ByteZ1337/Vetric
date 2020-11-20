@@ -19,4 +19,8 @@ fun JsonObject.getString(property: String, default: String? = null) = if (hasStr
 
 fun JsonObject.getNumber(property: String, default: Number? = null) = if (hasNumber(property)) get(property).asNumber else default
 
+fun JsonObject.getInt(property: String, default: Int? = null) = if (hasNumber(property)) get(property).asInt else default
+
+fun JsonObject.getDouble(property: String, default: Double? = null) = if (hasNumber(property)) get(property).asDouble else default
+
 fun JsonObject.getBoolean(property: String, default: Boolean = false) = if (hasBoolean(property)) get(property).asBoolean else default
