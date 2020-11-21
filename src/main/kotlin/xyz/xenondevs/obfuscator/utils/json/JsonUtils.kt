@@ -15,6 +15,9 @@ fun JsonObject.hasNumber(property: String) =
 fun JsonObject.hasBoolean(property: String) =
     has(property) && this[property] is JsonPrimitive && (this[property] as JsonPrimitive).isBoolean
 
+fun JsonObject.hasObject(property: String) =
+    has(property) && this[property] is JsonObject
+
 fun JsonObject.getString(property: String, default: String? = null) = if (hasString(property)) get(property).asString else default
 
 fun JsonObject.getNumber(property: String, default: Number? = null) = if (hasNumber(property)) get(property).asNumber else default

@@ -63,7 +63,7 @@ object SupplierType : SettingType<StringSupplier>() {
         else return parseCharSupplier(element)
     }
     
-    fun parseCharSupplier(obj: JsonObject): StringSupplier {
+    private fun parseCharSupplier(obj: JsonObject): StringSupplier {
         val supplier = Supplier[obj.getString("name")!!]!!
         if (obj.has("length")) {
             val (min, max) = RangeType.parse(obj["length"]!!)!!
@@ -72,7 +72,7 @@ object SupplierType : SettingType<StringSupplier>() {
         return supplier.newInstance(10, 20)
     }
     
-    fun parseDictionary(obj: JsonObject): DictionarySupplier {
+    private fun parseDictionary(obj: JsonObject): DictionarySupplier {
         val dict = obj.getString("dict")!!
         if (dict.equals("custom", true)) {
             val file = FileType.parse(obj["path"])!!
