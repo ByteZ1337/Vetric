@@ -21,11 +21,11 @@ object RenamerConfig : TransformerType(Renamer) {
                 }
             }
             Renamer.repeatNames = obj.getBoolean("repeatNames")
-            Renamer.renamePackages = obj.getBoolean("packages")
             Renamer.removePackages = obj.getBoolean("removePackages")
-            Renamer.renameClasses = obj.getBoolean("packages", true)
-            Renamer.renameFields = obj.getBoolean("packages", true)
-            Renamer.renameMethods = obj.getBoolean("packages", true)
+            Renamer.renamePackages = obj.getBoolean("packages")
+            Renamer.renameClasses = obj.getBoolean("classes", true)
+            Renamer.renameFields = obj.getBoolean("fields", true)
+            Renamer.renameMethods = obj.getBoolean("methods", true)
             
             if (Renamer.renamePackages && Renamer.removePackages) {
                 println("RenamePackages and RemovePackages is set to true. Defaulting to removing packages")
