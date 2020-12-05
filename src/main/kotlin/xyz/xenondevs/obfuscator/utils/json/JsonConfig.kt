@@ -109,11 +109,11 @@ open class JsonConfig(val file: File, autoLoad: Boolean = true) {
     }
     
     fun removeFromArray(path: String, vararg values: String) = removeFromArray(path) { element ->
-        element is JsonPrimitive && element.isString && values.any { it == element.asString }
+        element.isString() && values.any { it == element.asString }
     }
     
     fun removeFromArray(path: String, vararg values: Number) = removeFromArray(path) { element ->
-        element is JsonPrimitive && element.isNumber && values.any { it.toString() == element.asNumber.toString() }
+        element.isNumber() && values.any { it.toString() == element.asNumber.toString() }
     }
     
     fun get(path: List<String>): JsonElement? {

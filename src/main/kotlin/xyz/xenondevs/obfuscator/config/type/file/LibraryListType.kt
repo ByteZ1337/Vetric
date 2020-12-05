@@ -2,12 +2,12 @@ package xyz.xenondevs.obfuscator.config.type.file
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import xyz.xenondevs.obfuscator.config.type.SettingType
 import xyz.xenondevs.obfuscator.jvm.Library
 import xyz.xenondevs.obfuscator.utils.json.getBoolean
 import xyz.xenondevs.obfuscator.utils.json.getString
 import xyz.xenondevs.obfuscator.utils.json.hasString
+import xyz.xenondevs.obfuscator.utils.json.isString
 import java.io.File
 
 object LibraryListType : SettingType<List<Library>>() {
@@ -19,7 +19,7 @@ object LibraryListType : SettingType<List<Library>>() {
         val libraries = ArrayList<Library>()
         element.asJsonArray!!.forEach { lib ->
             // Library path is given as JsonPrimitive
-            if (lib is JsonPrimitive && lib.isString)
+            if (lib.isString())
                 libraries += getLibraries(lib.asString, false)
             // Library path is buried in a JsonObject
             else if (lib is JsonObject && lib.hasString("path")) {

@@ -30,7 +30,10 @@ object Obfuscator {
     }
     
     fun applyTransformers() {
-        TransformerRegistry.transformers.forEach { it.transformJar(input) }
+        val enabled = TransformerRegistry.getEnabled()
+        require(enabled.isNotEmpty()) { "No transformers are enabled!" } // Might be removed
+        
+        enabled.forEach { it.transformJar(input) }
     }
     
     fun writeOutput() {

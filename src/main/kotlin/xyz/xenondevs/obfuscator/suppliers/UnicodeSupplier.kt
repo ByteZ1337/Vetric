@@ -2,7 +2,7 @@ package xyz.xenondevs.obfuscator.suppliers
 
 import kotlin.random.Random
 
-class UnicodeSupplier(val min: Int, val max: Int) : StringSupplier("Unicode") {
+class UnicodeSupplier(private val min: Int, private val max: Int) : StringSupplier("Unicode") {
     
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
     

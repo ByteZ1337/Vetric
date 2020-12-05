@@ -5,11 +5,12 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import xyz.xenondevs.obfuscator.utils.json.getInt
 import xyz.xenondevs.obfuscator.utils.json.hasNumber
+import xyz.xenondevs.obfuscator.utils.json.isNumber
 
 object RangeType : SettingType<Pair<Int, Int>>() {
     
     override fun isValid(element: JsonElement, silent: Boolean): Boolean {
-        if (element is JsonPrimitive && element.isNumber)
+        if (element.isNumber())
             return true
         if (element is JsonObject) {
             if (!element.hasNumber("min")) {

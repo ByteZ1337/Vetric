@@ -7,9 +7,11 @@ import xyz.xenondevs.obfuscator.transformers.string.StringEncrypter
 
 object TransformerRegistry {
     
-    val transformers = mutableListOf(
+    val transformers = listOf(
         Cleaner, Renamer, ResourceUpdater,
         StringEncrypter
     )
+    
+    fun getEnabled() = transformers.filter(Transformer::enabled)
     
 }

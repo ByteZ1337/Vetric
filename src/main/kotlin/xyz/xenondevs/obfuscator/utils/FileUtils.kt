@@ -6,18 +6,18 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 object FileUtils {
-
+    
     const val ZIP_PREFIX = 0x504B0304u
     const val CLASS_PREFIX = 0xCAFEBABEu
-
+    
     fun getFileExtension(path: String) = path.substringAfterLast('.')
-
+    
 }
 
 fun File.startsWith(prefix: ByteArray): Boolean {
     if (this.length() < prefix.size)
         return false
-
+    
     val array = ByteArray(prefix.size)
     this.inputStream().also { it.read(array); it.close() }
     return prefix.contentEquals(array)

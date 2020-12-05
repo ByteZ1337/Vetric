@@ -4,7 +4,7 @@ import kotlin.random.Random
 
 // Breaks RSyntaxTextArea font rendering used by lots of decompilers
 // WARNING: This Supplier skyrockets the file size! A single field name can take up to 5kb!
-class CombiningSupplier(val min: Int, val max: Int) : StringSupplier("Combining") {
+class CombiningSupplier(private val min: Int, private val max: Int) : StringSupplier("Combining") {
     
     constructor(defaultLength: Int = 5) : this(defaultLength, defaultLength)
     

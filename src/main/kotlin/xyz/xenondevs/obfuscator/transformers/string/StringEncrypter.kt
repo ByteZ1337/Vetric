@@ -5,6 +5,7 @@ import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.LdcInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
+import xyz.xenondevs.obfuscator.config.type.TransformerType
 import xyz.xenondevs.obfuscator.jvm.ClassWrapper
 import xyz.xenondevs.obfuscator.jvm.JavaArchive
 import xyz.xenondevs.obfuscator.utils.ASMUtils
@@ -12,14 +13,14 @@ import xyz.xenondevs.obfuscator.utils.StringUtils
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
-object StringEncrypter : StringTransformer("StringEncrypter", { it.length <= 1000 }) {
-
+object StringEncrypter : StringTransformer("StringEncrypter", TransformerType(StringEncrypter::class), { it.length <= 1000 }) {
+    
     val methods = ArrayList<Pair<String, String>>()
-
+    
     override fun transformJar(jar: JavaArchive) {
         // Clear methods to make sure old methods aren't used
         methods.clear()
-
+        
         val size = jar.classes.count(this::isInjectable)
         if (size == 0) {
             System.err.println("Not enough public classes for decryption method. Skipping $name")
@@ -35,11 +36,11 @@ object StringEncrypter : StringTransformer("StringEncrypter", { it.length <= 100
         println("Decrypt methods in:\n" + methods.joinToString("\n") { it.first })
         super.transformJar(jar)
     }
-
+    
     override fun transformString(method: MethodNode, instruction: LdcInsnNode, string: String) {
         if (methods.any { it.first == current.name && it.second == method.name })
             return
-
+        
         println("Encrypting ${instruction.cst}")
         val key = LdcInsnNode(StringUtils.randomString(10..20))
         instruction.cst = StringUtils.encrypt(string, key.cst as String)
@@ -55,10 +56,11 @@ object StringEncrypter : StringTransformer("StringEncrypter", { it.length <= 100
             )
         )
     }
-
+    
     fun isInjectable(wrapper: ClassWrapper) =
         !wrapper.isInterface() && !wrapper.isEnum() && ASMUtils.isPublic(wrapper.access)
-
+    
+    // TODO generate in Runtime
     fun generateDecryptMethod(): MethodNode {
         val method = MethodNode()
         with(method) {
@@ -142,5 +144,5 @@ object StringEncrypter : StringTransformer("StringEncrypter", { it.length <= 100
         }
         return method
     }
-
+    
 }

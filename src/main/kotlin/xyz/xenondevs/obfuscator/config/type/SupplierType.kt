@@ -82,7 +82,7 @@ object SupplierType : SettingType<StringSupplier>() {
             val lines = file.readLines()
             require(lines.isNotEmpty()) { "The given dictionary is empty." }
             
-            return DictionarySupplier("custom", lines)
+            return DictionarySupplier(file.name, lines)
         } else return DictionarySupplier.DEFAULT.first { it.name.equals(dict, true) }
     }
     
