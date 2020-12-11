@@ -14,7 +14,7 @@ import xyz.xenondevs.obfuscator.jvm.JavaArchive
 import xyz.xenondevs.obfuscator.suppliers.AlphaSupplier
 import xyz.xenondevs.obfuscator.suppliers.StringSupplier
 import xyz.xenondevs.obfuscator.transformers.Transformer
-import xyz.xenondevs.obfuscator.utils.ASMUtils
+import xyz.xenondevs.obfuscator.utils.asm.ASMUtils
 import xyz.xenondevs.obfuscator.utils.between
 import xyz.xenondevs.obfuscator.utils.flushClose
 import xyz.xenondevs.obfuscator.utils.json.getBoolean
@@ -82,8 +82,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     }
     
     private fun generateMethodMappings(clazz: ClassWrapper) {
-        // TODO replace with putIfAbsent
-        val renameable = clazz.methods.filter { shouldRenameMethod(it, clazz) && !ASMUtils.isInherited(it, clazz) }
+        val renameable = clazz.methods.filter { shouldRenameMethod(it, clazz) }
         if (renameable.isEmpty())
             return
         val (names, indexMap) = getDescNames(methodsSupplier, renameable, MethodNode::desc)
@@ -106,6 +105,10 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
             && "main" != method.name && "premain" != method.name
             // Don't rename enum static methods
             && !(owner.isEnum() && ASMUtils.isStatic(method.access) && ("values" == method.name || "valueOf" == method.name))
+            // Don't rename methods that are already renamed by a superclass
+            && !mappings.containsKey("${owner.name}.${method.name}${method.desc}")
+            // Don't rename methods that belong to a superclass
+            && !ASMUtils.isInherited(method, owner)
     
     private fun <T> getDescNames(
         supplier: StringSupplier,

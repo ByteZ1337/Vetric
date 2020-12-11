@@ -19,6 +19,10 @@ object Cleaner : ClassTransformer("Cleaner", TransformerType(Cleaner::class)) {
         clazz.sourceDebug = null
         clazz.sourceFile = null
         clazz.signature = null
+        clazz.outerClass = null
+        clazz.outerMethod = null
+        clazz.outerMethodDesc = null
+        clazz.innerClasses = emptyList()
     }
     
     override fun transformField(field: FieldNode) {

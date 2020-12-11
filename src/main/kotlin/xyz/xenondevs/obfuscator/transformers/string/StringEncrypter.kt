@@ -1,15 +1,16 @@
 package xyz.xenondevs.obfuscator.transformers.string
 
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.tree.LabelNode
 import org.objectweb.asm.tree.LdcInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.obfuscator.config.type.TransformerType
 import xyz.xenondevs.obfuscator.jvm.ClassWrapper
 import xyz.xenondevs.obfuscator.jvm.JavaArchive
-import xyz.xenondevs.obfuscator.utils.ASMUtils
 import xyz.xenondevs.obfuscator.utils.StringUtils
+import xyz.xenondevs.obfuscator.utils.asm.ASMUtils
+import xyz.xenondevs.obfuscator.utils.asm.insnBuilder
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
@@ -69,80 +70,48 @@ object StringEncrypter : StringTransformer("StringEncrypter", TransformerType(St
             desc = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
             signature = null
             exceptions = null
-            visitCode()
-            val label0 = Label()
-            visitLabel(label0)
-            visitLdcInsn("")
-            visitVarInsn(ASTORE, 2)
-            val label1 = Label()
-            visitLabel(label1)
-            visitInsn(ICONST_0)
-            visitVarInsn(ISTORE, 3)
-            val label2 = Label()
-            visitLabel(label2)
-            visitFrame(F_APPEND, 2, arrayOf<Any>("java/lang/String", INTEGER), 0, null)
-            visitVarInsn(ILOAD, 3)
-            visitVarInsn(ALOAD, 0)
-            visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "length", "()I", false)
-            val label3 = Label()
-            visitJumpInsn(IF_ICMPGE, label3)
-            val label4 = Label()
-            visitLabel(label4)
-            visitTypeInsn(NEW, "java/lang/StringBuilder")
-            visitInsn(DUP)
-            visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false)
-            visitVarInsn(ALOAD, 2)
-            visitMethodInsn(
-                INVOKEVIRTUAL,
-                "java/lang/StringBuilder",
-                "append",
-                "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
-                false
-            )
-            visitVarInsn(ALOAD, 0)
-            visitVarInsn(ILOAD, 3)
-            visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "charAt", "(I)C", false)
-            visitVarInsn(ALOAD, 1)
-            visitVarInsn(ILOAD, 3)
-            visitVarInsn(ALOAD, 1)
-            visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "length", "()I", false)
-            visitInsn(IREM)
-            visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "charAt", "(I)C", false)
-            visitInsn(IXOR)
-            visitInsn(I2C)
-            visitMethodInsn(
-                INVOKEVIRTUAL,
-                "java/lang/StringBuilder",
-                "append",
-                "(C)Ljava/lang/StringBuilder;",
-                false
-            )
-            visitMethodInsn(
-                INVOKEVIRTUAL,
-                "java/lang/StringBuilder",
-                "toString",
-                "()Ljava/lang/String;",
-                false
-            )
-            visitVarInsn(ASTORE, 2)
-            val label5 = Label()
-            visitLabel(label5)
-            visitIincInsn(3, 1)
-            visitJumpInsn(GOTO, label2)
-            visitLabel(label3)
-            visitFrame(F_CHOP, 1, null, 0, null)
-            visitVarInsn(ALOAD, 2)
-            visitInsn(ARETURN)
-            val label6 = Label()
-            visitLabel(label6)
-            visitLocalVariable(StringUtils.randomString(5..30), "I", null, label2, label3, 3)
-            visitLocalVariable(StringUtils.randomString(5..30), "Ljava/lang/String;", null, label0, label6, 0)
-            visitLocalVariable(StringUtils.randomString(5..30), "Ljava/lang/String;", null, label0, label6, 1)
-            visitLocalVariable(StringUtils.randomString(5..30), "Ljava/lang/String;", null, label1, label6, 2)
-            visitMaxs(5, 4)
-            visitEnd()
+            maxStack = 5
+            maxLocals = 4
+            instructions = insnBuilder {
+                ldc("")
+                astore(2)
+                ldc(0)
+                istore(3)
+                val label2 = LabelNode()
+                +label2
+                iload(3)
+                aload(0)
+                invokevirtual("java/lang/String", "length", "()I")
+                val label3 = LabelNode()
+                if_icmpge(label3)
+                new("java/lang/StringBuilder")
+                dup()
+                invokespecial("java/lang/StringBuilder", "<init>", "()V")
+                aload(2)
+                invokevirtual("java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;")
+                aload(0)
+                iload(3)
+                invokevirtual("java/lang/String", "charAt", "(I)C")
+                aload(1)
+                dup()
+                iload(3)
+                swap()
+                invokevirtual("java/lang/String", "length", "()I")
+                irem()
+                invokevirtual("java/lang/String", "charAt", "(I)C")
+                visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "charAt", "(I)C", false)
+                ixor()
+                i2c()
+                invokevirtual("java/lang/StringBuilder", "append", "(C)Ljava/lang/StringBuilder;")
+                invokevirtual("java/lang/StringBuilder", "toString", "()Ljava/lang/String;")
+                astore(2)
+                iinc(3, 1)
+                goto(label2)
+                +label3
+                aload(2)
+                areturn()
+            }
         }
         return method
     }
-    
 }

@@ -2,8 +2,8 @@ package xyz.xenondevs.obfuscator.asm
 
 import org.objectweb.asm.ClassWriter
 import xyz.xenondevs.obfuscator.jvm.ClassPath
-import xyz.xenondevs.obfuscator.utils.ASMUtils
-import xyz.xenondevs.obfuscator.utils.ASMUtils.OBJECT_TYPE
+import xyz.xenondevs.obfuscator.utils.asm.ASMUtils
+import xyz.xenondevs.obfuscator.utils.asm.ASMUtils.OBJECT_TYPE
 
 /**
  * ASM insists on having some classes loaded in the current classpath... So we bypass it

@@ -2,6 +2,7 @@ package xyz.xenondevs.obfuscator.utils
 
 import java.io.Flushable
 import java.lang.reflect.Modifier
+import kotlin.reflect.KClass
 
 fun UInt.toByteArray() =
     byteArrayOf(
@@ -33,6 +34,6 @@ fun IntRange.toIntArray(): IntArray {
     return IntArray(size) { ++current }
 }
 
-val Class<*>.internalName get() = canonicalName.replace('.', '/')
+val Class<*>.internalName get() = name.replace('.', '/')
 
-typealias BigInt = java.math.BigInteger
+val KClass<*>.internalName get() = java.internalName

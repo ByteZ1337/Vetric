@@ -6,7 +6,8 @@ import xyz.xenondevs.obfuscator.config.type.TransformerType
 import xyz.xenondevs.obfuscator.jvm.ClassWrapper
 import xyz.xenondevs.obfuscator.jvm.JavaArchive
 
-abstract class ClassTransformer(name: String, configType: TransformerType, private val methodsFirst: Boolean = false) : Transformer(name, configType) {
+abstract class ClassTransformer(name: String, configType: TransformerType, private val methodsFirst: Boolean = false) :
+    Transformer(name, configType) {
     
     lateinit var current: ClassWrapper
     

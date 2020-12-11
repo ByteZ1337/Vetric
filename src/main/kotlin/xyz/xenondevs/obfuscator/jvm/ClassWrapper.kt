@@ -5,7 +5,7 @@ import org.objectweb.asm.ClassReader.SKIP_FRAMES
 import org.objectweb.asm.Opcodes.ASM9
 import org.objectweb.asm.tree.ClassNode
 import xyz.xenondevs.obfuscator.asm.ExternalClassWriter
-import xyz.xenondevs.obfuscator.utils.ASMUtils
+import xyz.xenondevs.obfuscator.utils.asm.ASMUtils
 
 class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
     
