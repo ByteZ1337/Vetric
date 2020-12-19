@@ -14,6 +14,7 @@ import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.suppliers.AlphaSupplier
 import xyz.xenondevs.vetric.suppliers.StringSupplier
 import xyz.xenondevs.vetric.transformers.Transformer
+import xyz.xenondevs.vetric.utils.accessWrapper
 import xyz.xenondevs.vetric.utils.asm.ASMUtils
 import xyz.xenondevs.vetric.utils.between
 import xyz.xenondevs.vetric.utils.flushClose
@@ -98,13 +99,13 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     
     private fun shouldRenameMethod(method: MethodNode, owner: ClassWrapper) =
         // Don't rename native methods
-        !method.accesWrapper.isNative() &&
+        !method.accessWrapper.isNative() &&
             // Don't rename <clinit> and <init>
             !method.name.startsWith('<')
             // Don't rename main and agent main methods
             && "main" != method.name && "premain" != method.name
             // Don't rename enum static methods
-            && !(owner.isEnum() && method.accesWrapper.isStatic() && ("values" == method.name || "valueOf" == method.name))
+            && !(owner.isEnum() && method.accessWrapper.isStatic() && ("values" == method.name || "valueOf" == method.name))
             // Don't rename methods that are already renamed by a superclass
             && !mappings.containsKey("${owner.name}.${method.name}${method.desc}")
             // Don't rename methods that belong to a superclass

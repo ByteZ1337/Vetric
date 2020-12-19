@@ -5,6 +5,7 @@ import org.objectweb.asm.Opcodes.SIPUSH
 import org.objectweb.asm.tree.*
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.ClassWrapper
+import xyz.xenondevs.vetric.utils.accessWrapper
 
 object ASMUtils {
     
@@ -48,7 +49,7 @@ object ASMUtils {
     
     // TODO Implement getSuperClasses
     fun getParent(method: MethodNode, clazz: ClassNode): ClassWrapper? {
-        if (method.accesWrapper.isStatic())
+        if (method.accessWrapper.isStatic())
             return null
         
         if (clazz.superName != null) {
