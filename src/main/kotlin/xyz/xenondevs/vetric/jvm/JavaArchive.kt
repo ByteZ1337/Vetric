@@ -1,5 +1,6 @@
 package xyz.xenondevs.vetric.jvm
 
+import org.objectweb.asm.tree.AbstractInsnNode
 import xyz.xenondevs.vetric.utils.*
 import xyz.xenondevs.vetric.utils.FileUtils.CLASS_PREFIX
 import xyz.xenondevs.vetric.utils.FileUtils.ZIP_PREFIX
@@ -78,8 +79,19 @@ open class JavaArchive() {
             jos.close()
     }
     
+    inline fun <reified T : AbstractInsnNode> forEachInstruction(filter: (T) -> Boolean = { true }, transform: (T) -> Unit) =
+        classes.filterNot { it.methods.isNullOrEmpty() }
+            .flatMap { it.methods.flatMap { method -> method.instructions } }
+            .filterTypeAnd(filter)
+            .forEach(transform)
+    
+    fun forEachInstruction(transform: (AbstractInsnNode) -> Unit) =
+        classes.filterNot { it.methods.isNullOrEmpty() }
+            .flatMap { it.methods.flatMap { method -> method.instructions } }
+            .forEach(transform)
+    
     fun getClass(name: String) = classes.firstOrNull {
-        it.name == name || (name.contains(".class") && it.fileName == name)
+        it.name == name || (name.endsWith(".class") && it.fileName == name)
     }
     
     fun getResource(name: String) = resources.firstOrNull { it.fileName == name }

@@ -1,8 +1,12 @@
 package xyz.xenondevs.vetric.utils
 
+import org.objectweb.asm.Opcodes.ACC_PRIVATE
+import org.objectweb.asm.tree.FieldInsnNode
 import org.objectweb.asm.tree.FieldNode
+import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.asm.Access
+import xyz.xenondevs.vetric.jvm.ClassPath
 import java.io.Flushable
 import kotlin.reflect.KClass
 
@@ -18,6 +22,10 @@ fun UInt.toByteArray() =
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T> Iterable<*>.filterTypeAnd(block: (T) -> Boolean) =
+    filter { it is T && block(it) } as List<T>
+
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T> Array<*>.filterTypeAnd(block: (T) -> Boolean) =
     filter { it is T && block(it) } as List<T>
 
 fun <T> T.flushClose() where T : Flushable, T : AutoCloseable {
@@ -36,4 +44,18 @@ val KClass<*>.internalName get() = java.internalName
 
 val FieldNode.accessWrapper get() = Access(access)
 
+val FieldInsnNode.access
+    get() = ownerWrapper.fields.firstOrNull { it.name == name && it.desc == desc }?.accessWrapper
+        ?: Access(ACC_PRIVATE)
+
+val FieldInsnNode.ownerWrapper
+    get() = ClassPath.getClassWrapper(owner)
+
 val MethodNode.accessWrapper get() = Access(access)
+
+val MethodInsnNode.access
+    get() = ownerWrapper.methods.firstOrNull { it.name == name && it.desc == desc }?.accessWrapper
+        ?: Access(ACC_PRIVATE)
+
+val MethodInsnNode.ownerWrapper
+    get() = ClassPath.getClassWrapper(owner)
