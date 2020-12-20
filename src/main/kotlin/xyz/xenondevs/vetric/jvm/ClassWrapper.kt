@@ -33,8 +33,14 @@ class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
     fun getFullSubClasses(): HashSet<String> =
         HashSet(subClasses.map(ClassPath::getClassWrapper).flatMap { it.getFullSubClasses() + it.name })
     
+    fun getField(name: String, desc: String) =
+        fields?.firstOrNull { name == it.name && desc == it.desc }
+    
     operator fun contains(method: MethodNode) =
-        methods.any { method.name == it.name && method.desc == it.desc }
+        getMethod(method.name, method.desc) != null
+    
+    fun getMethod(name: String, desc: String) =
+        methods?.firstOrNull { name == it.name && desc == it.desc }
     
     fun getByteCode() = CustomClassWriter().also(this::accept).toByteArray()!!
     

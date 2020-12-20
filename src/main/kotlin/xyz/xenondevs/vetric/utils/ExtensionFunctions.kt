@@ -44,18 +44,22 @@ val KClass<*>.internalName get() = java.internalName
 
 val FieldNode.accessWrapper get() = Access(access)
 
-val FieldInsnNode.access
-    get() = ownerWrapper.fields.firstOrNull { it.name == name && it.desc == desc }?.accessWrapper
-        ?: Access(ACC_PRIVATE)
-
 val FieldInsnNode.ownerWrapper
     get() = ClassPath.getClassWrapper(owner)
 
-val MethodNode.accessWrapper get() = Access(access)
+val FieldInsnNode.node
+    get() = ownerWrapper.getField(name, desc)
 
-val MethodInsnNode.access
-    get() = ownerWrapper.methods.firstOrNull { it.name == name && it.desc == desc }?.accessWrapper
-        ?: Access(ACC_PRIVATE)
+val FieldInsnNode.access
+    get() = node?.accessWrapper ?: Access(ACC_PRIVATE)
+
+val MethodNode.accessWrapper get() = Access(access)
 
 val MethodInsnNode.ownerWrapper
     get() = ClassPath.getClassWrapper(owner)
+
+val MethodInsnNode.node
+    get() = ownerWrapper.getMethod(name, desc)
+
+val MethodInsnNode.access
+    get() = node?.accessWrapper ?: Access(ACC_PRIVATE)

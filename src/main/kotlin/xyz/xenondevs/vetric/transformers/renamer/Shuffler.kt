@@ -9,6 +9,7 @@ import org.objectweb.asm.tree.InvokeDynamicInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.config.type.TransformerConfig
+import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.transformers.Transformer
 import xyz.xenondevs.vetric.transformers.TransformerPriority.HIGHEST
@@ -44,7 +45,7 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     private fun shuffleMethodsCC(jar: JavaArchive) {
         val available = jar.classes.filter { it.accessWrapper.isPublicClass() }
         jar.classes.forEach { clazz ->
-            clazz.methods.filter(this::isMoveable).forEach method@{ method ->
+            clazz.methods.filter { this.isMoveable(it, clazz) }.forEach method@{ method ->
                 val newClass = available.filter { method !in it }.randomOrNull() ?: return@method
                 method.access = ACC_PUBLIC or ACC_STATIC
                 newClass.methods.add(method)
@@ -56,12 +57,12 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
         replaceMethodReferences(jar)
     }
     
-    private fun isMoveable(method: MethodNode): Boolean {
+    private fun isMoveable(method: MethodNode, clazz: ClassWrapper): Boolean {
         return method.accessWrapper.isStatic()
-            && !method.name.startsWith('<')
+            && Renamer.isRenameable(method, clazz)
             && !processedMethods.contains(method)
-            && method.instructions.filterIsInstance<FieldInsnNode>().all { it.access.isPublic() && it.ownerWrapper.accessWrapper.isPublic() }
-            && method.instructions.filterIsInstance<MethodInsnNode>().all { it.access.isPublic() && it.ownerWrapper.accessWrapper.isPublic() }
+            && method.instructions.filterIsInstance<FieldInsnNode>().all { it.access.isPublic() && (!it.access.isStatic() || it.ownerWrapper.accessWrapper.isPublic()) }
+            && method.instructions.filterIsInstance<MethodInsnNode>().all { it.access.isPublic() && (!it.access.isStatic() || it.ownerWrapper.accessWrapper.isPublic()) }
     }
     
     private fun replaceMethodReferences(jar: JavaArchive) {

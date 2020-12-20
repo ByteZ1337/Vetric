@@ -83,7 +83,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     }
     
     private fun generateMethodMappings(clazz: ClassWrapper) {
-        val renameable = clazz.methods.filter { shouldRenameMethod(it, clazz) }
+        val renameable = clazz.methods.filter { isRenameable(it, clazz) }
         if (renameable.isEmpty())
             return
         val (names, indexMap) = getDescNames(methodsSupplier, renameable, MethodNode::desc)
@@ -97,11 +97,12 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
         }
     }
     
-    private fun shouldRenameMethod(method: MethodNode, owner: ClassWrapper) =
+    // TODO Move
+    fun isRenameable(method: MethodNode, owner: ClassWrapper) =
         // Don't rename native methods
-        !method.accessWrapper.isNative() &&
+        !method.accessWrapper.isNative()
             // Don't rename <clinit> and <init>
-            !method.name.startsWith('<')
+            && !method.name.startsWith('<')
             // Don't rename main and agent main methods
             && "main" != method.name && "premain" != method.name
             // Don't rename enum static methods
