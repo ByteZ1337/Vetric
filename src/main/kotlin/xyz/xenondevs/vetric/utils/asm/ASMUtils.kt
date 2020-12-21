@@ -2,10 +2,12 @@ package xyz.xenondevs.vetric.utils.asm
 
 import org.objectweb.asm.Opcodes.BIPUSH
 import org.objectweb.asm.Opcodes.SIPUSH
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.utils.accessWrapper
+import xyz.xenondevs.vetric.utils.startsWithAny
 
 object ASMUtils {
     
@@ -113,5 +115,11 @@ object ASMUtils {
             value % 1 == 0.0 && value in 0.0..1.0 -> InsnNode((value + 14).toInt())
             else -> LdcInsnNode(value)
         }
+    
+    fun getType(name: String): Type {
+        if (name.length > 1 && !name.startsWithAny('L', '[', '('))
+            return Type.getType("L$name;")
+        return Type.getType(name)
+    }
     
 }

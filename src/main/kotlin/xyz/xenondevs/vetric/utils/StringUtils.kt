@@ -7,5 +7,3 @@ object StringUtils {
     }.joinToString("")
     
 }
-
-fun String.between(start: Char, end: Char) = this.substringAfterLast(start).substringBeforeLast(end)

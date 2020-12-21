@@ -1,14 +1,19 @@
 package xyz.xenondevs.vetric.utils
 
 import org.objectweb.asm.Opcodes.ACC_PRIVATE
-import org.objectweb.asm.tree.FieldInsnNode
-import org.objectweb.asm.tree.FieldNode
-import org.objectweb.asm.tree.MethodInsnNode
-import org.objectweb.asm.tree.MethodNode
+import org.objectweb.asm.Type
+import org.objectweb.asm.Type.*
+import org.objectweb.asm.tree.*
 import xyz.xenondevs.vetric.asm.Access
 import xyz.xenondevs.vetric.jvm.ClassPath
 import java.io.Flushable
 import kotlin.reflect.KClass
+
+fun String.between(start: Char, end: Char) = this.substringAfterLast(start).substringBeforeLast(end)
+
+fun String.startsWithAny(vararg prefixes: Char) = prefixes.any(this::startsWith)
+
+fun String.endsWithAny(vararg prefixes: Char) = prefixes.any(this::endsWith)
 
 fun Int.hasMask(mask: Int) = this and mask == mask
 
@@ -38,9 +43,24 @@ fun IntRange.toIntArray(): IntArray {
     return IntArray(size) { ++current }
 }
 
+fun InsnList.remove(vararg insn: AbstractInsnNode) = insn.forEach(this::remove)
+
 val Class<*>.internalName get() = name.replace('.', '/')
 
 val KClass<*>.internalName get() = java.internalName
+
+val Type.name: String
+    get() = when (sort) {
+        OBJECT -> internalName
+        ARRAY -> elementType.name
+        METHOD -> returnType.name
+        INT -> "java/lang/Integer"
+        CHAR -> "java/lang/Character"
+        else -> "java/lang/" + className.capitalize()
+    }
+
+val Type.clazz
+    get() = ClassPath.getClassWrapper(name)
 
 val FieldNode.accessWrapper get() = Access(access)
 

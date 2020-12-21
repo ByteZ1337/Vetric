@@ -5,6 +5,7 @@ import org.objectweb.asm.ClassReader.SKIP_FRAMES
 import org.objectweb.asm.Opcodes.ASM9
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
+import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.asm.Access
 import xyz.xenondevs.vetric.asm.CustomClassWriter
@@ -36,11 +37,14 @@ class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
     fun getField(name: String, desc: String) =
         fields?.firstOrNull { name == it.name && desc == it.desc }
     
-    operator fun contains(method: MethodNode) =
-        getMethod(method.name, method.desc) != null
+    operator fun contains(field: FieldNode) =
+        getField(field.name, field.desc) != null
     
     fun getMethod(name: String, desc: String) =
         methods?.firstOrNull { name == it.name && desc == it.desc }
+    
+    operator fun contains(method: MethodNode) =
+        getMethod(method.name, method.desc) != null
     
     fun getByteCode() = CustomClassWriter().also(this::accept).toByteArray()!!
     
