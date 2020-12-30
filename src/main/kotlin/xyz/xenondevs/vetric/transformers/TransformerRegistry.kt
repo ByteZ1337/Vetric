@@ -1,6 +1,7 @@
 package xyz.xenondevs.vetric.transformers
 
 import xyz.xenondevs.vetric.transformers.misc.Cleaner
+import xyz.xenondevs.vetric.transformers.misc.EnumAccessHider
 import xyz.xenondevs.vetric.transformers.renamer.Renamer
 import xyz.xenondevs.vetric.transformers.renamer.ResourceUpdater
 import xyz.xenondevs.vetric.transformers.renamer.Shuffler
@@ -10,7 +11,7 @@ object TransformerRegistry {
     
     val transformers = listOf(
         Cleaner, Renamer, ResourceUpdater,
-        StringEncrypter, Shuffler
+        StringEncrypter, Shuffler, EnumAccessHider
     )
     
     fun getEnabled() = transformers.filter(Transformer::enabled)

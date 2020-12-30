@@ -2,13 +2,14 @@ package xyz.xenondevs.vetric.jvm
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassReader.SKIP_FRAMES
-import org.objectweb.asm.Opcodes.ASM9
+import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.asm.Access
 import xyz.xenondevs.vetric.asm.CustomClassWriter
+import xyz.xenondevs.vetric.utils.asm.insnBuilder
 
 class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
     
@@ -45,6 +46,16 @@ class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
     
     operator fun contains(method: MethodNode) =
         getMethod(method.name, method.desc) != null
+    
+    fun getOrCreateClinit(): MethodNode {
+        var method = getMethod("<clinit>", "()V")
+        if (method == null) {
+            method = MethodNode(ACC_PUBLIC or ACC_STATIC, "<clinit>", "()V", null, null)
+            method.instructions = insnBuilder { _return() }
+            methods.add(method)
+        }
+        return method
+    }
     
     fun getByteCode() = CustomClassWriter().also(this::accept).toByteArray()!!
     

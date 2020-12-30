@@ -128,17 +128,17 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
             || !Type.getReturnType(method.desc).clazz.accessWrapper.isPublic())
             return false
         return method.instructions.all { insn ->
-            when (insn) {
-                is InvokeDynamicInsnNode -> return false
-                is FieldInsnNode -> return@all insn.access.isPublic()
+            return@all when (insn) {
+                is InvokeDynamicInsnNode -> false
+                is FieldInsnNode -> insn.access.isPublic()
                     && insn.ownerWrapper.accessWrapper.isPublic()
                     && Type.getType(insn.desc).clazz.accessWrapper.isPublic()
-                is MethodInsnNode -> return@all insn.access.isPublic()
+                is MethodInsnNode -> insn.access.isPublic()
                     && insn.ownerWrapper.accessWrapper.isPublic()
                     && Type.getArgumentTypes(insn.desc).all { it.clazz.accessWrapper.isPublic() }
                     && Type.getReturnType(insn.desc).clazz.accessWrapper.isPublic()
                 is TypeInsnNode -> return@all ASMUtils.getType(insn.desc).clazz.accessWrapper.isPublic()
-                else -> return@all true
+                else -> true
             }
         }
     }

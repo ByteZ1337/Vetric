@@ -8,11 +8,13 @@ import xyz.xenondevs.vetric.jvm.JavaArchive
 
 abstract class ClassTransformer(name: String, config: TransformerConfig, priority: TransformerPriority = TransformerPriority.NORMAL) : Transformer(name, config, priority) {
     
-    lateinit var current: ClassWrapper
+    lateinit var currentJar: JavaArchive
+    lateinit var currentClass: ClassWrapper
     
     override fun transformJar(jar: JavaArchive) {
+        currentJar = jar
         jar.classes.forEach {
-            current = it
+            currentClass = it
             transformClass(it)
             it.fields.forEach(this::transformField)
             it.methods.forEach(this::transformMethod)

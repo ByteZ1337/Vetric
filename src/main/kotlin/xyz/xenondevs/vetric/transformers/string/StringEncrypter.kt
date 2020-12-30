@@ -10,13 +10,14 @@ import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.suppliers.CombiningSupplier
 import xyz.xenondevs.vetric.utils.StringUtils
+import xyz.xenondevs.vetric.utils.asm.MemberReference
 import xyz.xenondevs.vetric.utils.asm.insnBuilder
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
 object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(StringEncrypter::class), { it.length <= 1000 }) {
     
-    private val methods = ArrayList<Pair<String, String>>()
+    private val methods = ArrayList<MemberReference>()
     private val supplier = CombiningSupplier()
     
     override fun transformJar(jar: JavaArchive) {
@@ -33,14 +34,14 @@ object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(
         jar.classes.filter(this::isInjectable).shuffled().take(amount).forEach {
             val method = generateDecryptMethod()
             it.methods.add(method)
-            methods += it.name to method.name
+            methods += MemberReference(it.name, method.name, method.desc)
         }
-        println("Decrypt methods in:\n" + methods.joinToString("\n") { it.first })
+        println("Decrypt methods in:\n" + methods.joinToString("\n"))
         super.transformJar(jar)
     }
     
     override fun transformString(method: MethodNode, instruction: LdcInsnNode, string: String) {
-        if (methods.any { it.first == current.name && it.second == method.name })
+        if (methods.any { it.owner == currentClass.name && it.name == method.name })
             return
         
         println("Encrypting ${instruction.cst}")
@@ -52,9 +53,9 @@ object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(
             key,
             MethodInsnNode(
                 INVOKESTATIC,
-                randomMethod.first,
-                randomMethod.second,
-                "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+                randomMethod.owner,
+                randomMethod.name,
+                randomMethod.desc
             )
         )
     }

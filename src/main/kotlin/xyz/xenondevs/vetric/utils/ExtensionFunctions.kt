@@ -45,6 +45,16 @@ fun IntRange.toIntArray(): IntArray {
 
 fun InsnList.remove(vararg insn: AbstractInsnNode) = insn.forEach(this::remove)
 
+fun InsnList.replace(insn: AbstractInsnNode, replacement: AbstractInsnNode) {
+    insertBefore(insn, replacement)
+    remove(insn)
+}
+
+fun InsnList.replace(insn: AbstractInsnNode, replacement: InsnList) {
+    insertBefore(insn, replacement)
+    remove(insn)
+}
+
 val Class<*>.internalName get() = name.replace('.', '/')
 
 val KClass<*>.internalName get() = java.internalName
