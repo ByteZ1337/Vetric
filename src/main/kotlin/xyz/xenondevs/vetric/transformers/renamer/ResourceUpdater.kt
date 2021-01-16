@@ -9,7 +9,7 @@ import xyz.xenondevs.vetric.utils.json.toStringList
 
 object ResourceUpdater : ResourceTransformer("ResourceUpdater", ResourceUpdaterConfig) {
     
-    private var fileExtensions = hashSetOf("mf", "yml", "xml", "cfg", "json", "txt")
+    private var fileExtensions = hashSetOf("mf", "yml", "xml", "json")
     
     override fun transform(resource: Resource) {
         if (fileExtensions.contains(resource.getExtension().toLowerCase())) {
@@ -20,11 +20,12 @@ object ResourceUpdater : ResourceTransformer("ResourceUpdater", ResourceUpdaterC
                 content = content.replace(oldName.replace('/', '.'), newName.replace('/', '.'))
             }
             resource.content = content.encodeToByteArray()
-            println("Processed " + resource.fileName)
+            println("Processed ${resource.fileName}")
         }
     }
     
     private object ResourceUpdaterConfig : TransformerConfig(ResourceUpdater::class) {
+        
         override fun parse(obj: JsonObject) {
             super.parse(obj)
             if (enabled && obj.hasArray("filetypes"))

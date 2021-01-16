@@ -9,9 +9,9 @@ class UnicodeSupplier(private val min: Int, private val max: Int) : StringSuppli
     override fun randomString(length: Int): String {
         val builder = StringBuilder()
         while (builder.length < length) {
-            val ch = Random.nextInt(Character.MAX_CODE_POINT).toChar()
-            if (ch != '$' && ch.isDefined())
-                builder.append(ch)
+            val char = Random.nextInt(Character.MAX_CODE_POINT).toChar()
+            if (char.isJavaIdentifierPart())
+                builder.append(char)
         }
         return builder.toString()
     }

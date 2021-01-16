@@ -1,5 +1,6 @@
 package xyz.xenondevs.vetric.jvm
 
+import org.objectweb.asm.ClassReader.SKIP_FRAMES
 import org.objectweb.asm.tree.AbstractInsnNode
 import xyz.xenondevs.vetric.utils.*
 import xyz.xenondevs.vetric.utils.FileUtils.CLASS_PREFIX
@@ -11,13 +12,13 @@ import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipOutputStream
 
-open class JavaArchive() {
+open class JavaArchive(val parsingOptions: Int = SKIP_FRAMES) {
     
     val directories = ArrayList<JarEntry>()
     val classes = ArrayList<ClassWrapper>()
     val resources = ArrayList<Resource>()
     
-    constructor(file: File) : this() {
+    constructor(file: File, parsingOptions: Int = SKIP_FRAMES) : this(parsingOptions) {
         readFile(file)
     }
     
@@ -39,7 +40,7 @@ open class JavaArchive() {
             if ("class" == FileUtils.getFileExtension(name)
                 // Check if the file starts with 0xCAFEBABE
                 && content.take(4).toByteArray().contentEquals(CLASS_PREFIX.toByteArray())
-            ) classes += ClassWrapper(name, content)
+            ) classes += ClassWrapper(name, content, parsingOptions)
             else resources += Resource(name, content)
         }
     }

@@ -5,20 +5,19 @@ import org.objectweb.asm.tree.MethodInsnNode
 
 class MemberReference(val owner: String, val name: String, val desc: String) {
     
-    fun process(insn: FieldInsnNode) {
+    fun transform(insn: FieldInsnNode) {
         insn.owner = owner
         insn.name = name
         insn.desc = desc
     }
     
-    fun process(insn: MethodInsnNode) {
+    fun transform(insn: MethodInsnNode) {
         insn.owner = owner
         insn.name = name
         insn.desc = desc
     }
     
-    override fun toString(): String {
-        return "$owner.$name$desc"
-    }
+    override fun toString() =
+        if (desc.contains('(')) "$owner.$name$desc" else "$owner.$name.$desc"
     
 }

@@ -61,7 +61,7 @@ object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(
     }
     
     private fun isInjectable(wrapper: ClassWrapper) =
-        wrapper.accessWrapper.none(ACC_INTERFACE, ACC_ENUM) && wrapper.accessWrapper.isPublic()
+        wrapper.accessWrapper.isPublicClass()
     
     // TODO generate in Runtime
     private fun generateDecryptMethod(): MethodNode {

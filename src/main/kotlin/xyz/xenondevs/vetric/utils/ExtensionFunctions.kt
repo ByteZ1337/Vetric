@@ -4,7 +4,8 @@ import org.objectweb.asm.Opcodes.ACC_PRIVATE
 import org.objectweb.asm.Type
 import org.objectweb.asm.Type.*
 import org.objectweb.asm.tree.*
-import xyz.xenondevs.vetric.asm.Access
+import xyz.xenondevs.vetric.asm.access.ReferencingAccess
+import xyz.xenondevs.vetric.asm.access.ValueAccess
 import xyz.xenondevs.vetric.jvm.ClassPath
 import java.io.Flushable
 import kotlin.reflect.KClass
@@ -16,6 +17,8 @@ fun String.startsWithAny(vararg prefixes: Char) = prefixes.any(this::startsWith)
 fun String.endsWithAny(vararg prefixes: Char) = prefixes.any(this::endsWith)
 
 fun Int.hasMask(mask: Int) = this and mask == mask
+
+fun Int.setMask(mask: Int, value: Boolean) = if (value) this or mask else this and mask.inv()
 
 fun UInt.toByteArray() =
     byteArrayOf(
@@ -59,6 +62,8 @@ val Class<*>.internalName get() = name.replace('.', '/')
 
 val KClass<*>.internalName get() = java.internalName
 
+fun ClassNode.hasAnnotations() = !this.invisibleAnnotations.isNullOrEmpty() || !this.visibleAnnotations.isNullOrEmpty()
+
 val Type.name: String
     get() = when (sort) {
         OBJECT -> internalName
@@ -72,7 +77,9 @@ val Type.name: String
 val Type.clazz
     get() = ClassPath.getClassWrapper(name)
 
-val FieldNode.accessWrapper get() = Access(access)
+val FieldNode.accessWrapper get() = ReferencingAccess({ this.access }, { this.access = it })
+
+fun FieldNode.hasAnnotations() = !this.invisibleAnnotations.isNullOrEmpty() || !this.visibleAnnotations.isNullOrEmpty()
 
 val FieldInsnNode.ownerWrapper
     get() = ClassPath.getClassWrapper(owner)
@@ -81,9 +88,11 @@ val FieldInsnNode.node
     get() = ownerWrapper.getField(name, desc)
 
 val FieldInsnNode.access
-    get() = node?.accessWrapper ?: Access(ACC_PRIVATE)
+    get() = node?.accessWrapper ?: ValueAccess(ACC_PRIVATE)
 
-val MethodNode.accessWrapper get() = Access(access)
+val MethodNode.accessWrapper get() = ReferencingAccess({ this.access }, { this.access = it })
+
+fun MethodNode.hasAnnotations() = !this.visibleAnnotations.isNullOrEmpty() || !this.invisibleAnnotations.isNullOrEmpty()
 
 val MethodInsnNode.ownerWrapper
     get() = ClassPath.getClassWrapper(owner)
@@ -92,4 +101,4 @@ val MethodInsnNode.node
     get() = ownerWrapper.getMethod(name, desc)
 
 val MethodInsnNode.access
-    get() = node?.accessWrapper ?: Access(ACC_PRIVATE)
+    get() = node?.accessWrapper ?: ValueAccess(ACC_PRIVATE)

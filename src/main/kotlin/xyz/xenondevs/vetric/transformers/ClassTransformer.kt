@@ -10,12 +10,17 @@ abstract class ClassTransformer(name: String, config: TransformerConfig, priorit
     
     lateinit var currentJar: JavaArchive
     lateinit var currentClass: ClassWrapper
+    private var skipMembers = false
     
     override fun transformJar(jar: JavaArchive) {
         currentJar = jar
         jar.classes.forEach {
             currentClass = it
             transformClass(it)
+            if (skipMembers) {
+                skipMembers = false
+                return@forEach
+            }
             it.fields.forEach(this::transformField)
             it.methods.forEach(this::transformMethod)
         }
@@ -26,5 +31,9 @@ abstract class ClassTransformer(name: String, config: TransformerConfig, priorit
     abstract fun transformField(field: FieldNode)
     
     abstract fun transformMethod(method: MethodNode)
+    
+    fun skipClass() {
+        skipMembers = true
+    }
     
 }

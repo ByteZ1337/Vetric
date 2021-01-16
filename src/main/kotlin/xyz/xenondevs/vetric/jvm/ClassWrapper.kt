@@ -7,13 +7,14 @@ import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
-import xyz.xenondevs.vetric.asm.Access
 import xyz.xenondevs.vetric.asm.CustomClassWriter
+import xyz.xenondevs.vetric.asm.access.ReferencingAccess
 import xyz.xenondevs.vetric.utils.asm.insnBuilder
 
 class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
     
     val originalName = fileName
+    val accessWrapper = ReferencingAccess({ this.access }, { this.access = it })
     
     val inheritanceTree
         get() = ClassPath.getTree(this)
@@ -23,13 +24,11 @@ class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
         get() = inheritanceTree.subClasses
     val className
         get() = name.substringAfter('/')
-    val accessWrapper
-        get() = Access(access)
     val type: Type
         get() = Type.getType("L$name;")
     
-    constructor(fileName: String, byteCode: ByteArray) : this(fileName) {
-        ClassReader(byteCode).accept(this, SKIP_FRAMES)
+    constructor(fileName: String, byteCode: ByteArray, parsingOptions: Int = SKIP_FRAMES) : this(fileName) {
+        ClassReader(byteCode).accept(this, parsingOptions)
     }
     
     fun getFullSubClasses(): HashSet<String> =

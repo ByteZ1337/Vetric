@@ -14,7 +14,7 @@ import xyz.xenondevs.vetric.utils.*
 import xyz.xenondevs.vetric.utils.asm.ASMUtils
 import xyz.xenondevs.vetric.utils.json.getBoolean
 
-// TODO When exclusion is added add, check to isMoveable
+// TODO When exclusion is added: Add check to isMoveable
 object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     
     var shuffleFields = true
