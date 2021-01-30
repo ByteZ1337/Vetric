@@ -2,7 +2,7 @@ package xyz.xenondevs.vetric.config.type.file
 
 import com.google.gson.JsonElement
 import xyz.xenondevs.vetric.config.type.SettingType
-import xyz.xenondevs.vetric.utils.json.isString
+import xyz.xenondevs.vetric.util.json.isString
 import java.io.File
 
 object FileType : SettingType<File>() {

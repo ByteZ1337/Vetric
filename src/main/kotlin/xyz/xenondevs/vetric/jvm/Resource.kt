@@ -1,6 +1,6 @@
 package xyz.xenondevs.vetric.jvm
 
-import xyz.xenondevs.vetric.utils.FileUtils
+import xyz.xenondevs.vetric.util.FileUtils
 
 class Resource(var fileName: String, var content: ByteArray) {
     

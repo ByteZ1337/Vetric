@@ -1,7 +1,7 @@
 package xyz.xenondevs.vetric.asm.access
 
 import org.objectweb.asm.Opcodes.*
-import xyz.xenondevs.vetric.utils.hasMask
+import xyz.xenondevs.vetric.util.hasMask
 
 class ValueAccess(val access: Int) : Access {
     

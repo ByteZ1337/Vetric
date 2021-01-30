@@ -2,8 +2,8 @@ package xyz.xenondevs.vetric.asm
 
 import org.objectweb.asm.ClassWriter
 import xyz.xenondevs.vetric.jvm.ClassPath
-import xyz.xenondevs.vetric.utils.asm.ASMUtils
-import xyz.xenondevs.vetric.utils.asm.ASMUtils.OBJECT_TYPE
+import xyz.xenondevs.vetric.util.asm.ASMUtils
+import xyz.xenondevs.vetric.util.asm.ASMUtils.OBJECT_TYPE
 
 /**
  * ASM insists on having some classes loaded in the current classpath... So we bypass it

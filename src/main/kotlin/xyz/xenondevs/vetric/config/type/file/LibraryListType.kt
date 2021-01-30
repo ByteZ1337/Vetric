@@ -4,10 +4,10 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import xyz.xenondevs.vetric.config.type.SettingType
 import xyz.xenondevs.vetric.jvm.Library
-import xyz.xenondevs.vetric.utils.json.getBoolean
-import xyz.xenondevs.vetric.utils.json.getString
-import xyz.xenondevs.vetric.utils.json.hasString
-import xyz.xenondevs.vetric.utils.json.isString
+import xyz.xenondevs.vetric.util.json.getBoolean
+import xyz.xenondevs.vetric.util.json.getString
+import xyz.xenondevs.vetric.util.json.hasString
+import xyz.xenondevs.vetric.util.json.isString
 import java.io.File
 
 object LibraryListType : SettingType<List<Library>>() {

@@ -2,9 +2,9 @@ package xyz.xenondevs.vetric.jvm
 
 import org.objectweb.asm.ClassReader.SKIP_FRAMES
 import org.objectweb.asm.tree.AbstractInsnNode
-import xyz.xenondevs.vetric.utils.*
-import xyz.xenondevs.vetric.utils.FileUtils.CLASS_PREFIX
-import xyz.xenondevs.vetric.utils.FileUtils.ZIP_PREFIX
+import xyz.xenondevs.vetric.util.*
+import xyz.xenondevs.vetric.util.FileUtils.CLASS_PREFIX
+import xyz.xenondevs.vetric.util.FileUtils.ZIP_PREFIX
 import java.io.File
 import java.io.OutputStream
 import java.util.jar.JarEntry

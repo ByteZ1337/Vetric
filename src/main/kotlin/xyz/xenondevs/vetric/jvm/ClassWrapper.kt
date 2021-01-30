@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.asm.CustomClassWriter
 import xyz.xenondevs.vetric.asm.access.ReferencingAccess
-import xyz.xenondevs.vetric.utils.asm.insnBuilder
+import xyz.xenondevs.vetric.util.asm.insnBuilder
 
 class ClassWrapper(var fileName: String) : ClassNode(ASM9) {
     

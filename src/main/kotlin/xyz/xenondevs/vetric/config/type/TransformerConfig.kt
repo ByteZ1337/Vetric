@@ -2,9 +2,9 @@ package xyz.xenondevs.vetric.config.type
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import xyz.xenondevs.vetric.transformers.Transformer
-import xyz.xenondevs.vetric.transformers.TransformerRegistry
-import xyz.xenondevs.vetric.utils.json.getBoolean
+import xyz.xenondevs.vetric.transformer.Transformer
+import xyz.xenondevs.vetric.transformer.TransformerRegistry
+import xyz.xenondevs.vetric.util.json.getBoolean
 import kotlin.reflect.KClass
 
 open class TransformerConfig(transformerClass: KClass<out Transformer>) : SettingType<Unit>() {

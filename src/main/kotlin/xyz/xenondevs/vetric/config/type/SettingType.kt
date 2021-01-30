@@ -2,7 +2,7 @@ package xyz.xenondevs.vetric.config.type
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import xyz.xenondevs.vetric.utils.json.JsonConfig
+import xyz.xenondevs.vetric.util.json.JsonConfig
 
 abstract class SettingType<T> {
     

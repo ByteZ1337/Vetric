@@ -4,9 +4,9 @@ import xyz.xenondevs.vetric.config.ObfuscatorConfig
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.jvm.Library
-import xyz.xenondevs.vetric.transformers.Transformer
-import xyz.xenondevs.vetric.transformers.TransformerRegistry
-import xyz.xenondevs.vetric.utils.json.JsonConfig
+import xyz.xenondevs.vetric.transformer.Transformer
+import xyz.xenondevs.vetric.transformer.TransformerRegistry
+import xyz.xenondevs.vetric.util.json.JsonConfig
 import java.io.File
 import java.util.jar.JarOutputStream
 

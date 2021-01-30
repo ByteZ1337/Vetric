@@ -2,8 +2,8 @@ package xyz.xenondevs.vetric.config
 
 import com.google.gson.JsonObject
 import xyz.xenondevs.vetric.jvm.Library
-import xyz.xenondevs.vetric.transformers.TransformerRegistry
-import xyz.xenondevs.vetric.utils.json.JsonConfig
+import xyz.xenondevs.vetric.transformer.TransformerRegistry
+import xyz.xenondevs.vetric.util.json.JsonConfig
 import java.io.File
 
 object ObfuscatorConfig {

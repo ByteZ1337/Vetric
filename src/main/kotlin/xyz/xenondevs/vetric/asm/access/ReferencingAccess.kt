@@ -1,8 +1,8 @@
 package xyz.xenondevs.vetric.asm.access
 
 import org.objectweb.asm.Opcodes.*
-import xyz.xenondevs.vetric.utils.hasMask
-import xyz.xenondevs.vetric.utils.setMask
+import xyz.xenondevs.vetric.util.hasMask
+import xyz.xenondevs.vetric.util.setMask
 
 class ReferencingAccess(val get: () -> Int, val set: (Int) -> Unit) : Access {
     

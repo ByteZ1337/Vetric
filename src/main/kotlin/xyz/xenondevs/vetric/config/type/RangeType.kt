@@ -3,9 +3,9 @@ package xyz.xenondevs.vetric.config.type
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import xyz.xenondevs.vetric.utils.json.getInt
-import xyz.xenondevs.vetric.utils.json.hasNumber
-import xyz.xenondevs.vetric.utils.json.isNumber
+import xyz.xenondevs.vetric.util.json.getInt
+import xyz.xenondevs.vetric.util.json.hasNumber
+import xyz.xenondevs.vetric.util.json.isNumber
 
 object RangeType : SettingType<Pair<Int, Int>>() {
     

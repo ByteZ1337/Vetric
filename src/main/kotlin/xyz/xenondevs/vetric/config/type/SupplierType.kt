@@ -4,11 +4,11 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import xyz.xenondevs.vetric.config.type.file.FileType
-import xyz.xenondevs.vetric.suppliers.DictionarySupplier
-import xyz.xenondevs.vetric.suppliers.StringSupplier
-import xyz.xenondevs.vetric.suppliers.Supplier
-import xyz.xenondevs.vetric.utils.json.getString
-import xyz.xenondevs.vetric.utils.json.hasString
+import xyz.xenondevs.vetric.supplier.DictionarySupplier
+import xyz.xenondevs.vetric.supplier.StringSupplier
+import xyz.xenondevs.vetric.supplier.Supplier
+import xyz.xenondevs.vetric.util.json.getString
+import xyz.xenondevs.vetric.util.json.hasString
 
 // TODO cleanup
 @Suppress("LiftReturnOrAssignment")
