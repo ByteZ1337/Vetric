@@ -6,7 +6,10 @@ import org.objectweb.asm.tree.AbstractInsnNode
 import xyz.xenondevs.vetric.transformer.TransformerPriority
 import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
 
-open class NumberTransformer(val name: String, val priority: TransformerPriority) {
+open class NumberTransformer(val name: String, val priority: TransformerPriority, val multipleIterations: Boolean = false) {
+    
+    var enabled = false
+    var iterations = 1
     
     open fun transformInteger(insnParent: InsnParent, insn: AbstractInsnNode, value: Int) = Unit
     
