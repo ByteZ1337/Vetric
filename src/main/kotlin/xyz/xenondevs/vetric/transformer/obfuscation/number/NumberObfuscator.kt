@@ -11,6 +11,7 @@ import xyz.xenondevs.vetric.config.type.TransformerConfig
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
+import xyz.xenondevs.vetric.transformer.obfuscation.number.light.ArithmeticTransformer
 import xyz.xenondevs.vetric.transformer.obfuscation.number.light.XorTransformer
 import xyz.xenondevs.vetric.util.asm.ASMUtils
 import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
@@ -19,7 +20,7 @@ import xyz.xenondevs.vetric.util.json.*
 object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorConfig, TransformerPriority.LOW) {
     
     private val transformers = sortedSetOf(compareBy(NumberTransformer::priority),
-        XorTransformer
+        XorTransformer, ArithmeticTransformer
     )
     
     fun getTransformer(name: String): NumberTransformer? = transformers.firstOrNull { it.name.equals(name, true) }
@@ -29,7 +30,7 @@ object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorC
         val maxIterations = enabled.maxOf(NumberTransformer::iterations)
         
         repeat(maxIterations) { iteration ->
-            transformers.filter { it.iterations >= iteration }.forEach { transformer ->
+            enabled.filter { it.iterations >= iteration }.forEach { transformer ->
                 method.instructions.forEach insnLoop@{ insn ->
                     val number = when {
                         insn is LdcInsnNode && insn.cst is Number -> insn.cst as Number

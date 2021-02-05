@@ -8,7 +8,10 @@ import xyz.xenondevs.vetric.asm.access.ReferencingAccess
 import xyz.xenondevs.vetric.asm.access.ValueAccess
 import xyz.xenondevs.vetric.jvm.ClassPath
 import java.io.Flushable
+import kotlin.random.Random
 import kotlin.reflect.KClass
+
+//TODO Move stuff
 
 fun String.between(start: Char, end: Char) = this.substringAfterLast(start).substringBeforeLast(end)
 
@@ -39,6 +42,10 @@ inline fun <reified T> Array<*>.filterTypeAnd(block: (T) -> Boolean) =
 fun <T> T.flushClose() where T : Flushable, T : AutoCloseable {
     flush(); close()
 }
+
+fun Random.nextFloat(range: IntRange) = range.first + (range.last - range.first) * this.nextFloat()
+
+fun Random.nextDouble(range: LongRange) = range.first + (range.last - range.first) * this.nextDouble()
 
 fun IntRange.toIntArray(): IntArray {
     val size = this.last - this.first + 1
