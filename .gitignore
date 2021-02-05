@@ -60,6 +60,7 @@ local.properties
 
 # IntelliJ
 /out/
+/src/test
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
