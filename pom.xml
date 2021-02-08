@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>LATEST</version>
+            <version>9.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-util -->
         <dependency>
