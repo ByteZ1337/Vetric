@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>LATEST</version>
+            <version>9.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-commons -->
         <dependency>
