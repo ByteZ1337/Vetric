@@ -8,7 +8,7 @@ import xyz.xenondevs.vetric.util.asm.insnBuilder
 import xyz.xenondevs.vetric.util.replace
 import kotlin.random.Random
 
-object XorTransformer : NumberTransformer("Xor", TransformerPriority.NORMAL, true) {
+object Xor : NumberTransformer("Xor", TransformerPriority.NORMAL, true) {
     
     override fun transformInteger(insnParent: InsnParent, insn: AbstractInsnNode, value: Int) {
         val key = Random.nextInt()

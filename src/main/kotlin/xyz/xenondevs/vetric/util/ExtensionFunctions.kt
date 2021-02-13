@@ -9,6 +9,7 @@ import xyz.xenondevs.vetric.asm.access.ValueAccess
 import xyz.xenondevs.vetric.jvm.ClassPath
 import java.io.Flushable
 import kotlin.random.Random
+import kotlin.random.nextInt
 import kotlin.reflect.KClass
 
 //TODO Move stuff
@@ -42,6 +43,8 @@ inline fun <reified T> Array<*>.filterTypeAnd(block: (T) -> Boolean) =
 fun <T> T.flushClose() where T : Flushable, T : AutoCloseable {
     flush(); close()
 }
+
+fun repeatRandom(range: IntRange, block: (Int) -> Unit) = repeat(Random.nextInt(range), block)
 
 fun Random.nextFloat(range: IntRange) = range.first + (range.last - range.first) * this.nextFloat()
 

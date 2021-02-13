@@ -7,18 +7,18 @@ import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
 import xyz.xenondevs.vetric.util.asm.insnBuilder
 import xyz.xenondevs.vetric.util.nextDouble
 import xyz.xenondevs.vetric.util.nextFloat
+import xyz.xenondevs.vetric.util.repeatRandom
 import xyz.xenondevs.vetric.util.replace
 import kotlin.random.Random
-import kotlin.random.nextInt
 
-object ArithmeticTransformer : NumberTransformer("Arithmetic", TransformerPriority.HIGHEST, true) {
+object Arithmetic : NumberTransformer("Arithmetic", TransformerPriority.HIGHEST, true) {
     
     override fun transformInteger(insnParent: InsnParent, insn: AbstractInsnNode, value: Int) {
         val startValue = Random.nextInt()
         var current = startValue
         insnParent.insnList.replace(insn, insnBuilder {
             ldc(startValue)
-            repeat(Random.nextInt(1..3)) {
+            repeatRandom(1..3) {
                 val operand = Random.nextInt()
                 ldc(operand)
                 if (Random.nextBoolean()) {
@@ -39,7 +39,7 @@ object ArithmeticTransformer : NumberTransformer("Arithmetic", TransformerPriori
         var current = startValue
         insnParent.insnList.replace(insn, insnBuilder {
             ldc(startValue)
-            repeat(Random.nextInt(1..3)) {
+            repeatRandom(1..3) {
                 val operand = Random.nextLong()
                 ldc(operand)
                 if (Random.nextBoolean()) {
@@ -60,7 +60,7 @@ object ArithmeticTransformer : NumberTransformer("Arithmetic", TransformerPriori
         var current = startValue
         insnParent.insnList.replace(insn, insnBuilder {
             ldc(startValue)
-            repeat(Random.nextInt(1, 3)) {
+            repeatRandom(1..3) {
                 val operand = Random.nextFloat(-500000..500000)
                 ldc(operand)
                 if (Random.nextBoolean()) {
@@ -81,7 +81,7 @@ object ArithmeticTransformer : NumberTransformer("Arithmetic", TransformerPriori
         var current = startValue
         insnParent.insnList.replace(insn, insnBuilder {
             ldc(startValue)
-            repeat(Random.nextInt(1..3)) {
+            repeatRandom(1..3) {
                 val operand = Random.nextDouble(-500000L..500000L)
                 ldc(operand)
                 if (Random.nextBoolean()) {
