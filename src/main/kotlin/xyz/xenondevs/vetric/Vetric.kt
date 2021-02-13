@@ -4,7 +4,6 @@ import xyz.xenondevs.vetric.config.ObfuscatorConfig
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.jvm.Library
-import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerRegistry
 import xyz.xenondevs.vetric.util.json.JsonConfig
 import java.io.File
@@ -31,7 +30,7 @@ object Vetric {
     }
     
     fun applyTransformers() {
-        val enabled = TransformerRegistry.getEnabled().sortedBy(Transformer::priority)
+        val enabled = TransformerRegistry.getEnabled()
         require(enabled.isNotEmpty()) { "No transformers are enabled!" } // Might be removed
         
         enabled.forEach { it.runPreparations(input) }

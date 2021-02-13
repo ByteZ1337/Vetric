@@ -11,7 +11,7 @@ import xyz.xenondevs.vetric.transformer.shrinking.Cleaner
 
 object TransformerRegistry {
     
-    val transformers = listOf(
+    val transformers = sortedSetOf(
         Cleaner, Renamer, ResourceUpdater, StringEncrypter,
         Shuffler, EnumAccessHider, CodeHider, NumberObfuscator
     )

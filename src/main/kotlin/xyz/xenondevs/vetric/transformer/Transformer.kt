@@ -4,7 +4,11 @@ import xyz.xenondevs.vetric.config.type.TransformerConfig
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.transformer.TransformerPriority.NORMAL
 
-abstract class Transformer(val name: String, val config: TransformerConfig, val priority: TransformerPriority = NORMAL) {
+abstract class Transformer(
+    val name: String,
+    val config: TransformerConfig,
+    val priority: TransformerPriority = NORMAL
+) : Comparable<Transformer> {
     
     var enabled = false
     
@@ -16,4 +20,11 @@ abstract class Transformer(val name: String, val config: TransformerConfig, val 
     
     override fun equals(other: Any?) =
         this === other || (other is Transformer && other.name == this.name)
+    
+    override fun compareTo(other: Transformer): Int {
+        if (equals(other)) return 0
+        
+        val result = priority.compareTo(other.priority)
+        return if (result == 0) 1 else result
+    }
 }
