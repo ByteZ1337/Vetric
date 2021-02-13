@@ -1,8 +1,7 @@
 package xyz.xenondevs.vetric.transformer.obfuscation.number.light
 
 import org.objectweb.asm.tree.AbstractInsnNode
-import xyz.xenondevs.vetric.transformer.TransformerPriority
-import xyz.xenondevs.vetric.transformer.TransformerPriority.*
+import xyz.xenondevs.vetric.transformer.TransformerPriority.HIGH
 import xyz.xenondevs.vetric.transformer.obfuscation.number.NumberTransformer
 import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
 import xyz.xenondevs.vetric.util.asm.insnBuilder
@@ -12,7 +11,7 @@ import xyz.xenondevs.vetric.util.repeatRandom
 import xyz.xenondevs.vetric.util.replace
 import kotlin.random.Random
 
-object Arithmetic : NumberTransformer("Arithmetic", HIGHEST, true) {
+object Arithmetic : NumberTransformer("Arithmetic", HIGH, true) {
     
     override fun transformInteger(insnParent: InsnParent, insn: AbstractInsnNode, value: Int) {
         val startValue = Random.nextInt()
