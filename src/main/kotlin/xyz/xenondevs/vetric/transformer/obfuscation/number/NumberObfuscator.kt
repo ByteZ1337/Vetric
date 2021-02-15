@@ -21,6 +21,11 @@ import xyz.xenondevs.vetric.util.json.*
 
 object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorConfig, LOW) {
     
+    var obfuscateIntegers = true
+    var obfuscateLongs = true
+    var obfuscateFloats = true
+    var obfuscateDoubles = true
+    
     private val transformers = sortedSetOf(
         Xor, Bitwise, Arithmetic, Encoder
     )
@@ -42,7 +47,8 @@ object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorC
                         insn.opcode in DCONST_0..DCONST_1 -> ASMUtils.getDouble(insn)
                         else -> return@insnLoop
                     }
-                    callTransformer(transformer, method, insn, number)
+                    if (shouldObfuscate(number))
+                        callTransformer(transformer, method, insn, number)
                 }
             }
         }
@@ -58,6 +64,12 @@ object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorC
             is Double -> transformer.transformDouble(parent, insn, value)
         }
     }
+    
+    private fun shouldObfuscate(number: Number) =
+        (number is Int && obfuscateIntegers)
+            || (number is Long && obfuscateLongs)
+            || (number is Float && obfuscateFloats)
+            || (number is Double && obfuscateDoubles)
     
     override fun transformClass(clazz: ClassWrapper) = Unit
     
@@ -78,6 +90,10 @@ object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorC
                 println("No number transformers enabled! Disabling number obfuscator.")
                 enabled = false
             }
+            obfuscateIntegers = obj.getBoolean("integers", true)
+            obfuscateLongs = obj.getBoolean("longs", true)
+            obfuscateFloats = obj.getBoolean("floats", true)
+            obfuscateDoubles = obj.getBoolean("doubles", true)
         }
         
         private fun handleTransformer(element: JsonElement, index: Int) {
