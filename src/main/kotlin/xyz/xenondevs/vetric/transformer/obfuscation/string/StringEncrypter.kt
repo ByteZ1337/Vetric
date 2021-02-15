@@ -6,6 +6,7 @@ import org.objectweb.asm.tree.LdcInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.config.type.TransformerConfig
+import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.supplier.CombiningSupplier
@@ -15,7 +16,8 @@ import xyz.xenondevs.vetric.util.asm.insnBuilder
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
-object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(StringEncrypter::class), { it.length <= 1000 }) {
+object StringEncrypter :
+    StringTransformer("StringEncrypter", TransformerConfig(StringEncrypter::class), { it.length <= 1000 }) {
     
     private val methods = ArrayList<MemberReference>()
     private val supplier = CombiningSupplier()
@@ -60,8 +62,8 @@ object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(
         )
     }
     
-    private fun isInjectable(wrapper: ClassWrapper) =
-        wrapper.accessWrapper.isPublicClass()
+    private fun isInjectable(clazz: ClassWrapper) =
+        clazz.accessWrapper.isPublicClass() && !ExclusionManager.isExcluded(clazz)
     
     // TODO generate in Runtime
     private fun generateDecryptMethod(): MethodNode {

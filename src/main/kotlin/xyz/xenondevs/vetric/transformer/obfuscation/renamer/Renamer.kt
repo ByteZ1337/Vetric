@@ -8,6 +8,7 @@ import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.asm.CustomRemapper
 import xyz.xenondevs.vetric.config.type.SupplierType
 import xyz.xenondevs.vetric.config.type.TransformerConfig
+import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
@@ -55,7 +56,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
         ClassPath.buildJarTree(jar)
         mappings.clear()
         
-        jar.classes.forEach { clazz ->
+        jar.classes.filterNot(ExclusionManager::isExcluded).forEach { clazz ->
             if (renameFields && !clazz.fields.isNullOrEmpty())
                 generateFieldMappings(clazz)
             if (renameMethods && !clazz.methods.isNullOrEmpty())
@@ -70,7 +71,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     private fun generateFieldMappings(clazz: ClassWrapper) {
         val (names, indexMap) = getDescNames(fieldsSupplier, clazz.fields, FieldNode::desc)
         
-        clazz.fields.forEach { field ->
+        clazz.fields.filterNot { ExclusionManager.isExcluded(clazz, it) }.forEach { field ->
             if (clazz.isEnum() && "\$VALUES" == field.name)
                 return@forEach
             
@@ -99,8 +100,10 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     
     // TODO Move
     fun isRenameable(method: MethodNode, owner: ClassWrapper) =
-        // Don't rename native methods
-        !method.accessWrapper.isNative()
+        // Don't rename excluded methods
+        !ExclusionManager.isExcluded(owner, method)
+            // Don't rename native methods
+            && !method.accessWrapper.isNative()
             // Don't rename <clinit> and <init>
             && !method.name.startsWith('<')
             // Don't rename main and agent main methods

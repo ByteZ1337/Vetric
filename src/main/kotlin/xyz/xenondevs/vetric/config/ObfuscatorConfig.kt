@@ -1,6 +1,7 @@
 package xyz.xenondevs.vetric.config
 
 import com.google.gson.JsonObject
+import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.Library
 import xyz.xenondevs.vetric.transformer.TransformerRegistry
 import xyz.xenondevs.vetric.util.json.JsonConfig
@@ -16,6 +17,7 @@ object ObfuscatorConfig {
         input = config.getOrThrow(ConfigSetting.INPUT) { "Missing input file in config." }
         output = config.getOrThrow(ConfigSetting.OUTPUT) { "Missing output file in config." }
         libraries = config.getOrDefault(ConfigSetting.LIBRARIES, emptyList())
+        ExclusionManager.parseConfig(config)
         
         if (config.contains<JsonObject>("transformers")) {
             TransformerRegistry.transformers.forEach {

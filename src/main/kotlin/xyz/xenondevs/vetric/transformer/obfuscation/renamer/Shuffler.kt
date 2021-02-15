@@ -6,6 +6,7 @@ import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import xyz.xenondevs.vetric.config.type.TransformerConfig
+import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.transformer.Transformer
@@ -14,7 +15,7 @@ import xyz.xenondevs.vetric.util.*
 import xyz.xenondevs.vetric.util.asm.ASMUtils
 import xyz.xenondevs.vetric.util.json.getBoolean
 
-// TODO When exclusion is added: Add check to isMoveable
+// TODO Cleanup
 object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     
     var shuffleFields = true
@@ -31,7 +32,7 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
         if (crossClassFields) shuffleFieldsCC(jar)
         if (crossClassMethods) shuffleMethodsCC(jar)
         
-        jar.classes.forEach {
+        jar.classes.filterNot(ExclusionManager::isExcluded).forEach {
             if (shuffleFields && !it.fields.isNullOrEmpty())
                 it.fields.shuffle()
             if (shuffleMethods && !it.methods.isNullOrEmpty())
@@ -43,7 +44,7 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     }
     
     private fun shuffleFieldsCC(jar: JavaArchive) {
-        val available = jar.classes.filter { it.accessWrapper.isPublicClass() }
+        val available = jar.classes.filter { it.accessWrapper.isPublicClass() && !ExclusionManager.isExcluded(it) }
         if (available.isEmpty())
             return
         
@@ -66,8 +67,13 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     }
     
     private fun prepareField(clazz: ClassWrapper, field: FieldNode): Boolean {
-        if (!field.accessWrapper.hasFlags(ACC_STATIC, ACC_FINAL) || "${clazz.name}.${field.name}.${field.desc}" in processedFields)
+        if (ExclusionManager.isExcluded(clazz, field))
             return false
+        
+        if (!field.accessWrapper.hasFlags(ACC_STATIC, ACC_FINAL)
+            || "${clazz.name}.${field.name}.${field.desc}" in processedFields
+        ) return false
+        
         if (field.value != null)
             return true
         
@@ -87,14 +93,14 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     }
     
     private fun shuffleMethodsCC(jar: JavaArchive) {
-        val available = jar.classes.filter { it.accessWrapper.isPublicClass() }
+        val available = jar.classes.filter { it.accessWrapper.isPublicClass() && !ExclusionManager.isExcluded(it) }
         if (available.isEmpty())
             return
         
         available.forEach { clazz ->
             if (clazz.methods.isNullOrEmpty())
                 return@forEach
-            clazz.methods.filter { this.isMoveable(it, clazz) }.forEach method@{ method ->
+            clazz.methods.filter { this.isMoveable(clazz, it) }.forEach method@{ method ->
                 val newClass = available.filter { method !in it }.randomOrNull() ?: return@method
                 method.access = ACC_PUBLIC or ACC_STATIC
                 newClass.methods.add(method)
@@ -120,13 +126,17 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     }
     
     // TODO Move
-    private fun isMoveable(method: MethodNode, clazz: ClassWrapper): Boolean {
+    private fun isMoveable(clazz: ClassWrapper, method: MethodNode): Boolean {
+        if (ExclusionManager.isExcluded(clazz, method))
+            return false
+        
         if (!method.accessWrapper.isStatic()
             || "${clazz.name}.${method.name}${method.desc}" in processedMethods
             || !Renamer.isRenameable(method, clazz)
             || !Type.getArgumentTypes(method.desc).map(Type::clazz).all { it.accessWrapper.isPublic() }
-            || !Type.getReturnType(method.desc).clazz.accessWrapper.isPublic())
-            return false
+            || !Type.getReturnType(method.desc).clazz.accessWrapper.isPublic()
+        ) return false
+        
         return method.instructions.all { insn ->
             return@all when (insn) {
                 is InvokeDynamicInsnNode -> false
