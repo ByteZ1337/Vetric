@@ -1,0 +1,40 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 172 172">
+    <defs>
+        <radialGradient cx="48.74767" cy="53.76792" r="120.71175" gradientUnits="userSpaceOnUse" id="color-1">
+            <stop offset="0.212" stop-color="#5059c9"></stop>
+            <stop offset="0.373" stop-color="#545dcb"></stop>
+            <stop offset="0.524" stop-color="#5f68d1"></stop>
+            <stop offset="0.672" stop-color="#727ada"></stop>
+            <stop offset="0.818" stop-color="#8d94e8"></stop>
+            <stop offset="0.96" stop-color="#afb5f9"></stop>
+            <stop offset="1" stop-color="#bac0ff"></stop>
+        </radialGradient>
+        <radialGradient cx="79.06737" cy="53.30423" r="18.57609" gradientUnits="userSpaceOnUse" id="color-2">
+            <stop offset="0.313" stop-color="#333333" stop-opacity="0"></stop>
+            <stop offset="1" stop-color="#333333"></stop>
+        </radialGradient>
+        <radialGradient cx="49.1275" cy="90.47917" r="12.384" gradientUnits="userSpaceOnUse" id="color-3">
+            <stop offset="0.313" stop-color="#333333" stop-opacity="0"></stop>
+            <stop offset="1" stop-color="#333333"></stop>
+        </radialGradient>
+        <radialGradient cx="132.70158" cy="80.40283" r="9.288" gradientUnits="userSpaceOnUse" id="color-4">
+            <stop offset="0.313" stop-color="#333333" stop-opacity="0"></stop>
+            <stop offset="1" stop-color="#333333"></stop>
+        </radialGradient>
+    </defs>
+    <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter"
+       stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none"
+       font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+        <path d="M0,172v-172h172v172z" fill="none"></path>
+        <g>
+            <path d="M86,157.66667c39.5815,0 71.66667,-32.08517 71.66667,-71.66667c0,-39.5815 -32.08517,-71.66667 -71.66667,-71.66667c-39.5815,0 -71.66667,32.08517 -71.66667,71.66667c0,39.5815 32.08517,71.66667 71.66667,71.66667z"
+                  fill="url(#color-1)"></path>
+            <path d="M75.25,35.83333c-5.93758,0 -10.75,4.81242 -10.75,10.75c0,5.93758 4.81242,10.75 10.75,10.75c5.93758,0 10.75,-4.81242 10.75,-10.75c0,-5.93758 -4.81242,-10.75 -10.75,-10.75z"
+                  fill="url(#color-2)"></path>
+            <path d="M46.58333,78.83333c-3.95958,0 -7.16667,3.20708 -7.16667,7.16667c0,3.95958 3.20708,7.16667 7.16667,7.16667c3.95958,0 7.16667,-3.20708 7.16667,-7.16667c0,-3.95958 -3.20708,-7.16667 -7.16667,-7.16667z"
+                  fill="url(#color-3)"></path>
+            <path d="M130.79167,71.66667c-2.967,0 -5.375,2.408 -5.375,5.375c0,2.967 2.408,5.375 5.375,5.375c2.967,0 5.375,-2.408 5.375,-5.375c0,-2.967 -2.408,-5.375 -5.375,-5.375z"
+                  fill="url(#color-4)"></path>
+        </g>
+    </g>
+</svg>
