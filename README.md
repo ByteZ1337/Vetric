@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img width=250 height=250 src="https://xenondevs.xyz/vetric/moon.svg" />
+  <img width=250 height=250 src="https://raw.githubusercontent.com/ByteZ1337/Vetric/master/.github/img/vetric.svg" />
   <br>Vetric<br>
 </h1>
 
