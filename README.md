@@ -11,4 +11,4 @@
   <img src="https://img.shields.io/badge/Made%20with-Kotlin-brightgreen" alt"Contribtutions" />
 </p>
 
-<h2 align="center">Work in progress!</h2>
+The project is currently on hold and will be further developed as soon as I have motivation again
