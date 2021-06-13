@@ -16,8 +16,7 @@ import xyz.xenondevs.vetric.util.asm.insnBuilder
 import kotlin.math.ln
 import kotlin.math.roundToInt
 
-object StringEncrypter :
-    StringTransformer("StringEncrypter", TransformerConfig(StringEncrypter::class), { it.length <= 1000 }) {
+object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(StringEncrypter::class), { it.length <= 1000 }) {
     
     private val methods = ArrayList<MemberReference>()
     private val supplier = CombiningSupplier()

@@ -7,8 +7,8 @@
   An advanced Java/Kotlin obfuscator<br><br>
   <img src="https://img.shields.io/github/issues/ByteZ1337/Vetric" alt="issue" />
   <img src="https://img.shields.io/github/license/ByteZ1337/Vetric" alt="License" />
-  <img src="https://img.shields.io/badge/contributions-welcome-green" alt"Contribtutions" />
-  <img src="https://img.shields.io/badge/Made%20with-Kotlin-brightgreen" alt"Contribtutions" />
+  <img src="https://img.shields.io/badge/contributions-welcome-green" alt="Contributions" />
+  <img src="https://img.shields.io/badge/Made%20with-Kotlin-brightgreen" alt="Kotlin" />
 </p>
 
-The project is currently on hold and will be further developed as soon as I have motivation again
+Work in progress

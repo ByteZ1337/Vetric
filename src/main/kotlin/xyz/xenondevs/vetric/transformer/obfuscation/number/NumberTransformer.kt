@@ -23,6 +23,8 @@ open class NumberTransformer(
     
     open fun transformDouble(insnParent: InsnParent, insn: AbstractInsnNode, value: Double) = Unit
     
+    override fun hashCode() = name.hashCode()
+    
     override fun equals(other: Any?) =
         this === other || (other is NumberTransformer && other.name == this.name)
     
