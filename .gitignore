@@ -5,7 +5,7 @@
 .metadata
 
 # Gradle temporarily build directory
-.gradle
+*gradle
 
 # Eclipse Build Directory
 bin/
@@ -59,6 +59,7 @@ local.properties
 ## Plugin-specific files:
 
 # IntelliJ
+build
 /out/
 /src/test
 
