@@ -21,7 +21,7 @@ object ObfuscatorConfig {
         
         if (config.contains<JsonObject>("transformers")) {
             TransformerRegistry.transformers.forEach {
-                val key = "transformers.${it.name.toLowerCase()}"
+                val key = "transformers.${it.name.lowercase()}"
                 if (key in config && it.config.isValid(key, config, true))
                     it.config.parse(key, config)
             }

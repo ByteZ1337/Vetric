@@ -3,7 +3,7 @@ package xyz.xenondevs.vetric.asm.access
 import org.objectweb.asm.Opcodes.*
 import xyz.xenondevs.vetric.util.hasMask
 
-class ValueAccess(val access: Int) : Access {
+class ValueAccess(private val access: Int) : Access {
     
     override fun isPublic() = access.hasMask(ACC_PUBLIC)
     

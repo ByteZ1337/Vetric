@@ -20,7 +20,7 @@ object Vetric {
         writeOutput()
     }
     
-    fun initFiles(configFile: File) {
+    private fun initFiles(configFile: File) {
         ObfuscatorConfig.load(JsonConfig(configFile, true))
         input = JavaArchive(ObfuscatorConfig.input)
         output = ObfuscatorConfig.output
@@ -29,7 +29,7 @@ object Vetric {
         ObfuscatorConfig.libraries.forEach(ClassPath::loadLibrary)
     }
     
-    fun applyTransformers() {
+    private fun applyTransformers() {
         val enabled = TransformerRegistry.getEnabled()
         require(enabled.isNotEmpty()) { "No transformers are enabled!" } // Might be removed
         
@@ -37,7 +37,7 @@ object Vetric {
         enabled.forEach { it.transformJar(input) }
     }
     
-    fun writeOutput() {
+    private fun writeOutput() {
         println("Writing file...")
         val outputStream = JarOutputStream(output.outputStream())
         val writtenEntries = HashSet<String>()

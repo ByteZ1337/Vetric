@@ -9,7 +9,12 @@ import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
 import xyz.xenondevs.vetric.util.filterTypeAnd
 
-abstract class StringTransformer(name: String, config: TransformerConfig, val stringFilter: (String) -> Boolean = { true }, priority: TransformerPriority = TransformerPriority.NORMAL) : ClassTransformer(name, config, priority) {
+abstract class StringTransformer(
+    name: String,
+    config: TransformerConfig,
+    val stringFilter: (String) -> Boolean = { true },
+    priority: TransformerPriority = TransformerPriority.NORMAL
+) : ClassTransformer(name, config, priority) {
     
     override fun transformMethod(method: MethodNode) {
         method.instructions.filterTypeAnd<LdcInsnNode> { it.cst is String && stringFilter(it.cst as String) }.forEach {

@@ -58,9 +58,6 @@ object ClassPath {
         println("Done")
     }
     
-    fun getTree(name: String, vararg knownSubClasses: String = emptyArray()) =
-        getTree(getClassWrapper(name), *knownSubClasses)
-    
     // TODO add full subclass instead of current wrapper
     fun getTree(wrapper: ClassWrapper, vararg knownSubClasses: String = emptyArray()): InheritanceTree {
         if (!inheritanceTree.containsKey(wrapper.name)) {
@@ -72,9 +69,9 @@ object ClassPath {
                 getTree(getClassWrapper(superName), wrapper.name)
             }
             wrapper.interfaces?.let { interfaces ->
-                interfaces.forEach { interf ->
-                    tree.parentClasses += interf
-                    getTree(getClassWrapper(interf), wrapper.name)
+                interfaces.forEach { i ->
+                    tree.parentClasses += i
+                    getTree(getClassWrapper(i), wrapper.name)
                 }
             }
             

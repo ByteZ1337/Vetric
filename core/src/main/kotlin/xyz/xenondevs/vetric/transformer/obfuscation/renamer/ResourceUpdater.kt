@@ -12,7 +12,7 @@ object ResourceUpdater : ResourceTransformer("ResourceUpdater", ResourceUpdaterC
     private var fileExtensions = hashSetOf("mf", "yml", "xml", "json")
     
     override fun transform(resource: Resource) {
-        if (fileExtensions.contains(resource.getExtension().toLowerCase())) {
+        if (fileExtensions.contains(resource.getExtension().lowercase())) {
             var content = resource.content.decodeToString()
             val nameMap = Renamer.mappings.toList().sortedByDescending { it.first.length }.toMap()
             nameMap.forEach { (oldName, newName) ->

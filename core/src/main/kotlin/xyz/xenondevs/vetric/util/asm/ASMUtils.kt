@@ -11,7 +11,7 @@ import xyz.xenondevs.vetric.util.startsWithAny
 
 object ASMUtils {
     
-    /* ------------------ Constnats ------------------ */
+    /* ------------------ Constants ------------------ */
     
     const val OBJECT_TYPE = "java/lang/Object"
     
@@ -64,8 +64,8 @@ object ASMUtils {
         }
         
         if (clazz.interfaces != null) {
-            clazz.interfaces.forEach { interf ->
-                val interfaceClass = ClassPath.getClassWrapper(interf)
+            clazz.interfaces.forEach { i ->
+                val interfaceClass = ClassPath.getClassWrapper(i)
                 val rec = getParent(method, interfaceClass)
                 if (hasMethod(method.name, method.desc, interfaceClass) && rec == null)
                     return interfaceClass

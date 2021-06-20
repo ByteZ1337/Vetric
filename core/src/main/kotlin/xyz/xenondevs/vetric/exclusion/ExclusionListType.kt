@@ -13,16 +13,16 @@ object ExclusionListType : SettingType<List<String>>() {
     override fun isValid(element: JsonElement, silent: Boolean) = element is JsonArray
     
     override fun parseElement(element: JsonElement): List<String> {
-        val exlusions = ArrayList<String>()
+        val exclusions = ArrayList<String>()
         element as JsonArray
         element.forEachIndexed { index, arrElement ->
             when {
-                arrElement is JsonObject -> handleMemberReference(index, arrElement, exlusions)
-                arrElement.isString() -> exlusions.add(arrElement.asString)
+                arrElement is JsonObject -> handleMemberReference(index, arrElement, exclusions)
+                arrElement.isString() -> exclusions.add(arrElement.asString)
                 else -> println("Invalid number transformer at index $index. Skipping...")
             }
         }
-        return exlusions
+        return exclusions
     }
     
     private fun handleMemberReference(index: Int, obj: JsonObject, list: MutableList<String>) {

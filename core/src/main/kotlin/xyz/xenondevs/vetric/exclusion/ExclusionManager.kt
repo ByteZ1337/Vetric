@@ -11,21 +11,21 @@ import xyz.xenondevs.vetric.util.json.hasString
 
 object ExclusionManager {
     
-    private var exlusions = emptyList<String>()
+    private var exclusions = emptyList<String>()
     private lateinit var script: String
     
     fun isExcluded(clazz: ClassWrapper): Boolean {
-        return clazz.name in exlusions
+        return clazz.name in exclusions
     }
     
     fun isExcluded(owner: ClassWrapper, field: FieldNode): Boolean {
-        return "${owner.name}.${field.name}" in exlusions
-            || "${owner.name}.${field.name}.${field.desc}" in exlusions
+        return "${owner.name}.${field.name}" in exclusions
+            || "${owner.name}.${field.name}.${field.desc}" in exclusions
     }
     
     fun isExcluded(owner: ClassWrapper, method: MethodNode): Boolean {
-        return "${owner.name}.${method.name}" in exlusions
-            || "${owner.name}.${method.name}.${method.desc}" in exlusions
+        return "${owner.name}.${method.name}" in exclusions
+            || "${owner.name}.${method.name}.${method.desc}" in exclusions
     }
     
     fun parseConfig(config: JsonConfig) {
@@ -34,7 +34,7 @@ object ExclusionManager {
         val exclConfig = config.getObject("exclusion")!!
         
         if (exclConfig.hasArray("exclusions"))
-            exlusions = ExclusionListType.parseElement(exclConfig.getAsJsonArray("exclusions"))
+            exclusions = ExclusionListType.parseElement(exclConfig.getAsJsonArray("exclusions"))
         if (exclConfig.hasString("script"))
             script = exclConfig.getString("script")!!
     }

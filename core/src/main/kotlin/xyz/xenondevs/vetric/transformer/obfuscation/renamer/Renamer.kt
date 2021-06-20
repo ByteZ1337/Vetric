@@ -154,10 +154,10 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
         if (!clazz.sourceFile.isNullOrBlank())
             clazz.sourceFile = "${clazz.className}.java"
         if (!clazz.sourceDebug.isNullOrBlank() && clazz.sourceDebug.matches(SMAP_REGEX)) {
-            val originalname = clazz.originalName.substringBeforeLast('.')
+            val originalName = clazz.originalName.substringBeforeLast('.')
             val originalClassName = clazz.originalName.between('/', '.')
             clazz.sourceDebug = clazz.sourceDebug
-                .replace(clazz.name, originalname)
+                .replace(clazz.name, originalName)
                 .replace(clazz.className, originalClassName)
         }
     }

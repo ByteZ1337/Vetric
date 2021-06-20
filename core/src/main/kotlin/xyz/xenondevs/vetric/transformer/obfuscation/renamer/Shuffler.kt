@@ -24,8 +24,8 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
     var crossClassFields = false
     
     val mappings = HashMap<String, String>()
-    val processedMethods = ArrayList<String>()
-    val processedFields = ArrayList<String>()
+    private val processedMethods = ArrayList<String>()
+    private val processedFields = ArrayList<String>()
     
     override fun transformJar(jar: JavaArchive) {
         mappings.clear()
@@ -119,7 +119,13 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
             else if (insn is InvokeDynamicInsnNode) {
                 insn.bsmArgs?.forEachIndexed { index, obj ->
                     if (obj is Handle && "${obj.owner}.${obj.name}${obj.desc}" in mappings)
-                        insn.bsmArgs[index] = Handle(obj.tag, mappings["${obj.owner}.${obj.name}${obj.desc}"], obj.name, obj.desc, obj.isInterface)
+                        insn.bsmArgs[index] = Handle(
+                            obj.tag,
+                            mappings["${obj.owner}.${obj.name}${obj.desc}"],
+                            obj.name,
+                            obj.desc,
+                            obj.isInterface
+                        )
                 }
             }
         }

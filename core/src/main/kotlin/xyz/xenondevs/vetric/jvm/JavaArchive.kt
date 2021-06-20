@@ -12,7 +12,7 @@ import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipOutputStream
 
-open class JavaArchive(val parsingOptions: Int = SKIP_FRAMES) {
+open class JavaArchive(private val parsingOptions: Int = SKIP_FRAMES) {
     
     val directories = ArrayList<JarEntry>()
     val classes = ArrayList<ClassWrapper>()
@@ -80,7 +80,10 @@ open class JavaArchive(val parsingOptions: Int = SKIP_FRAMES) {
             jos.close()
     }
     
-    inline fun <reified T : AbstractInsnNode> forEachInstruction(filter: (T) -> Boolean = { true }, transform: (T) -> Unit) =
+    inline fun <reified T : AbstractInsnNode> forEachInstruction(
+        filter: (T) -> Boolean = { true },
+        transform: (T) -> Unit
+    ) =
         classes.filterNot { it.methods.isNullOrEmpty() }
             .flatMap { it.methods.flatMap { method -> method.instructions } }
             .filterTypeAnd(filter)

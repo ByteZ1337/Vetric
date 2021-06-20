@@ -24,7 +24,10 @@ class CustomClassWriter(flags: Int = COMPUTE_FRAMES) : ClassWriter(flags) {
         if (OBJECT_TYPE != second)
             return second
         
-        return getCommonSuperClass(ClassPath.getClassWrapper(type1).superName, ClassPath.getClassWrapper(type2).superName)
+        return getCommonSuperClass(
+            ClassPath.getClassWrapper(type1).superName,
+            ClassPath.getClassWrapper(type2).superName
+        )
     }
     
     private fun findCommonSuperName(type1: String, type2: String): String {

@@ -2,7 +2,7 @@ package xyz.xenondevs.vetric.supplier
 
 abstract class StringSupplier(val name: String) {
     
-    protected val generated = HashSet<String>()
+    private val generated = HashSet<String>()
     
     abstract fun randomString(length: Int): String
     

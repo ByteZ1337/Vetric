@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE", "FunctionName")
+@file:Suppress("NOTHING_TO_INLINE", "FunctionName", "SpellCheckingInspection", "unused", "MemberVisibilityCanBePrivate")
 
 package xyz.xenondevs.vetric.util.asm
 
@@ -55,7 +55,7 @@ class InsnBuilder {
     fun label() = LabelNode()
     
     /**
-     * Creas a new [LabelNode] and adds
+     * Creates a new [LabelNode] and adds
      * it to the [list].
      */
     fun addLabel() = +label()
@@ -227,10 +227,17 @@ class InsnBuilder {
     
     /* Method invocation */
     
-    inline fun invokevirtual(owner: String, name: String, desc: String, `interface`: Boolean = false) = +MethodInsnNode(INVOKEVIRTUAL, owner, name, desc, `interface`)
-    inline fun invokespecial(owner: String, name: String, desc: String, `interface`: Boolean = false) = +MethodInsnNode(INVOKESPECIAL, owner, name, desc, `interface`)
-    inline fun invokestatic(owner: String, name: String, desc: String, `interface`: Boolean = false) = +MethodInsnNode(INVOKESTATIC, owner, name, desc, `interface`)
-    inline fun invokeinterface(owner: String, name: String, desc: String, `interface`: Boolean = false) = +MethodInsnNode(INVOKEINTERFACE, owner, name, desc, `interface`)
+    inline fun invokevirtual(owner: String, name: String, desc: String, `interface`: Boolean = false) =
+        +MethodInsnNode(INVOKEVIRTUAL, owner, name, desc, `interface`)
+    
+    inline fun invokespecial(owner: String, name: String, desc: String, `interface`: Boolean = false) =
+        +MethodInsnNode(INVOKESPECIAL, owner, name, desc, `interface`)
+    
+    inline fun invokestatic(owner: String, name: String, desc: String, `interface`: Boolean = false) =
+        +MethodInsnNode(INVOKESTATIC, owner, name, desc, `interface`)
+    
+    inline fun invokeinterface(owner: String, name: String, desc: String, `interface`: Boolean = false) =
+        +MethodInsnNode(INVOKEINTERFACE, owner, name, desc, `interface`)
     
     /* Creating new instances */
     

@@ -26,15 +26,20 @@ fun JsonObject.hasObject(property: String) =
 fun JsonObject.hasArray(property: String) =
     has(property) && this[property] is JsonArray
 
-fun JsonObject.getString(property: String, default: String? = null) = if (hasString(property)) get(property).asString else default
+fun JsonObject.getString(property: String, default: String? = null) =
+    if (hasString(property)) get(property).asString else default
 
-fun JsonObject.getNumber(property: String, default: Number? = null) = if (hasNumber(property)) get(property).asNumber else default
+fun JsonObject.getNumber(property: String, default: Number? = null) =
+    if (hasNumber(property)) get(property).asNumber else default
 
-fun JsonObject.getInt(property: String, default: Int? = null) = if (hasNumber(property)) get(property).asInt else default
+fun JsonObject.getInt(property: String, default: Int? = null) =
+    if (hasNumber(property)) get(property).asInt else default
 
-fun JsonObject.getDouble(property: String, default: Double? = null) = if (hasNumber(property)) get(property).asDouble else default
+fun JsonObject.getDouble(property: String, default: Double? = null) =
+    if (hasNumber(property)) get(property).asDouble else default
 
-fun JsonObject.getBoolean(property: String, default: Boolean = false) = if (hasBoolean(property)) get(property).asBoolean else default
+fun JsonObject.getBoolean(property: String, default: Boolean = false) =
+    if (hasBoolean(property)) get(property).asBoolean else default
 
 fun <T> JsonArray.toStringList(consumer: (List<String>) -> T) =
     consumer(this.filter(JsonElement::isString).map(JsonElement::getAsString))

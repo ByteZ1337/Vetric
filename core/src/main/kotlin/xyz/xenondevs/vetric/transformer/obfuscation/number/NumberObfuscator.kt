@@ -54,7 +54,12 @@ object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorC
         }
     }
     
-    fun callTransformer(transformer: NumberTransformer, method: MethodNode, insn: AbstractInsnNode, value: Number) {
+    private fun callTransformer(
+        transformer: NumberTransformer,
+        method: MethodNode,
+        insn: AbstractInsnNode,
+        value: Number
+    ) {
         val parent = InsnParent(currentJar, currentClass, method, method.instructions)
         
         when (value) {
