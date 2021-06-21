@@ -138,7 +138,7 @@ object Shuffler : Transformer("Shuffler", ShufflerConfig, HIGHEST) {
         
         if (!method.accessWrapper.isStatic()
             || "${clazz.name}.${method.name}${method.desc}" in processedMethods
-            || !Renamer.isRenameable(method, clazz)
+            || !ASMUtils.isRenameable(method, clazz)
             || !Type.getArgumentTypes(method.desc).map(Type::clazz).all { it.accessWrapper.isPublic() }
             || !Type.getReturnType(method.desc).clazz.accessWrapper.isPublic()
         ) return false

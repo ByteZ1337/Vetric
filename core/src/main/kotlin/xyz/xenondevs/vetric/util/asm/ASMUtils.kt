@@ -3,9 +3,11 @@ package xyz.xenondevs.vetric.util.asm
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
+import xyz.xenondevs.vetric.transformer.obfuscation.renamer.Renamer
 import xyz.xenondevs.vetric.util.accessWrapper
 import xyz.xenondevs.vetric.util.startsWithAny
 
@@ -89,6 +91,22 @@ object ASMUtils {
     
     fun hasMethod(name: String, desc: String, clazz: ClassNode) =
         clazz.methods != null && clazz.methods.any { it.desc == desc && it.name == name }
+    
+    fun isRenameable(method: MethodNode, owner: ClassWrapper) =
+        // Don't rename excluded methods
+        !ExclusionManager.isExcluded(owner, method)
+            // Don't rename native methods
+            && !method.accessWrapper.isNative()
+            // Don't rename <clinit> and <init>
+            && !method.name.startsWith('<')
+            // Don't rename main and agent main methods
+            && "main" != method.name && "premain" != method.name
+            // Don't rename enum static methods
+            && !(owner.isEnum() && method.accessWrapper.isStatic() && ("values" == method.name || "valueOf" == method.name))
+            // Don't rename methods that are already renamed by a superclass
+            && !Renamer.mappings.containsKey("${owner.name}.${method.name}${method.desc}")
+            // Don't rename methods that belong to a superclass
+            && !ASMUtils.isInherited(method, owner)
     
     fun getIntInsn(value: Int) =
         when (value) {

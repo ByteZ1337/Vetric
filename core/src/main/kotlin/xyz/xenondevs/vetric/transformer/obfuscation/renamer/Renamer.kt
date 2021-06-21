@@ -3,25 +3,19 @@ package xyz.xenondevs.vetric.transformer.obfuscation.renamer
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.objectweb.asm.commons.ClassRemapper
-import org.objectweb.asm.tree.FieldNode
-import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.asm.CustomRemapper
 import xyz.xenondevs.vetric.config.type.SupplierType
 import xyz.xenondevs.vetric.config.type.TransformerConfig
-import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.supplier.AlphaSupplier
 import xyz.xenondevs.vetric.supplier.StringSupplier
 import xyz.xenondevs.vetric.transformer.Transformer
-import xyz.xenondevs.vetric.util.accessWrapper
-import xyz.xenondevs.vetric.util.asm.ASMUtils
 import xyz.xenondevs.vetric.util.between
 import xyz.xenondevs.vetric.util.flushClose
 import xyz.xenondevs.vetric.util.json.getBoolean
 import java.io.File
-import java.util.concurrent.atomic.AtomicInteger
 
 // TODO search for reflection calls, package renaming
 object Renamer : Transformer("Renamer", RenamerConfig) {
@@ -40,7 +34,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     var renameFields = true
     var renameMethods = true
     
-    val mappings = HashMap<String, String>()
+    var mappings: MutableMap<String, String> = HashMap()
     
     override fun transformJar(jar: JavaArchive) {
         generateMappings(jar)
@@ -54,82 +48,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     
     private fun generateMappings(jar: JavaArchive) {
         ClassPath.buildJarTree(jar)
-        mappings.clear()
-        
-        jar.classes.filterNot(ExclusionManager::isExcluded).forEach { clazz ->
-            if (renameFields && !clazz.fields.isNullOrEmpty())
-                generateFieldMappings(clazz)
-            if (renameMethods && !clazz.methods.isNullOrEmpty())
-                generateMethodMappings(clazz)
-            if (renameClasses)
-                mappings[clazz.name] = classesSupplier.randomStringUnique()
-            if (renameFields || renameMethods || renameClasses)
-                println("Generated mappings for " + clazz.name)
-        }
-    }
-    
-    private fun generateFieldMappings(clazz: ClassWrapper) {
-        val (names, indexMap) = getDescNames(fieldsSupplier, clazz.fields, FieldNode::desc)
-        
-        clazz.fields.filterNot { ExclusionManager.isExcluded(clazz, it) }.forEach { field ->
-            if (clazz.isEnum() && "\$VALUES" == field.name)
-                return@forEach
-            
-            // Get the new name with the current index of the descriptor.
-            val newName = names.toList()[indexMap[field.desc]!!.getAndIncrement()]
-            // Add the path to the mappings HashMap
-            mappings["${clazz.name}.${field.name}.${field.desc}"] = newName
-            clazz.getFullSubClasses().forEach { mappings["$it.${field.name}.${field.desc}"] = newName }
-        }
-    }
-    
-    private fun generateMethodMappings(clazz: ClassWrapper) {
-        val renameable = clazz.methods.filter { isRenameable(it, clazz) }
-        if (renameable.isEmpty())
-            return
-        val (names, indexMap) = getDescNames(methodsSupplier, renameable, MethodNode::desc)
-        
-        renameable.forEach { method ->
-            // Get the new name with the current index of the descriptor.
-            val newName = names.toList()[indexMap[method.desc]!!.getAndIncrement()]
-            // Add the path to the mappings HashMap
-            mappings["${clazz.name}.${method.name}${method.desc}"] = newName
-            clazz.getFullSubClasses().forEach { mappings["$it.${method.name}${method.desc}"] = newName }
-        }
-    }
-    
-    // TODO Move
-    fun isRenameable(method: MethodNode, owner: ClassWrapper) =
-        // Don't rename excluded methods
-        !ExclusionManager.isExcluded(owner, method)
-            // Don't rename native methods
-            && !method.accessWrapper.isNative()
-            // Don't rename <clinit> and <init>
-            && !method.name.startsWith('<')
-            // Don't rename main and agent main methods
-            && "main" != method.name && "premain" != method.name
-            // Don't rename enum static methods
-            && !(owner.isEnum() && method.accessWrapper.isStatic() && ("values" == method.name || "valueOf" == method.name))
-            // Don't rename methods that are already renamed by a superclass
-            && !mappings.containsKey("${owner.name}.${method.name}${method.desc}")
-            // Don't rename methods that belong to a superclass
-            && !ASMUtils.isInherited(method, owner)
-    
-    private fun <T> getDescNames(
-        supplier: StringSupplier,
-        list: List<T>,
-        mapper: (T) -> String
-    ): Pair<HashSet<String>, HashMap<String, AtomicInteger>> {
-        val names = HashSet<String>()
-        val indexMap = HashMap<String, AtomicInteger>()
-        // Search the amount of needed names and fill the HashSet
-        val count = list.groupingBy(mapper).eachCount().values.maxOrNull()!!
-        // TODO increase length when no names are left
-        repeat(count) { names += supplier.randomStringUnique(names) }
-        // Fill the HashMap
-        list.map(mapper).distinct().forEach { indexMap[it] = AtomicInteger() }
-        
-        return names to indexMap
+        mappings = MappingsGenerator(jar).generateMappings()
     }
     
     private fun applyMappings(jar: JavaArchive) {
