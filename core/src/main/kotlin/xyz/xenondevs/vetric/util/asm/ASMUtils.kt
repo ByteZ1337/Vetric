@@ -106,7 +106,11 @@ object ASMUtils {
             // Don't rename methods that are already renamed by a superclass
             && !Renamer.mappings.containsKey("${owner.name}.${method.name}${method.desc}")
             // Don't rename methods that belong to a superclass
-            && !ASMUtils.isInherited(method, owner)
+            && !isInherited(method, owner)
+    
+    fun isRenameable(field: FieldNode, owner: ClassWrapper) =
+        !ExclusionManager.isExcluded(owner, field) && !(owner.isEnum() && "\$VALUES" == field.name)
+    
     
     fun getIntInsn(value: Int) =
         when (value) {
