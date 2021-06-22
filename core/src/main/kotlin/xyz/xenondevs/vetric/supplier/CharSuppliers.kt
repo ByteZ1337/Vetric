@@ -1,8 +1,6 @@
 package xyz.xenondevs.vetric.supplier
 
-import java.lang.reflect.Constructor
 import kotlin.random.Random
-import kotlin.reflect.KClass
 
 // TODO increasing
 open class CharSupplier(name: String, private val min: Int, private val max: Int, private val chars: List<Char>) : StringSupplier(name) {
@@ -26,7 +24,7 @@ class AlphaNumericSupplier(min: Int, max: Int) : CharSupplier("AlphaNumeric", mi
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
 }
 
-class InvisibleSupplier(min: Int, max: Int) : CharSupplier("Invisible", min, max, 0x2000..0x200F) {
+class BarcodeSupplier(min: Int, max: Int) : CharSupplier("Barcode", min, max, listOf('I', 'l')) {
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
 }
 
@@ -34,19 +32,18 @@ class DotsSupplier(min: Int, max: Int) : CharSupplier("Dots", min, max, (0x2cc..
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
 }
 
-class BarcodeSupplier(min: Int, max: Int) : CharSupplier("Barcode", min, max, listOf('I', 'l')) {
+class InvisibleSupplier(min: Int, max: Int) : CharSupplier("Invisible", min, max, 0x2000..0x200F) {
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
 }
 
-// TODO Use registry instead of enum
-enum class Supplier(private val clazz: KClass<out StringSupplier>) {
-    ALPHA(AlphaSupplier::class),
-    ALPHANUMERIC(AlphaNumericSupplier::class),
-    INVISIBLE(InvisibleSupplier::class),
-    DOTS(DotsSupplier::class),
-    COMBINING(CombiningSupplier::class),
-    UNICODE(UnicodeSupplier::class),
-    BARCODE(BarcodeSupplier::class);
+enum class Supplier(private val constructor: (Int, Int) -> StringSupplier) {
+    ALPHA(::AlphaSupplier),
+    ALPHANUMERIC(::AlphaNumericSupplier),
+    BARCODE(::BarcodeSupplier),
+    COMBINING(::CombiningSupplier),
+    DOTS(::DotsSupplier),
+    INVISIBLE(::InvisibleSupplier),
+    UNICODE(::UnicodeSupplier);
     
     companion object {
         private val VALUES = values()
@@ -54,12 +51,8 @@ enum class Supplier(private val clazz: KClass<out StringSupplier>) {
         operator fun get(name: String) = VALUES.firstOrNull { it.toString().equals(name, true) }
     }
     
-    private val constructor: Constructor<out StringSupplier> by lazy {
-        clazz.java.getConstructor(Int::class.java, Int::class.java)
-    }
-    
     fun newInstance(min: Int, max: Int): StringSupplier {
-        return constructor.newInstance(min, max)
+        return constructor(min, max)
     }
     
 }

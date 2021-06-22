@@ -15,7 +15,7 @@ object ExclusionManager {
     private lateinit var script: String
     
     fun isExcluded(clazz: ClassWrapper): Boolean {
-        return clazz.name in exclusions
+        return clazz.name.startsWith("kotlin/") || clazz.name in exclusions
     }
     
     fun isExcluded(owner: ClassWrapper, field: FieldNode): Boolean {

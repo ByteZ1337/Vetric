@@ -3,9 +3,12 @@ package xyz.xenondevs.vetric.transformer.obfuscation.renamer
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import xyz.xenondevs.vetric.asm.Refactorer
+import xyz.xenondevs.vetric.asm.kotlin.KotlinIntrinsicsReplacer
 import xyz.xenondevs.vetric.config.type.SupplierType
 import xyz.xenondevs.vetric.config.type.TransformerConfig
+import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassPath
+import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.supplier.AlphaSupplier
 import xyz.xenondevs.vetric.supplier.StringSupplier
@@ -36,6 +39,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     override fun transformJar(jar: JavaArchive) {
         generateMappings(jar)
         applyMappings(jar)
+        processDebug(jar)
         
         val mappingsFile = File("mappings.txt")
         val writer = mappingsFile.bufferedWriter()
@@ -53,6 +57,13 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
         jar.classes.clear()
         jar.classes.addAll(newClasses)
         ClassPath.reload()
+    }
+    
+    private fun processDebug(jar: JavaArchive) {
+        jar.classes
+            .filterNot(ExclusionManager::isExcluded)
+            .flatMap(ClassWrapper::methods)
+            .forEach(KotlinIntrinsicsReplacer::processMethod)
     }
     
     private object RenamerConfig : TransformerConfig(Renamer::class) {
