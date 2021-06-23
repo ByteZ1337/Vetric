@@ -36,7 +36,9 @@ class MappingsGenerator(private val jar: JavaArchive) {
             val generated = HashSet<String>()
             renameableFields.forEach { field ->
                 val newName = supplier.randomStringUnique(generated)
-                mappings[clazz.name + '.' + field.name + '.' + field.desc] = newName
+                val fieldPath = field.name + '.' + field.desc
+                mappings["${clazz.name}.$fieldPath"] = newName
+                clazz.getFullSubClasses().forEach { mappings["$it.$fieldPath"] = newName }
             }
             return
         }
@@ -52,8 +54,9 @@ class MappingsGenerator(private val jar: JavaArchive) {
             val newName = nameList[index]
             
             // Add the new name to the mappings.
-            val fieldPath = clazz.name + '.' + field.name + '.' + field.desc
-            mappings[fieldPath] = newName
+            val fieldPath = field.name + '.' + field.desc
+            mappings["${clazz.name}.$fieldPath"] = newName
+            clazz.getFullSubClasses().forEach { mappings["$it.$fieldPath"] = newName }
         }
     }
     
