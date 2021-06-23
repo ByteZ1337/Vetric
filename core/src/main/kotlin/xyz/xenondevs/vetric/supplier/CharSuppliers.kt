@@ -5,11 +5,9 @@ import kotlin.random.Random
 // TODO increasing
 open class CharSupplier(name: String, private val min: Int, private val max: Int, private val chars: List<Char>) : StringSupplier(name) {
     
-    constructor(name: String, defaultLength: Int = 20, chars: List<Char>) : this(name, defaultLength, defaultLength, chars)
-    
     constructor(name: String, min: Int, max: Int, codes: Iterable<Int>) : this(name, min, max, codes.map(Int::toChar))
     
-    constructor(name: String, defaultLength: Int = 20, codes: Iterable<Int>) : this(name, defaultLength, defaultLength, codes.map(Int::toChar))
+    constructor(name: String, min: Int, max: Int, codes: CharRange) : this(name, min, max, codes.toList())
     
     override fun randomString(length: Int) = (1..length).joinToString("") { chars.random().toString() }
     
@@ -36,6 +34,8 @@ class InvisibleSupplier(min: Int, max: Int) : CharSupplier("Invisible", min, max
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
 }
 
+class NumericSupplier(min: Int, max: Int) : CharSupplier("Numeric", min, max, '0'..'9')
+
 enum class Supplier(private val constructor: (Int, Int) -> StringSupplier) {
     ALPHA(::AlphaSupplier),
     ALPHANUMERIC(::AlphaNumericSupplier),
@@ -43,6 +43,7 @@ enum class Supplier(private val constructor: (Int, Int) -> StringSupplier) {
     COMBINING(::CombiningSupplier),
     DOTS(::DotsSupplier),
     INVISIBLE(::InvisibleSupplier),
+    NUMERIC(::NumericSupplier),
     UNICODE(::UnicodeSupplier);
     
     companion object {

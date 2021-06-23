@@ -20,12 +20,11 @@ import java.io.File
 // TODO search for reflection calls, package renaming
 object Renamer : Transformer("Renamer", RenamerConfig) {
     
-    private val SMAP_REGEX = Regex("^SMAP .+\\.kt Kotlin .*")
-    
     var packagesSupplier: StringSupplier = AlphaSupplier()
     var classesSupplier: StringSupplier = AlphaSupplier()
     var fieldsSupplier: StringSupplier = AlphaSupplier()
     var methodsSupplier: StringSupplier = AlphaSupplier()
+    var localVariablesSupplier: StringSupplier = AlphaSupplier()
     
     var repeatNames = true
     var removePackages = true
@@ -33,6 +32,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
     var renameClasses = true
     var renameFields = true
     var renameMethods = true
+    var renameLocalVariables = true
     
     var mappings: MutableMap<String, String> = HashMap()
     
@@ -87,6 +87,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
             renameClasses = obj.getBoolean("classes", true)
             renameFields = obj.getBoolean("fields", true)
             renameMethods = obj.getBoolean("methods", true)
+            renameLocalVariables = obj.getBoolean("localvariables", true)
             if (renamePackages && removePackages) {
                 println("RenamePackages and RemovePackages is set to true. Defaulting to removing packages")
                 renamePackages = false
@@ -99,6 +100,7 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
             classesSupplier = supplier
             fieldsSupplier = supplier
             methodsSupplier = supplier
+            localVariablesSupplier = supplier
         }
         
         private fun handleMultipleSuppliers(obj: JsonObject) {
@@ -110,6 +112,8 @@ object Renamer : Transformer("Renamer", RenamerConfig) {
                 fieldsSupplier = SupplierType.parseElement(obj["fields"])
             if (obj.has("methods") && SupplierType.isValid(obj["methods"]))
                 methodsSupplier = SupplierType.parseElement(obj["methods"])
+            if (obj.has("localvariables") && SupplierType.isValid(obj["localvariables"]))
+                localVariablesSupplier = SupplierType.parseElement(obj["localvariables"])
         }
     }
 }
