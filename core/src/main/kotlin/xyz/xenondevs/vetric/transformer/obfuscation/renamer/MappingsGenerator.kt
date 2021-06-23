@@ -66,7 +66,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
             renameableMethods.forEach { method ->
                 val newName = supplier.randomStringUnique(generated)
                 mappings[clazz.name + '.' + method.name + method.desc] = newName
-                clazz.getFullSubClasses().forEach { Renamer.mappings["$it.${method.name}${method.desc}"] = newName }
+                clazz.getFullSubClasses().forEach { mappings["$it.${method.name}${method.desc}"] = newName }
             }
             return
         }
@@ -84,7 +84,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
             // Add the new name to the mappings.
             val methodPath = clazz.name + '.' + method.name + method.desc
             mappings[methodPath] = newName
-            clazz.getFullSubClasses().forEach { Renamer.mappings["$it.${method.name}${method.desc}"] = newName }
+            clazz.getFullSubClasses().forEach { mappings["$it.${method.name}${method.desc}"] = newName }
         }
     }
     
