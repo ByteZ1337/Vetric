@@ -1,14 +1,14 @@
 package xyz.xenondevs.vetric.transformer.obfuscation.number.light
 
 import org.objectweb.asm.tree.AbstractInsnNode
-import xyz.xenondevs.vetric.transformer.TransformerPriority.NORMAL
+import xyz.xenondevs.vetric.transformer.TransformerPriority.LOW
 import xyz.xenondevs.vetric.transformer.obfuscation.number.NumberTransformer
 import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
 import xyz.xenondevs.vetric.util.asm.insnBuilder
 import xyz.xenondevs.vetric.util.replace
 import kotlin.random.Random
 
-object Xor : NumberTransformer("Xor", NORMAL, true) {
+object Xor : NumberTransformer("Xor", LOW, true) {
     
     override fun transformInteger(insnParent: InsnParent, insn: AbstractInsnNode, value: Int) {
         val key = Random.nextInt()

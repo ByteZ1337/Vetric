@@ -10,6 +10,7 @@ import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.supplier.CombiningSupplier
+import xyz.xenondevs.vetric.supplier.InvisibleSupplier
 import xyz.xenondevs.vetric.util.StringUtils
 import xyz.xenondevs.vetric.util.asm.ASMUtils.MemberReference
 import xyz.xenondevs.vetric.util.asm.insnBuilder
@@ -19,12 +20,12 @@ import kotlin.math.roundToInt
 object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(StringEncrypter::class), { it.length <= 1000 }) {
     
     private val methods = ArrayList<MemberReference>()
-    private val supplier = CombiningSupplier()
+    private val supplier = InvisibleSupplier()
     
     override fun transformJar(jar: JavaArchive) {
         // Clear methods to make sure old methods aren't used
         methods.clear()
-        
+    
         val size = jar.classes.count(this::isInjectable)
         if (size == 0) {
             System.err.println("Not enough public classes for decryption method. Skipping $name")
@@ -45,7 +46,6 @@ object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(
         if (methods.any { it.owner == currentClass.name && it.name == method.name })
             return
         
-        println("Encrypting ${instruction.cst}")
         val key = LdcInsnNode(supplier.randomString(10..20))
         instruction.cst = StringUtils.encrypt(string, key.cst as String)
         method.instructions.insert(instruction, key)
@@ -69,7 +69,7 @@ object StringEncrypter : StringTransformer("StringEncrypter", TransformerConfig(
         val method = MethodNode()
         with(method) {
             access = ACC_PUBLIC or ACC_STATIC
-            name = "decrypt" + supplier.randomString(5..10)
+            name = supplier.randomString()
             desc = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
             signature = null
             exceptions = null
