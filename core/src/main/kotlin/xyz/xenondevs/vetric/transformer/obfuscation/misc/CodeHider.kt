@@ -6,8 +6,8 @@ import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.vetric.config.type.TransformerConfig
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.transformer.ClassTransformer
-import xyz.xenondevs.vetric.util.accessWrapper
-import xyz.xenondevs.vetric.util.hasAnnotations
+import xyz.xenondevs.vetric.util.asm.accessWrapper
+import xyz.xenondevs.vetric.util.asm.hasAnnotations
 import xyz.xenondevs.vetric.util.json.getBoolean
 
 object CodeHider : ClassTransformer("CodeHider", CodeHiderConfig) {

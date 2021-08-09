@@ -1,13 +1,12 @@
 package xyz.xenondevs.vetric.transformer.obfuscation.number.light
 
 import org.objectweb.asm.tree.AbstractInsnNode
-import xyz.xenondevs.vetric.transformer.TransformerPriority.HIGH
 import xyz.xenondevs.vetric.transformer.TransformerPriority.NORMAL
 import xyz.xenondevs.vetric.transformer.obfuscation.number.NumberTransformer
 import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
 import xyz.xenondevs.vetric.util.asm.insnBuilder
+import xyz.xenondevs.vetric.util.asm.replace
 import xyz.xenondevs.vetric.util.repeatRandom
-import xyz.xenondevs.vetric.util.replace
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.random.nextLong

@@ -3,13 +3,74 @@ package xyz.xenondevs.vetric.util.asm
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
+import xyz.xenondevs.vetric.asm.access.ReferencingAccess
+import xyz.xenondevs.vetric.asm.access.ValueAccess
 import xyz.xenondevs.vetric.exclusion.ExclusionManager
 import xyz.xenondevs.vetric.jvm.ClassPath
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.transformer.obfuscation.renamer.Renamer
-import xyz.xenondevs.vetric.util.accessWrapper
+import xyz.xenondevs.vetric.util.capitalize
 import xyz.xenondevs.vetric.util.startsWithAny
+import kotlin.reflect.KClass
+
+fun InsnList.remove(vararg insn: AbstractInsnNode) = insn.forEach(this::remove)
+
+fun InsnList.replace(insn: AbstractInsnNode, replacement: AbstractInsnNode) {
+    insertBefore(insn, replacement)
+    remove(insn)
+}
+
+fun InsnList.replace(insn: AbstractInsnNode, replacement: InsnList) {
+    insertBefore(insn, replacement)
+    remove(insn)
+}
+
+val Class<*>.internalName get() = name.replace('.', '/')
+
+val KClass<*>.internalName get() = java.internalName
+
+fun ClassNode.hasAnnotations() = !this.invisibleAnnotations.isNullOrEmpty() || !this.visibleAnnotations.isNullOrEmpty()
+
+val Type.name: String
+    get() = when (sort) {
+        Type.OBJECT -> internalName
+        Type.ARRAY -> elementType.name
+        Type.METHOD -> returnType.name
+        Type.INT -> "java/lang/Integer"
+        Type.CHAR -> "java/lang/Character"
+        else -> "java/lang/" + className.capitalize()
+    }
+
+val Type.clazz
+    get() = ClassPath.getClassWrapper(name)
+
+val FieldNode.accessWrapper get() = ReferencingAccess({ this.access }, { this.access = it })
+
+fun FieldNode.hasAnnotations() = !this.invisibleAnnotations.isNullOrEmpty() || !this.visibleAnnotations.isNullOrEmpty()
+
+val FieldInsnNode.ownerWrapper
+    get() = ClassPath.getClassWrapper(owner)
+
+val FieldInsnNode.node
+    get() = ownerWrapper.getField(name, desc)
+
+val FieldInsnNode.access
+    get() = node?.accessWrapper ?: ValueAccess(ACC_PRIVATE)
+
+val MethodNode.accessWrapper get() = ReferencingAccess({ this.access }, { this.access = it })
+
+fun MethodNode.hasAnnotations() = !this.visibleAnnotations.isNullOrEmpty() || !this.invisibleAnnotations.isNullOrEmpty()
+
+val MethodInsnNode.ownerWrapper
+    get() = ClassPath.getClassWrapper(owner)
+
+val MethodInsnNode.node
+    get() = ownerWrapper.getMethod(name, desc)
+
+val MethodInsnNode.access
+    get() = node?.accessWrapper ?: ValueAccess(ACC_PRIVATE)
+
 
 object ASMUtils {
     

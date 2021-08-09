@@ -5,10 +5,10 @@ import xyz.xenondevs.vetric.transformer.TransformerPriority.NORMAL
 import xyz.xenondevs.vetric.transformer.obfuscation.number.NumberTransformer
 import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
 import xyz.xenondevs.vetric.util.asm.insnBuilder
+import xyz.xenondevs.vetric.util.asm.replace
 import xyz.xenondevs.vetric.util.nextDouble
 import xyz.xenondevs.vetric.util.nextFloat
 import xyz.xenondevs.vetric.util.repeatRandom
-import xyz.xenondevs.vetric.util.replace
 import kotlin.random.Random
 
 object Arithmetic : NumberTransformer("Arithmetic", NORMAL, true) {

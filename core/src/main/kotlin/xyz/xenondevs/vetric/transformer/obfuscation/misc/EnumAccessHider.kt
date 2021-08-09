@@ -8,12 +8,8 @@ import xyz.xenondevs.vetric.config.type.TransformerConfig
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority.HIGHEST
-import xyz.xenondevs.vetric.util.access
-import xyz.xenondevs.vetric.util.asm.ASMUtils
-import xyz.xenondevs.vetric.util.asm.insnBuilder
+import xyz.xenondevs.vetric.util.asm.*
 import xyz.xenondevs.vetric.util.filterTypeAnd
-import xyz.xenondevs.vetric.util.ownerWrapper
-import xyz.xenondevs.vetric.util.replace
 
 /**
  * Replaces enum constant ``GETSTATIC (0xb2)`` instructions with

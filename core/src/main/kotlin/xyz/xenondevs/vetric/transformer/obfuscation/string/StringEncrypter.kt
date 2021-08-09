@@ -14,6 +14,7 @@ import xyz.xenondevs.vetric.supplier.InvisibleSupplier
 import xyz.xenondevs.vetric.util.StringUtils
 import xyz.xenondevs.vetric.util.asm.ASMUtils.MemberReference
 import xyz.xenondevs.vetric.util.asm.insnBuilder
+import kotlin.math.cos
 import kotlin.math.ln
 import kotlin.math.roundToInt
 

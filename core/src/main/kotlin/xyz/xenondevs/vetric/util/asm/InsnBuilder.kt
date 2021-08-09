@@ -6,7 +6,6 @@ import org.objectweb.asm.Handle
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
-import xyz.xenondevs.vetric.util.internalName
 import kotlin.reflect.KClass
 
 /**

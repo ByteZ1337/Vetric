@@ -5,7 +5,7 @@ import xyz.xenondevs.vetric.transformer.TransformerPriority.LOWEST
 import xyz.xenondevs.vetric.transformer.obfuscation.number.NumberTransformer
 import xyz.xenondevs.vetric.util.asm.ASMUtils.InsnParent
 import xyz.xenondevs.vetric.util.asm.insnBuilder
-import xyz.xenondevs.vetric.util.replace
+import xyz.xenondevs.vetric.util.asm.replace
 import kotlin.random.Random
 import kotlin.random.nextInt
 

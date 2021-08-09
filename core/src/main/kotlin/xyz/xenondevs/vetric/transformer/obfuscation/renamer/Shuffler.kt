@@ -11,8 +11,8 @@ import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.jvm.JavaArchive
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority.HIGHEST
-import xyz.xenondevs.vetric.util.*
-import xyz.xenondevs.vetric.util.asm.ASMUtils
+import xyz.xenondevs.vetric.util.asm.*
+import xyz.xenondevs.vetric.util.filterTypeAnd
 import xyz.xenondevs.vetric.util.json.getBoolean
 
 // TODO Cleanup

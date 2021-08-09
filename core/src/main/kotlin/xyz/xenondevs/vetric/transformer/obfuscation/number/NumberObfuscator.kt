@@ -11,6 +11,7 @@ import xyz.xenondevs.vetric.config.type.TransformerConfig
 import xyz.xenondevs.vetric.jvm.ClassWrapper
 import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority.LOW
+import xyz.xenondevs.vetric.transformer.obfuscation.number.extreme.PseudoRandom
 import xyz.xenondevs.vetric.transformer.obfuscation.number.light.Arithmetic
 import xyz.xenondevs.vetric.transformer.obfuscation.number.light.Bitwise
 import xyz.xenondevs.vetric.transformer.obfuscation.number.light.Xor
@@ -27,7 +28,8 @@ object NumberObfuscator : ClassTransformer("NumberObfuscator", NumberObfuscatorC
     var obfuscateDoubles = true
     
     private val transformers = sortedSetOf(
-        Xor, Bitwise, Arithmetic, Encoder
+        Xor, Bitwise, Arithmetic, Encoder,
+        PseudoRandom
     )
     
     fun getTransformer(name: String): NumberTransformer? = transformers.firstOrNull { it.name.equals(name, true) }
