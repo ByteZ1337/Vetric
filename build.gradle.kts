@@ -22,7 +22,7 @@ dependencies {
 group = "xyz.xenondevs.vetric"
 version = "0.1"
 description = "Vetric"
-java.sourceCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_16
 
 publishing {
     publications.create<MavenPublication>("maven") {
