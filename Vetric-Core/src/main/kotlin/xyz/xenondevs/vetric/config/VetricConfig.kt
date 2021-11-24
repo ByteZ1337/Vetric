@@ -1,0 +1,29 @@
+package xyz.xenondevs.vetric.config
+
+import com.google.gson.JsonObject
+import xyz.xenondevs.vetric.cli.terminal.warn
+import xyz.xenondevs.vetric.transformer.Transformer
+import xyz.xenondevs.vetric.transformer.TransformerRegistry
+import java.io.File
+
+class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = true) {
+    
+    var input: File = this["input"] ?: throw IllegalStateException("Input file not set")
+    var output: File = this["output"] ?: throw IllegalStateException("Output file not set")
+    val transformers = mutableListOf<Transformer>()
+    
+    init {
+        val obj = getElement("transformers")
+        if(obj is JsonObject) {
+            val keys = obj.keySet()
+            transformers.addAll(TransformerRegistry.filter { it.name.lowercase() in keys })
+        } else warn("NO TRANSFORMERS ENABLED")
+    }
+    
+    operator fun get(transformer: Transformer): JsonConfig {
+        val config = getElement("transformers." + transformer.name.lowercase())!!
+        check(config is JsonObject) { "Transformer config must be a JsonObject" }
+        return JsonConfig(config)
+    }
+    
+}
