@@ -63,9 +63,7 @@ fun debug(message: String, vararg args: Any) {
 
 fun info(message: String, vararg args: Any) = Terminal.logFormatted(message.format(args = args), LogLevel.INFO)
 
-fun warn(message: String, vararg args: Any) {
-    Terminal.logFormatted(message.format(args = args), LogLevel.WARNING)
-}
+fun warn(message: String, vararg args: Any) = Terminal.logFormatted(message.format(args = args), LogLevel.WARNING)
 
 fun error(message: String, vararg args: Any) = Terminal.logFormatted(message.format(args = args), LogLevel.ERROR)
 
