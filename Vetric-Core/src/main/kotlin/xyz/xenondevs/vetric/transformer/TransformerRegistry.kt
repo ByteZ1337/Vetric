@@ -1,3 +1,7 @@
 package xyz.xenondevs.vetric.transformer
 
-object TransformerRegistry : Iterable<Transformer> by sortedSetOf()
+import xyz.xenondevs.vetric.transformer.impl.shrinking.LineNumberRemover
+
+object TransformerRegistry : Iterable<Transformer> by sortedSetOf(
+    LineNumberRemover
+)

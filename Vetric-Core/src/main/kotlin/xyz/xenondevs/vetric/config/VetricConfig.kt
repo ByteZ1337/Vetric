@@ -14,14 +14,16 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
     
     init {
         val obj = getElement("transformers")
-        if(obj is JsonObject) {
-            val keys = obj.keySet()
+        if (obj is JsonObject) {
+            val keys = obj.keySet().map(String::lowercase)
             transformers.addAll(TransformerRegistry.filter { it.name.lowercase() in keys })
         } else warn("NO TRANSFORMERS ENABLED")
     }
     
     operator fun get(transformer: Transformer): JsonConfig {
-        val config = getElement("transformers." + transformer.name.lowercase())!!
+        val obj = getElement("transformers") as JsonObject
+        val configName = obj.keySet().firstOrNull { transformer.name.equals(it, true) }!! // Can't be null because of the check above
+        val config = getElement("transformers.$configName")!!
         check(config is JsonObject) { "Transformer config must be a JsonObject" }
         return JsonConfig(config)
     }

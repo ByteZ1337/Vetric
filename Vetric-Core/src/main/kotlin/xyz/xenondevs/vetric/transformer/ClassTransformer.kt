@@ -38,4 +38,10 @@ abstract class ClassTransformer(
         skipMembers = true
     }
     
+    fun getFullName(method: MethodNode) =
+        currentClass.name + "." + method.name + method.desc
+    
+    fun getFullName(field: FieldNode) =
+        currentClass.name + "." + field.name + "." + field.desc
+    
 }

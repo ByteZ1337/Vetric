@@ -3,10 +3,12 @@ package xyz.xenondevs.vetric.cli.terminal
 import org.fusesource.jansi.Ansi
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
+import org.jline.reader.Widget
 import org.jline.terminal.TerminalBuilder
 import xyz.xenondevs.vetric.Vetric
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.thread
 import org.jline.terminal.Terminal as JLineTerminal
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -16,7 +18,7 @@ object Terminal : JLineTerminal by TerminalBuilder.terminal() {
     
     private val PREFIX = ansi {
         bold()
-        fgRgb(255, 255, 0)
+        fgBrightCyan()
         a("\uD835\uDCE5/> ") // Fancy V
         reset()
     }

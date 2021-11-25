@@ -9,8 +9,9 @@ import xyz.xenondevs.vetric.cli.terminal.debug
 import xyz.xenondevs.vetric.cli.terminal.info
 import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
+import xyz.xenondevs.vetric.utils.pluralize
 
-class LineNumberRemover: ClassTransformer("LineNumberRemover", TransformerPriority.LOWEST) {
+object LineNumberRemover : ClassTransformer("LineNumberRemover", TransformerPriority.LOWEST) {
     
     private var totalCounter = 0
     
@@ -21,10 +22,11 @@ class LineNumberRemover: ClassTransformer("LineNumberRemover", TransformerPriori
     }
     
     override fun transformMethod(method: MethodNode) {
-        var counter = 0
-        method.instructions.removeAll { if (it is LineNumberNode) ++counter; true }
-        debug("Removed $counter line numbers from ${method.name}")
-        totalCounter += counter
+        val before = method.instructions.size()
+        method.instructions.removeAll { it is LineNumberNode }
+        val count = before - method.instructions.size()
+        debug("Removed %d line %s from %s", count, "number".pluralize(count), getFullName(method))
+        totalCounter += count
     }
     
     override fun transformClass(clazz: ClassWrapper) = Unit
