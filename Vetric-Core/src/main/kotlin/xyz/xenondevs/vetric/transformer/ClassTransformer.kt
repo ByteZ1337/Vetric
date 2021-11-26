@@ -5,7 +5,7 @@ import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.jvm.JavaArchive
 
-abstract class ClassTransformer(
+open class ClassTransformer(
     name: String,
     priority: TransformerPriority
 ) : Transformer(name, priority) {
@@ -28,11 +28,11 @@ abstract class ClassTransformer(
         }
     }
     
-    abstract fun transformClass(clazz: ClassWrapper)
+    open fun transformClass(clazz: ClassWrapper) {}
     
-    abstract fun transformField(field: FieldNode)
+    open fun transformField(field: FieldNode) {}
     
-    abstract fun transformMethod(method: MethodNode)
+    open fun transformMethod(method: MethodNode) {}
     
     fun skipClass() {
         skipMembers = true

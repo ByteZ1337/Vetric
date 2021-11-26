@@ -29,7 +29,4 @@ object LineNumberRemover : ClassTransformer("LineNumberRemover", TransformerPrio
         totalCounter += count
     }
     
-    override fun transformClass(clazz: ClassWrapper) = Unit
-    
-    override fun transformField(field: FieldNode) = Unit
 }

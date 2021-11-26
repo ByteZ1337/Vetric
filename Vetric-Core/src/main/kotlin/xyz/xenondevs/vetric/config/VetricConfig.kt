@@ -17,7 +17,9 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
         if (obj is JsonObject) {
             val keys = obj.keySet().map(String::lowercase)
             transformers.addAll(TransformerRegistry.filter { it.name.lowercase() in keys })
-        } else warn("NO TRANSFORMERS ENABLED")
+        }
+        if (transformers.isEmpty())
+            warn("NO TRANSFORMERS ENABLED")
     }
     
     operator fun get(transformer: Transformer): JsonConfig {

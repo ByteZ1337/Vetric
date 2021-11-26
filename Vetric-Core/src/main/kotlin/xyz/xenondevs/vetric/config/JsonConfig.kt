@@ -187,7 +187,7 @@ open class JsonConfig(val supplier: ConfigSupplier, autoInit: Boolean) {
     
     fun getFloat(path: String) = getNumber(path)?.toFloat()
     
-    fun getBoolean(path: String) = getPrimitive(path)?.asBoolean ?: false
+    fun getBoolean(path: String, default: Boolean = false) = getPrimitive(path)?.asBoolean ?: default
     
     fun getChar(path: String) = getPrimitive(path)?.asCharacter
     
