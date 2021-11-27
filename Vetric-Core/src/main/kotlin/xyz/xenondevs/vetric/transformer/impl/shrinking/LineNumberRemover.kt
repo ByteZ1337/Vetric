@@ -1,9 +1,7 @@
 package xyz.xenondevs.vetric.transformer.impl.shrinking
 
-import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.LineNumberNode
 import org.objectweb.asm.tree.MethodNode
-import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.vetric.cli.terminal.debug
 import xyz.xenondevs.vetric.cli.terminal.info
