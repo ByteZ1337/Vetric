@@ -4,7 +4,9 @@ import org.fusesource.jansi.Ansi
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
 import org.jline.terminal.TerminalBuilder
+import org.jline.widget.AutosuggestionWidgets
 import xyz.xenondevs.vetric.Vetric
+import xyz.xenondevs.vetric.cli.command.CommandManager.CommandCompleter
 import xyz.xenondevs.vetric.logging.Logger
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,7 +24,12 @@ object Terminal : JLineTerminal by TerminalBuilder.terminal(), Logger {
         reset()
     }
     
-    private val lineReader: LineReader = LineReaderBuilder.builder().terminal(this).build()
+    private val lineReader: LineReader = LineReaderBuilder.builder()
+        .terminal(this)
+        .completer(CommandCompleter)
+        .build()
+    
+    private val autosuggestionWidgets = AutosuggestionWidgets(lineReader).apply { enable() }
     
     fun readLine(): String = readLine(PREFIX)
     
