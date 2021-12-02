@@ -3,8 +3,8 @@ package xyz.xenondevs.vetric.transformer.impl.shrinking
 import org.objectweb.asm.tree.LineNumberNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.bytebase.jvm.JavaArchive
-import xyz.xenondevs.vetric.cli.terminal.debug
-import xyz.xenondevs.vetric.cli.terminal.info
+import xyz.xenondevs.vetric.logging.debug
+import xyz.xenondevs.vetric.logging.info
 import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
 import xyz.xenondevs.vetric.utils.pluralize

@@ -2,7 +2,7 @@ package xyz.xenondevs.vetric.cli.command
 
 import xyz.xenondevs.vetric.Vetric
 import xyz.xenondevs.vetric.cli.terminal.Terminal
-import xyz.xenondevs.vetric.cli.terminal.info
+import xyz.xenondevs.vetric.logging.info
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 

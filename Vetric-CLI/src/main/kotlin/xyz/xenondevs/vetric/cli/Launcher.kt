@@ -1,12 +1,13 @@
-package xyz.xenondevs.vetric
+package xyz.xenondevs.vetric.cli
 
 import org.apache.commons.cli.*
 import org.fusesource.jansi.AnsiConsole
+import xyz.xenondevs.vetric.Vetric
 import xyz.xenondevs.vetric.cli.command.CommandManager
+import xyz.xenondevs.vetric.cli.terminal.Terminal
 import xyz.xenondevs.vetric.config.FileConfigSupplier
 import xyz.xenondevs.vetric.config.VetricConfig
 import java.io.File
-import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 object Launcher {
@@ -29,6 +30,7 @@ object Launcher {
         AnsiConsole.systemInstall() // Install the Jansi console to use ANSI codes
         Thread.currentThread().name = "Vetric Main"
         CommandManager.startListening()
+        Vetric.logger = Terminal
         Vetric.run(parseArgs(args))
     }
     

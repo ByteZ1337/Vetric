@@ -1,7 +1,7 @@
 package xyz.xenondevs.vetric.config
 
 import com.google.gson.JsonObject
-import xyz.xenondevs.vetric.cli.terminal.warn
+import xyz.xenondevs.vetric.logging.warn
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerRegistry
 import java.io.File

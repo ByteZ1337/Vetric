@@ -1,18 +1,18 @@
 package xyz.xenondevs.vetric
 
 import xyz.xenondevs.bytebase.jvm.JavaArchive
-import xyz.xenondevs.vetric.cli.command.CommandManager
 import xyz.xenondevs.vetric.config.VetricConfig
-import xyz.xenondevs.vetric.cli.terminal.info
+import xyz.xenondevs.vetric.logging.Logger
+import xyz.xenondevs.vetric.logging.info
 
 object Vetric {
-    
-    const val VERSION = "0.0.1"
-    
-    var debug = false
-    
     @Volatile
     var exit = false
+    
+    const val VERSION = "0.0.1"
+    var debug = false
+    
+    var logger: Logger? = null
     
     fun run(config: VetricConfig) {
         val jar = JavaArchive(config.input)

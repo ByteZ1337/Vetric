@@ -5,12 +5,13 @@ import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
 import org.jline.terminal.TerminalBuilder
 import xyz.xenondevs.vetric.Vetric
+import xyz.xenondevs.vetric.logging.Logger
 import java.text.SimpleDateFormat
 import java.util.*
 import org.jline.terminal.Terminal as JLineTerminal
 
 @Suppress("MemberVisibilityCanBePrivate")
-object Terminal : JLineTerminal by TerminalBuilder.terminal() {
+object Terminal : JLineTerminal by TerminalBuilder.terminal(), Logger {
     
     private val TIME_FORMAT = SimpleDateFormat("HH:mm:ss")
     
@@ -29,20 +30,33 @@ object Terminal : JLineTerminal by TerminalBuilder.terminal() {
         return lineReader.readLine(prompt)
     }
     
-    fun logFormatted(message: String, logLevel: LogLevel = LogLevel.INFO) {
+    fun log(message: String, level: LogLevel) {
         val thread = Thread.currentThread().name
         val time = TIME_FORMAT.format(Date())
         val formattedMessage = ansi {
-            a(logLevel.formatting)
+            a(level.formatting)
             a("[$time] ")
-            a("[$thread | $logLevel] ")
-            if (logLevel == LogLevel.INFO)
+            a("[$thread | $level] ")
+            if (level == LogLevel.INFO)
                 reset()
             a(message)
             reset()
         }
         lineReader.printAbove(formattedMessage)
     }
+    
+    override fun debug(message: String, vararg args: Any) {
+        if (Vetric.debug)
+            log(message.format(args = args), LogLevel.DEBUG)
+    }
+    
+    override fun info(message: String, vararg args: Any) = log(message.format(args = args), LogLevel.INFO)
+    
+    override fun warn(message: String, vararg args: Any) = log(message.format(args = args), LogLevel.WARNING)
+    
+    override fun error(message: String, vararg args: Any) = log(message.format(args = args), LogLevel.ERROR)
+    
+    override fun critical(message: String, vararg args: Any) = log(message.format(args = args), LogLevel.CRITICAL)
     
 }
 
@@ -51,20 +65,3 @@ fun ansi(builder: Ansi.() -> Unit): String {
     ansi.builder()
     return ansi.toString()
 }
-
-fun log(message: String, logLevel: LogLevel = LogLevel.INFO) = Terminal.logFormatted(message, logLevel)
-
-fun log(message: String, logLevel: LogLevel = LogLevel.INFO, vararg args: Any) = Terminal.logFormatted(message.format(args = args), logLevel)
-
-fun debug(message: String, vararg args: Any) {
-    if (Vetric.debug)
-        Terminal.logFormatted(message.format(args = args), LogLevel.DEBUG)
-}
-
-fun info(message: String, vararg args: Any) = Terminal.logFormatted(message.format(args = args), LogLevel.INFO)
-
-fun warn(message: String, vararg args: Any) = Terminal.logFormatted(message.format(args = args), LogLevel.WARNING)
-
-fun error(message: String, vararg args: Any) = Terminal.logFormatted(message.format(args = args), LogLevel.ERROR)
-
-fun critical(message: String, vararg args: Any) = Terminal.logFormatted(message.format(args = args), LogLevel.CRITICAL)
