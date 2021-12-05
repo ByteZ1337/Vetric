@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.github.ByteZ1337</groupId>
             <artifactId>ByteBase</artifactId>
-            <version>34c0bc8e48</version>
+            <version>bd41431206</version>
         </dependency>
         <!-- ASM -->
         <dependency>

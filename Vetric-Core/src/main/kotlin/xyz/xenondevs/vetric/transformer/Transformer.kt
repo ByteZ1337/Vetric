@@ -5,7 +5,7 @@ import xyz.xenondevs.vetric.config.JsonConfig
 
 abstract class Transformer(
     val name: String,
-    val priority: TransformerPriority
+    private val priority: TransformerPriority
 ) : Comparable<Transformer> {
     
     open fun loadConfig(config: JsonConfig) {}
