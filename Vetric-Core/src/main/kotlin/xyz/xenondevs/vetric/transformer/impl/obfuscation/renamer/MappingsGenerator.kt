@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * Generates mappings for the given [jar].
  *
+ * ## RepeatNames logic
  * This class also implements the repeatNames logic needed by the Renamer. repeatNames is a boolean
  * that determines whether the names of the fields should be repeated for different descriptors.
  *
@@ -37,7 +38,12 @@ import java.util.concurrent.atomic.AtomicInteger
  * This is possible because all references to fields and methods contain the descriptor in bytecode. So the JVM can
  * distinguish them, even if they have the same name.
  *
- * TODO:
+ * ## Package renaming
+ * All directories in the jar get a mapping entry even if they only contain resources. Instead of implementing
+ * some complicated logic to determine whether a directory contains resources, we simply add a mapping entry for
+ * every directory then remove empty directories in [JavaArchive.write].
+ *
+ * ## TODO
  * - Some sort of mappings config instead of accessing Renamer fields.
  * - Store mappings in a field instead of always passing them via parameters.
  * - Use different indexes/generated HashSets for each package depth.
