@@ -179,22 +179,9 @@ class MappingsGenerator(private val jar: JavaArchive) {
         }
     }
     
-    /**
-     * Generates a map of descriptors and their occurrences in the given list.
-     *
-     * For example (with the above fields):
-     * ```
-     * "I" -> 2
-     * "Ljava/lang/String;" -> 1
-     * "Ljava/lang/Object;" -> 1
-     * ```
-     */
     private fun <T> getOccurrenceMap(list: List<T>, mapper: (T) -> String): Map<String, Int> =
         list.groupingBy(mapper).eachCount()
     
-    /**
-     * Generates a list of names using the [supplier] that are needed for the given [occurrences].
-     */
     private fun getNeededNames(supplier: StringSupplier, occurrences: Map<String, Int>): List<String> {
         // Get the maximum amount of names needed.
         val amount = occurrences.values.maxOrNull() ?: return emptyList()
