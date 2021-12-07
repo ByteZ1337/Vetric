@@ -20,7 +20,7 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
      */
     var repeatNames = true
     
-    var renamePackages = true // TODO
+    var renamePackages = true
     var renameClasses = true
     var renameMethods = true
     var renameFields = true

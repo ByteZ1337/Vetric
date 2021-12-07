@@ -3,12 +3,18 @@ package xyz.xenondevs.vetric.utils
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import xyz.xenondevs.vetric.serialization.FileSerialization
+import xyz.xenondevs.vetric.serialization.SupplierConfigSerialization
+import xyz.xenondevs.vetric.serialization.SupplierFactorySerialization
+import xyz.xenondevs.vetric.supplier.SupplierConfig
+import xyz.xenondevs.vetric.supplier.SupplierFactory
 import java.io.File
 import java.lang.reflect.Type
 
 val GSON = GsonBuilder()
     .setPrettyPrinting()
     .registerTypeHierarchyAdapter<File>(FileSerialization)
+    .registerTypeHierarchyAdapter<SupplierConfig>(SupplierConfigSerialization)
+    .registerTypeHierarchyAdapter<SupplierFactory>(SupplierFactorySerialization)
     .create()!!
 
 operator fun JsonObject.set(property: String, value: JsonElement) = add(property, value)
@@ -21,6 +27,21 @@ fun JsonElement.isBoolean() =
 
 fun JsonElement.isNumber() =
     this is JsonPrimitive && isNumber
+
+fun JsonObject.hasString(property: String) =
+    has(property) && this[property].isString()
+
+fun JsonObject.hasNumber(property: String) =
+    has(property) && this[property].isNumber()
+
+fun JsonObject.hasBoolean(property: String) =
+    has(property) && this[property].isBoolean()
+
+fun JsonObject.hasObject(property: String) =
+    has(property) && this[property] is JsonObject
+
+fun JsonObject.hasArray(property: String) =
+    has(property) && this[property] is JsonArray
 
 inline fun <reified T> type(): Type = object : TypeToken<T>() {}.type
 

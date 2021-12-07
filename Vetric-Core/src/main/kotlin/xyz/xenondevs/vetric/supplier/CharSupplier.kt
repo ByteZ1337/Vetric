@@ -10,7 +10,12 @@ val UINT_MAX = UInt.MAX_VALUE.toDouble()
  * StringSupplier implementation that uses a list of characters to generate a random string. This implementation also
  * supports "counting up". For example: a, b, c, ..., z, aa, ab, ac, ..., zz, aaa, aab, aac, ..., zzz, etc.
  */
-open class CharSupplier(name: String, private val min: Int, private val max: Int, private val chars: List<Char>) : StringSupplier(name) {
+open class CharSupplier(name: String,
+                        private val min: Int,
+                        private val max: Int,
+                        private val chars: List<Char>,
+                        private val countUp: Boolean = false
+) : StringSupplier(name) {
     
     private val maxLength = ceil(log(UINT_MAX, chars.size.toDouble())).toInt()
     
@@ -23,6 +28,14 @@ open class CharSupplier(name: String, private val min: Int, private val max: Int
     override fun randomString(length: Int) = buildString { repeat(length) { append(chars.random()) } }
     
     override fun randomString() = randomString(Random.nextInt(min, max + 1))
+    
+    override fun randomStringUnique(exclude: HashSet<String>): String {
+        return if (countUp) stringAt(++index) else super.randomStringUnique(exclude)
+    }
+    
+    override fun randomStringUnique(length: Int, exclude: HashSet<String>): String {
+        return if (countUp) stringAt(++index) else super.randomStringUnique(exclude)
+    }
     
     open fun stringAt(index: Int): String {
         val charsLength = chars.size
