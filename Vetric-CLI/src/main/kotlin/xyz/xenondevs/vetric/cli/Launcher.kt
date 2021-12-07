@@ -7,6 +7,7 @@ import xyz.xenondevs.vetric.cli.command.CommandManager
 import xyz.xenondevs.vetric.cli.terminal.Terminal
 import xyz.xenondevs.vetric.config.FileConfigSupplier
 import xyz.xenondevs.vetric.config.VetricConfig
+import xyz.xenondevs.vetric.logging.err
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -31,7 +32,11 @@ object Launcher {
         Thread.currentThread().name = "Vetric Main"
         CommandManager.startListening()
         Vetric.logger = Terminal
-        Vetric.run(parseArgs(args))
+        try {
+            Vetric.run(parseArgs(args))
+        } catch (ex: Throwable) {
+            err(ex.stackTraceToString())
+        }
     }
     
     private fun parseArgs(args: Array<String>): VetricConfig {
