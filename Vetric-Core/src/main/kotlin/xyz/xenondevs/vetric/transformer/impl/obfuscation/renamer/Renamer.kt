@@ -8,10 +8,10 @@ import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.bytebase.jvm.VirtualClassPath
 import xyz.xenondevs.bytebase.util.accessWrapper
 import xyz.xenondevs.vetric.config.JsonConfig
-import xyz.xenondevs.vetric.supplier.impl.AlphaSupplier
+import xyz.xenondevs.vetric.logging.warn
+import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
-import java.io.File
 
 object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     
@@ -21,16 +21,18 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     var repeatNames = true
     
     var renamePackages = true
+    var removePackages = true
+    
     var renameClasses = true
     var renameMethods = true
     var renameFields = true
     var renameLocals = true
     
-    var packageSupplier = AlphaSupplier()
-    var classSupplier = AlphaSupplier()
-    var methodSupplier = AlphaSupplier()
-    var fieldSupplier = AlphaSupplier()
-    var localSupplier = AlphaSupplier()
+    var packageSupplier = DEFAULT_SUPPLIER
+    var classSupplier = DEFAULT_SUPPLIER
+    var methodSupplier = DEFAULT_SUPPLIER
+    var fieldSupplier = DEFAULT_SUPPLIER
+    var localSupplier = DEFAULT_SUPPLIER
     
     var mappings = HashMap<String, String>()
     
@@ -53,7 +55,32 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     }
     
     override fun loadConfig(config: JsonConfig) {
-        super.loadConfig(config)
+        repeatNames = config.getBoolean("repeatnames", true)
+        
+        renamePackages = config.getBoolean("packages", false)
+        removePackages = config.getBoolean("removepackages", !renamePackages)
+        
+        renameClasses = config.getBoolean("classes", true)
+        renameMethods = config.getBoolean("methods", true)
+        renameFields = config.getBoolean("fields", true)
+        renameLocals = config.getBoolean("locals", true)
+        
+        if (renamePackages)
+            packageSupplier = config["packagesupplier"] ?: DEFAULT_SUPPLIER
+        if (renameClasses)
+            classSupplier = config["classsupplier"] ?: DEFAULT_SUPPLIER
+        if (renameMethods)
+            methodSupplier = config["methodsupplier"] ?: DEFAULT_SUPPLIER
+        if (renameFields)
+            fieldSupplier = config["fieldsupplier"] ?: DEFAULT_SUPPLIER
+        if (renameLocals)
+            localSupplier = config["localsupplier"] ?: DEFAULT_SUPPLIER
+        
+        if (removePackages && renamePackages) {
+            warn("Renaming packages is not supported when removing packages. Defaulting to removing packages.")
+            renamePackages = false
+        }
+        
     }
     
 }
@@ -66,7 +93,7 @@ fun FieldNode.isRenamable() = !name.startsWith('$')
 /**
  * Checks if a method is renamable.
  */
-fun MethodNode.isRenamable(owner: ClassWrapper, /*mappings: HashMap<String, String>*/) =
+fun MethodNode.isRenamable(owner: ClassWrapper/*, mappings: HashMap<String, String>*/) =
     !accessWrapper.isNative()
         && !name.startsWith('<')
         && "main" != name && "premain" != name

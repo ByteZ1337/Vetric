@@ -5,6 +5,17 @@ import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.vetric.supplier.StringSupplier
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.classSupplier
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.fieldSupplier
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.localSupplier
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.methodSupplier
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.packageSupplier
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.removePackages
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameClasses
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameFields
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameLocals
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameMethods
+import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renamePackages
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -44,9 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * every directory then remove empty directories in [JavaArchive.write].
  *
  * ## TODO
- * - Some sort of mappings config instead of accessing Renamer fields.
  * - Store mappings in a field instead of always passing them via parameters.
- * - Use different indexes/generated HashSets for each package depth.
  *
  * @param jar The jar to generate mappings for.
  */
@@ -57,18 +66,18 @@ class MappingsGenerator(private val jar: JavaArchive) {
      */
     fun generateMappings(): HashMap<String, String> {
         val mappings = HashMap<String, String>()
-        if (Renamer.renamePackages)
-            getPackageMappings(jar, Renamer.packageSupplier, mappings)
+        if (renamePackages)
+            getPackageMappings(jar, packageSupplier.create(), mappings)
         jar.classes.forEach { clazz ->
-            if (Renamer.renameClasses)
-                mappings[clazz.name] = getClassMapping(clazz, Renamer.classSupplier, mappings)
-            if (Renamer.renameFields && !clazz.fields.isNullOrEmpty())
-                getFieldMappings(clazz, Renamer.fieldSupplier, mappings)
+            if (renameClasses)
+                mappings[clazz.name] = getClassMapping(clazz, classSupplier.create(), mappings)
+            if (renameFields && !clazz.fields.isNullOrEmpty())
+                getFieldMappings(clazz, fieldSupplier.create(), mappings)
             if (!clazz.methods.isNullOrEmpty()) {
-                if (Renamer.renameMethods)
-                    getMethodMappings(clazz, Renamer.methodSupplier, mappings)
-                if (Renamer.renameLocals)
-                    getLocalMappings(clazz, Renamer.localSupplier, mappings)
+                if (renameMethods)
+                    getMethodMappings(clazz, methodSupplier.create(), mappings)
+                if (renameLocals)
+                    getLocalMappings(clazz, localSupplier.create(), mappings)
             }
         }
         return mappings
@@ -89,12 +98,15 @@ class MappingsGenerator(private val jar: JavaArchive) {
     }
     
     private fun getClassMapping(clazz: ClassWrapper, supplier: StringSupplier, mappings: HashMap<String, String>): String {
-        if (Renamer.renamePackages) {
-            val name = clazz.name
-            val packageName = name.substringBeforeLast('/')
-            val packageMapping = mappings[packageName]
-            if (packageMapping != null)
-                return "$packageMapping/${supplier.randomStringUnique()}"
+        if (!removePackages) {
+            val packageName = clazz.name.substringBeforeLast('/')
+            if (renamePackages) {
+                val packageMapping = mappings[packageName]
+                if (packageMapping != null)
+                    return "$packageMapping/${supplier.randomStringUnique()}"
+            } else {
+                return "$packageName/${supplier.randomStringUnique()}"
+            }
         }
         return supplier.randomStringUnique()
     }

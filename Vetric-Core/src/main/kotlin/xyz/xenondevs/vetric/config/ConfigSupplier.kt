@@ -21,7 +21,7 @@ open class ConfigSupplier(val reader: () -> JsonObject, val writer: (String) -> 
 class FileConfigSupplier(private val file: File) : ConfigSupplier(
     {
         val text = file.readText()
-        if(text.isEmpty()) JsonObject()
+        if (text.isEmpty()) JsonObject()
         else JsonParser.parseString(text).asJsonObject
     }, { file.writeText(it) })
 
