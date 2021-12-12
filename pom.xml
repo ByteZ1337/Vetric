@@ -23,15 +23,15 @@
     </properties>
 
     <repositories>
+        <!-- xenondevs -->
+        <repository>
+            <id>xenondevs</id>
+            <url>https://repo.xenondevs.xyz/releases</url>
+        </repository>
         <!-- Maven Central -->
         <repository>
             <id>mavenCentral</id>
             <url>https://repo1.maven.org/maven2/</url>
-        </repository>
-        <!-- Jitpack -->
-        <repository>
-            <id>jitpack</id>
-            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -44,9 +44,9 @@
         </dependency>
         <!-- ByteBase -->
         <dependency>
-            <groupId>com.github.ByteZ1337</groupId>
+            <groupId>xyz.xenondevs.bytebase</groupId>
             <artifactId>ByteBase</artifactId>
-            <version>bd41431206</version>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <!-- ASM -->
         <dependency>
