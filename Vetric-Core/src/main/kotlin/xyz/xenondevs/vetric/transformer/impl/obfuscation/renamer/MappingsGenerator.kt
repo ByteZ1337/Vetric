@@ -142,7 +142,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
     }
     
     private fun getMethodMappings(clazz: ClassWrapper, supplier: StringSupplier, mappings: HashMap<String, String>) {
-        val renamableMethods = clazz.methods.filter { it.isRenamable(clazz/*, mappings*/) }
+        val renamableMethods = clazz.methods.filter { it.isRenamable(clazz, mappings) }
         
         if (!Renamer.repeatNames) { // Unique name for every method
             val generated = HashSet<String>()
@@ -161,7 +161,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
                 // Get the current index of the descriptor, then increase the index.
                 val index = indexMap[method.desc]!!.getAndIncrement()
                 // Use the index to retrieve the current name.
-                val newName = names[index]
+                val newName = names[index] // TODO: Check if this name overrides an already existing name of this class or a super class.
                 
                 // Add the new name to the mappings.
                 val methodPath = method.name + method.desc

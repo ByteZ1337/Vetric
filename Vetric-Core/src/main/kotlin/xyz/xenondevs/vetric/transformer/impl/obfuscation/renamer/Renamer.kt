@@ -93,10 +93,10 @@ fun FieldNode.isRenamable() = !name.startsWith('$')
 /**
  * Checks if a method is renamable.
  */
-fun MethodNode.isRenamable(owner: ClassWrapper/*, mappings: HashMap<String, String>*/) =
+fun MethodNode.isRenamable(owner: ClassWrapper, mappings: HashMap<String, String>) =
     !accessWrapper.isNative()
         && !name.startsWith('<')
         && "main" != name && "premain" != name
         && !(owner.isEnum() && accessWrapper.isStatic() && ("values" == name || "valueOf" == name))
-        //&& "${owner.name}.$name$desc" in mappings
+        && "${owner.name}.$name$desc" !in mappings
         && owner.superClasses.none { it.getMethod(name, desc) != null }
