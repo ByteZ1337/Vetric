@@ -4,7 +4,7 @@ import kotlin.math.ceil
 import kotlin.math.log
 import kotlin.random.Random
 
-val UINT_MAX = UInt.MAX_VALUE.toDouble()
+private val UINT_MAX = UInt.MAX_VALUE.toDouble()
 
 /**
  * StringSupplier implementation that uses a list of characters to generate a random string. This implementation also

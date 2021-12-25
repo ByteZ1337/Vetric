@@ -1,12 +1,12 @@
 package xyz.xenondevs.vetric.supplier.registry
 
-import xyz.xenondevs.vetric.supplier.CharSupplier
-import xyz.xenondevs.vetric.supplier.StringSupplier
-import xyz.xenondevs.vetric.supplier.SupplierConfig
+import xyz.xenondevs.vetric.supplier.*
 import xyz.xenondevs.vetric.supplier.impl.*
 
-private typealias SupplierConstructor = (SupplierConfig) -> StringSupplier
+private typealias SupplierConstructor = (config: SupplierConfig, needed: Int) -> StringSupplier
+private typealias NormalConstructor = (min: Int, max: Int) -> StringSupplier
 private typealias CharSupplierConstructor = (min: Int, max: Int, countUp: Boolean) -> CharSupplier
+private typealias DictionarySupplierConstructor = (countUp: Boolean, needed: Int) -> CharSupplier
 
 /**
  * Registry for default supplier implementations
@@ -21,23 +21,45 @@ object SupplierRegistry {
     val BARCODE_SUPPLIER = registerCharSupplier("Barcode", ::BarcodeSupplier)
     val DOTS_SUPPLIER = registerCharSupplier("Dots", ::DotsSupplier)
     val INVISIBLE_SUPPLIER = registerCharSupplier("Invisible", ::InvisibleSupplier)
-    val COMBINING_SUPPLIER = register("Combining", SupplierType.NORMAL) { CombiningSupplier(it.min, it.max) }
-    val UNICODE_SUPPLIER = register("Unicode", SupplierType.NORMAL) { UnicodeSupplier(it.min, it.max) }
+    val COMBINING_SUPPLIER = registerNormalSupplier("Combining", ::CombiningSupplier)
+    val UNICODE_SUPPLIER = registerNormalSupplier("Unicode", ::UnicodeSupplier)
     
-    fun register(name: String, type: SupplierType, constructor: SupplierConstructor): SupplierInfo {
+    private fun register(name: String, type: SupplierType, constructor: SupplierConstructor): SupplierInfo {
         val info = SupplierInfo(name, type, constructor)
         suppliers += info
         return info
     }
     
-    fun registerCharSupplier(name: String, constructor: CharSupplierConstructor): SupplierInfo {
-        return register(name, SupplierType.CHAR) { config -> constructor(config.min, config.max, config.countUp!!) }
+    private fun registerNormalSupplier(name: String, constructor: NormalConstructor): SupplierInfo {
+        return register(name, SupplierType.NORMAL) { config, _ ->
+            if (config !is NormalSupplierConfig)
+                throw IllegalArgumentException("Supplier config is not a NormalSupplierConfig")
+            
+            return@register constructor(config.min, config.max)
+        }
     }
     
-    fun getSupplier(name: String): SupplierInfo? {
-        return suppliers.find { name.equals(it.name, ignoreCase = true) }
+    private fun registerCharSupplier(name: String, constructor: CharSupplierConstructor): SupplierInfo {
+        return register(name, SupplierType.CHAR) { config, _ ->
+            if (config !is CharSupplierConfig)
+                throw IllegalStateException("Supplier config is not a CharSupplierConfig")
+            
+            return@register constructor(config.min, config.max, config.countUp)
+        }
     }
     
-    class SupplierInfo(val name: String, val type: SupplierType, val constructor: (SupplierConfig) -> StringSupplier)
+    private fun registerDictionarySupplier(name: String, constructor: DictionarySupplierConstructor): SupplierInfo {
+        return register(name, SupplierType.DICTIONARY) { config, needed ->
+            if (config !is DictionarySupplierConfig)
+                throw IllegalStateException("Supplier config is not a DictionarySupplierConfig")
+            
+            return@register constructor(config.countUp, needed)
+        }
+    }
+    
+    fun getSupplier(name: String): SupplierInfo? =
+        suppliers.find { name.equals(it.name, ignoreCase = true) }
+    
+    class SupplierInfo(val name: String, val type: SupplierType, val constructor: SupplierConstructor)
     
 }

@@ -3,9 +3,7 @@ package xyz.xenondevs.vetric.utils
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import xyz.xenondevs.vetric.serialization.FileSerialization
-import xyz.xenondevs.vetric.serialization.SupplierConfigSerialization
 import xyz.xenondevs.vetric.serialization.SupplierFactorySerialization
-import xyz.xenondevs.vetric.supplier.SupplierConfig
 import xyz.xenondevs.vetric.supplier.SupplierFactory
 import java.io.File
 import java.lang.reflect.Type
@@ -13,7 +11,6 @@ import java.lang.reflect.Type
 val GSON = GsonBuilder()
     .setPrettyPrinting()
     .registerTypeHierarchyAdapter<File>(FileSerialization)
-    .registerTypeHierarchyAdapter<SupplierConfig>(SupplierConfigSerialization)
     .registerTypeHierarchyAdapter<SupplierFactory>(SupplierFactorySerialization)
     .create()!!
 
