@@ -4,7 +4,9 @@ import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.jvm.JavaArchive
+import xyz.xenondevs.vetric.logging.debug
 import xyz.xenondevs.vetric.supplier.StringSupplier
+import xyz.xenondevs.vetric.supplier.SupplierFactory
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.classSupplier
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.fieldSupplier
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.localSupplier
@@ -50,12 +52,9 @@ import java.util.concurrent.atomic.AtomicInteger
  * distinguish them, even if they have the same name.
  *
  * ## Package renaming
- * All directories in the jar get a mapping entry even if they only contain resources. Instead of implementing
- * some complicated logic to determine whether a directory contains resources, we simply add a mapping entry for
- * every directory then remove empty directories in [JavaArchive.write].
- *
- * ## TODO
- * - Store mappings in a field instead of always passing them via parameters.
+ * All directories in the jar get a mapping entry if they only at least one class. Instead of implementing
+ * some complicated logic to determine whether a directory still contains resources, we simply let ByteBase remove empty
+ * directories in [JavaArchive.write].
  *
  * @param jar The jar to generate mappings for.
  */
@@ -67,9 +66,9 @@ class MappingsGenerator(private val jar: JavaArchive) {
     fun generateMappings(): HashMap<String, String> {
         val mappings = HashMap<String, String>()
         if (renamePackages)
-            getPackageMappings(jar, packageSupplier.create(), mappings)
+            getPackageMappings(jar, packageSupplier, mappings)
         jar.classes.forEach { clazz ->
-            if (renameClasses)
+            if (renameClasses || renamePackages)
                 mappings[clazz.name] = getClassMapping(clazz, classSupplier.create(), mappings)
             if (renameFields && !clazz.fields.isNullOrEmpty())
                 getFieldMappings(clazz, fieldSupplier.create(), mappings)
@@ -83,15 +82,19 @@ class MappingsGenerator(private val jar: JavaArchive) {
         return mappings
     }
     
-    private fun getPackageMappings(jar: JavaArchive, supplier: StringSupplier, mappings: HashMap<String, String>) {
-        jar.directories.sortedBy { it.length }.forEach {
+    private fun getPackageMappings(jar: JavaArchive, factory: SupplierFactory, mappings: HashMap<String, String>) {
+        val depthCount = jar.packages.groupBy { it.split('/').size - 1 }.mapValues { it.value.size }
+        val suppliers = Array(depthCount.size) { factory.create(depthCount[it + 1]!!) }
+        
+        jar.packages.sortedBy { it.length }.forEach {
             val path = it.dropLast(1)
-            val packages = path.split('/')
-            if (packages.size > 1) {
+            val depth = path.split('/').size - 1
+            if (depth > 0) {
                 val prefix = mappings[path.substringBeforeLast('/')] ?: error("Missing package prefix for $path")
-                mappings[path] = "$prefix/" + supplier.randomStringUnique()
+                mappings[path] = "$prefix/" + suppliers[depth].randomStringUnique()
             } else {
-                mappings[path] = supplier.randomStringUnique()
+                debug(path)
+                mappings[path] = suppliers[depth].randomStringUnique()
             }
             jar.directories.add(mappings[path]!!)
         }
@@ -102,8 +105,9 @@ class MappingsGenerator(private val jar: JavaArchive) {
             val packageName = clazz.name.substringBeforeLast('/')
             if (renamePackages) {
                 val packageMapping = mappings[packageName]
+                val className = if (renameClasses) supplier.randomStringUnique() else clazz.name.substringAfterLast('/')
                 if (packageMapping != null)
-                    return "$packageMapping/${supplier.randomStringUnique()}"
+                    return "$packageMapping/$className"
             } else {
                 return "$packageName/${supplier.randomStringUnique()}"
             }

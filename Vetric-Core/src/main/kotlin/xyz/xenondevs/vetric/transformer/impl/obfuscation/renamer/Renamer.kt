@@ -63,7 +63,7 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
         renameClasses = config.getBoolean("classes", true)
         renameMethods = config.getBoolean("methods", true)
         renameFields = config.getBoolean("fields", true)
-        renameLocals = config.getBoolean("locals", true)
+        renameLocals = config.getBoolean("locals", false)
         
         if (renamePackages)
             packageSupplier = config["packagesupplier"] ?: DEFAULT_SUPPLIER

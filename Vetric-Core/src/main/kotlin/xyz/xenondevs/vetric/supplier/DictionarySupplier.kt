@@ -46,7 +46,6 @@ class DictionarySupplier : StringSupplier {
         } while (dictionary.size < actuallyNeeded)
     }
     
-    
     override fun randomString(): String {
         val string = dictionary[index++]
         if (index >= dictionary.size)
