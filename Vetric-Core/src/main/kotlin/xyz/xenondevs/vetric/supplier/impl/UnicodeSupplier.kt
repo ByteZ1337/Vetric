@@ -7,7 +7,8 @@ class UnicodeSupplier(private val min: Int, private val max: Int) : StringSuppli
     
     constructor(defaultLength: Int = 20) : this(defaultLength, defaultLength)
     
-    override fun randomString(length: Int): String {
+    override fun randomString(): String {
+        val length = Random.nextInt(min, max + 1)
         return buildString {
             while (this.length < length) {
                 val char = Random.nextInt(Character.MAX_CODE_POINT).toChar()
@@ -16,7 +17,5 @@ class UnicodeSupplier(private val min: Int, private val max: Int) : StringSuppli
             }
         }
     }
-    
-    override fun randomString() = randomString(Random.nextInt(min, max + 1))
     
 }

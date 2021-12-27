@@ -25,15 +25,9 @@ open class CharSupplier(name: String,
     
     constructor(name: String, min: Int, max: Int, codes: CharRange) : this(name, min, max, codes.toList())
     
-    override fun randomString(length: Int) = buildString { repeat(length) { append(chars.random()) } }
-    
-    override fun randomString() = randomString(Random.nextInt(min, max + 1))
+    override fun randomString() = buildString { repeat(Random.nextInt(min, max + 1)) { append(chars.random()) } }
     
     override fun randomStringUnique(exclude: HashSet<String>): String {
-        return if (countUp) stringAt(++index) else super.randomStringUnique(exclude)
-    }
-    
-    override fun randomStringUnique(length: Int, exclude: HashSet<String>): String {
         return if (countUp) stringAt(++index) else super.randomStringUnique(exclude)
     }
     

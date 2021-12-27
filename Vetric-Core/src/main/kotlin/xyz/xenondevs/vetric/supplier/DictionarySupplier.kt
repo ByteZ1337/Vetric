@@ -60,8 +60,4 @@ class DictionarySupplier : StringSupplier {
         return dictionary[uniqueIndex++]
     }
     
-    override fun randomString(length: Int) = randomString()
-    
-    override fun randomStringUnique(length: Int, exclude: HashSet<String>) = randomStringUnique(exclude)
-    
 }

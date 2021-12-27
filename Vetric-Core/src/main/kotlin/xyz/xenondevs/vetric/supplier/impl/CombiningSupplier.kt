@@ -1,9 +1,6 @@
 package xyz.xenondevs.vetric.supplier.impl
 
 import xyz.xenondevs.vetric.supplier.StringSupplier
-import kotlin.random.Random
-
-val ALPHA_SUPPLIER by lazy { AlphaSupplier(1) }
 
 private val COMBINING by lazy {
     intArrayOf(
@@ -17,16 +14,16 @@ private val COMBINING by lazy {
 
 private val CHAR_REGEX = Regex(".(?!\$)")
 
-class CombiningSupplier(private val min: Int, private val max: Int) : StringSupplier("Combining") {
+class CombiningSupplier(min: Int, max: Int) : StringSupplier("Combining") {
+    
+    private val parentSupplier = AlphaSupplier(min, max)
     
     /**
-     * Generates a random string using the [ALPHA_SUPPLIER] and adds 10 random combining characters after each character.
+     * Generates a random string using the [parentSupplier] and adds 10 random combining characters after each character.
      */
-    override fun randomString(length: Int): String {
-        return ALPHA_SUPPLIER
-            .randomString(length)
+    override fun randomString(): String {
+        return parentSupplier
+            .randomString()
             .replace(CHAR_REGEX, "$0" + COMBINING.shuffled().take(10).joinToString(""))
     }
-    
-    override fun randomString() = randomString(Random.nextInt(min, max + 1))
 }
