@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * distinguish them, even if they have the same name.
  *
  * ## Package renaming
- * All directories in the jar get a mapping entry if they only at least one class. Instead of implementing
+ * All directories in the jar get a mapping entry if they contain at least one class. Instead of implementing
  * some complicated logic to determine whether a directory still contains resources, we simply let ByteBase remove empty
  * directories in [JavaArchive.write].
  *
@@ -67,9 +67,9 @@ class MappingsGenerator(private val jar: JavaArchive) {
         val mappings = HashMap<String, String>()
         if (renamePackages)
             getPackageMappings(jar, packageSupplier, mappings)
+        if (renameClasses || renamePackages)
+            getClassMappings(jar, classSupplier, mappings)
         jar.classes.forEach { clazz ->
-            if (renameClasses || renamePackages)
-                mappings[clazz.name] = getClassMapping(clazz, classSupplier.create(), mappings)
             if (renameFields && !clazz.fields.isNullOrEmpty())
                 getFieldMappings(clazz, fieldSupplier.create(), mappings)
             if (!clazz.methods.isNullOrEmpty()) {
@@ -100,19 +100,33 @@ class MappingsGenerator(private val jar: JavaArchive) {
         }
     }
     
-    private fun getClassMapping(clazz: ClassWrapper, supplier: StringSupplier, mappings: HashMap<String, String>): String {
-        if (!removePackages) {
-            val packageName = clazz.name.substringBeforeLast('/')
-            if (renamePackages) {
-                val packageMapping = mappings[packageName]
-                val className = if (renameClasses) supplier.randomStringUnique() else clazz.name.substringAfterLast('/')
-                if (packageMapping != null)
-                    return "$packageMapping/$className"
-            } else {
-                return "$packageName/${supplier.randomStringUnique()}"
+    private fun getClassMappings(jar: JavaArchive, factory: SupplierFactory, mappings: HashMap<String, String>) {
+        if (removePackages) { // All packages are removed, so we just need a single supplier.
+            val supplier = factory.create(jar.classes.size)
+            jar.classes.forEach { clazz ->
+                mappings[clazz.name] = supplier.randomStringUnique()
+            }
+        } else {
+            val packageSuppliers = jar.packages
+                .map { pkg -> pkg.dropLast(1) to jar.classes.count { it.name == pkg + it.className } } // Count classes in package
+                .filter { it.second > 0 } // Only packages with classes
+                .associate { it.first to factory.create(it.second) } // Create a supplier for each package
+            
+            jar.classes.forEach { clazz ->
+                val packageName = clazz.name.substringBeforeLast('/')
+                val supplier = packageSuppliers[packageName]
+                    ?: error("Missing package supplier for $packageName")
+                
+                if (renamePackages) {
+                    val packageMapping = mappings[packageName]
+                        ?: error("Missing package mapping for $packageName")
+                    val className = if (renameClasses) supplier.randomStringUnique() else clazz.className
+                    mappings[clazz.name] = "$packageMapping/$className"
+                } else {
+                    mappings[clazz.name] = "$packageName/${supplier.randomStringUnique()}"
+                }
             }
         }
-        return supplier.randomStringUnique()
     }
     
     private fun getFieldMappings(clazz: ClassWrapper, supplier: StringSupplier, mappings: HashMap<String, String>) {
