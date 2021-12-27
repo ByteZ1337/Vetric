@@ -93,7 +93,6 @@ class MappingsGenerator(private val jar: JavaArchive) {
                 val prefix = mappings[path.substringBeforeLast('/')] ?: error("Missing package prefix for $path")
                 mappings[path] = "$prefix/" + suppliers[depth].randomStringUnique()
             } else {
-                debug(path)
                 mappings[path] = suppliers[depth].randomStringUnique()
             }
             jar.directories.add(mappings[path]!!)
