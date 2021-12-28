@@ -66,15 +66,15 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
         renameLocals = config.getBoolean("locals", false)
         
         if (renamePackages)
-            packageSupplier = config["packagesupplier"] ?: DEFAULT_SUPPLIER
+            packageSupplier = config["supplier.packages"] ?: DEFAULT_SUPPLIER
         if (renameClasses)
-            classSupplier = config["classsupplier"] ?: DEFAULT_SUPPLIER
+            classSupplier = config["supplier.classes"] ?: DEFAULT_SUPPLIER
         if (renameMethods)
-            methodSupplier = config["methodsupplier"] ?: DEFAULT_SUPPLIER
+            methodSupplier = config["supplier.methods"] ?: DEFAULT_SUPPLIER
         if (renameFields)
-            fieldSupplier = config["fieldsupplier"] ?: DEFAULT_SUPPLIER
+            fieldSupplier = config["supplier.fields"] ?: DEFAULT_SUPPLIER
         if (renameLocals)
-            localSupplier = config["localsupplier"] ?: DEFAULT_SUPPLIER
+            localSupplier = config["supplier.locals"] ?: DEFAULT_SUPPLIER
         
         if (removePackages && renamePackages) {
             warn("Renaming packages is not supported when removing packages. Defaulting to removing packages.")
