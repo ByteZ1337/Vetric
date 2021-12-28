@@ -4,7 +4,6 @@ import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.jvm.JavaArchive
-import xyz.xenondevs.vetric.supplier.StringSupplier
 import xyz.xenondevs.vetric.supplier.SupplierFactory
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.classSupplier
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.fieldSupplier
