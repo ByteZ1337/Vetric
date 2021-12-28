@@ -55,33 +55,62 @@ import java.util.concurrent.atomic.AtomicInteger
  * some complicated logic to determine whether a directory still contains resources, we simply let ByteBase remove empty
  * directories in [JavaArchive.write].
  *
+ * TODO
+ * - better documentation and general cleanup
+ * - Fix complex edge-case:
+ * ```java
+ * public interface A {
+ *
+ *    public void methodA() // Renamed to a
+ *
+ * }
+ *
+ * public interface B {
+ *
+ *    public void methodB() // Renamed to a as well
+ *
+ * }
+ *
+ * public class C implements A, B {
+ *   @Override
+ *   public void methodA() { // Renamed to a
+ *   }
+ *   @Override
+ *   public void methodB() { // Renamed to a as well -> Illegal class format
+ *   }
+ * }
+ * ```
+ *
+ *
  * @param jar The jar to generate mappings for.
  */
 class MappingsGenerator(private val jar: JavaArchive) {
+    
+    private val mappings = HashMap<String, String>()
     
     /**
      * Generates mappings for the given [jar].
      */
     fun generateMappings(): HashMap<String, String> {
-        val mappings = HashMap<String, String>()
+        mappings.clear()
         if (renamePackages)
-            getPackageMappings(jar, packageSupplier, mappings)
+            getPackageMappings(jar, packageSupplier)
         if (renameClasses || renamePackages)
-            getClassMappings(jar, classSupplier, mappings)
+            getClassMappings(jar, classSupplier)
         jar.classes.forEach { clazz ->
             if (renameFields && !clazz.fields.isNullOrEmpty())
-                getFieldMappings(clazz, fieldSupplier.create(), mappings)
+                getFieldMappings(clazz, fieldSupplier)
             if (!clazz.methods.isNullOrEmpty()) {
                 if (renameMethods)
-                    getMethodMappings(clazz, methodSupplier.create(), mappings)
+                    getMethodMappings(clazz, methodSupplier)
                 if (renameLocals)
-                    getLocalMappings(clazz, localSupplier.create(), mappings)
+                    getLocalMappings(clazz, localSupplier)
             }
         }
         return mappings
     }
     
-    private fun getPackageMappings(jar: JavaArchive, factory: SupplierFactory, mappings: HashMap<String, String>) {
+    private fun getPackageMappings(jar: JavaArchive, factory: SupplierFactory) {
         val depthCount = jar.packages.groupBy { it.split('/').size - 1 }.mapValues { it.value.size }
         val suppliers = Array(depthCount.size) { factory.create(depthCount[it + 1]!!) }
         
@@ -98,7 +127,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
         }
     }
     
-    private fun getClassMappings(jar: JavaArchive, factory: SupplierFactory, mappings: HashMap<String, String>) {
+    private fun getClassMappings(jar: JavaArchive, factory: SupplierFactory) {
         if (removePackages) { // All packages are removed, so we just need a single supplier.
             val supplier = factory.create(jar.classes.size)
             jar.classes.forEach { clazz ->
@@ -127,13 +156,13 @@ class MappingsGenerator(private val jar: JavaArchive) {
         }
     }
     
-    private fun getFieldMappings(clazz: ClassWrapper, supplier: StringSupplier, mappings: HashMap<String, String>) {
+    private fun getFieldMappings(clazz: ClassWrapper, factory: SupplierFactory) {
         val renamableFields = clazz.fields.filter(FieldNode::isRenamable)
         
         if (!Renamer.repeatNames) { // Unique name for every field.
-            val generated = HashSet<String>()
+            val supplier = factory.create(renamableFields.size)
             renamableFields.forEach { field ->
-                val newName = supplier.randomStringUnique(generated)
+                val newName = supplier.randomStringUnique()
                 val fieldPath = field.name + "." + field.desc
                 mappings[clazz.name + "." + fieldPath] = newName
                 clazz.subClasses.forEach { mappings[it.name + "." + fieldPath] = newName }
@@ -141,7 +170,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
         } else { // Same name for fields with the same descriptor.
             val occurrences = getOccurrenceMap(clazz.fields, FieldNode::desc)
             val indexMap = occurrences.mapValues { AtomicInteger(0) }
-            val names = getNeededNames(supplier, occurrences)
+            val names = getNeededNames(factory, occurrences)
             
             renamableFields.forEach { field ->
                 // Get the current index of the descriptor, then increase the index.
@@ -157,13 +186,16 @@ class MappingsGenerator(private val jar: JavaArchive) {
         }
     }
     
-    private fun getMethodMappings(clazz: ClassWrapper, supplier: StringSupplier, mappings: HashMap<String, String>) {
+    private fun getMethodMappings(clazz: ClassWrapper, factory: SupplierFactory) {
         val renamableMethods = clazz.methods.filter { it.isRenamable(clazz, mappings) }
         
         if (!Renamer.repeatNames) { // Unique name for every method
-            val generated = HashSet<String>()
+            val supplier = factory.create(renamableMethods.size)
             renamableMethods.forEach { method ->
-                val newName = supplier.randomStringUnique(generated)
+                var newName: String
+                do {
+                    newName = supplier.randomStringUnique()
+                } while (!isUsableName(newName, clazz, method))
                 val methodPath = method.name + method.desc
                 mappings[clazz.name + "." + methodPath] = newName
                 clazz.subClasses.forEach { mappings[it.name + "." + methodPath] = newName }
@@ -171,13 +203,13 @@ class MappingsGenerator(private val jar: JavaArchive) {
         } else {
             val occurrences = getOccurrenceMap(renamableMethods, MethodNode::desc)
             val indexMap = occurrences.mapValues { AtomicInteger(0) }
-            val names = getNeededNames(supplier, occurrences)
+            val names = getNeededNames(factory, occurrences, clazz)
             
             renamableMethods.forEach { method ->
                 // Get the current index of the descriptor, then increase the index.
                 val index = indexMap[method.desc]!!.getAndIncrement()
                 // Use the index to retrieve the current name.
-                val newName = names[index] // TODO: Check if this name overrides an already existing name of this class or a super class.
+                val newName = names[index]
                 
                 // Add the new name to the mappings.
                 val methodPath = method.name + method.desc
@@ -187,17 +219,18 @@ class MappingsGenerator(private val jar: JavaArchive) {
         }
     }
     
-    private fun getLocalMappings(clazz: ClassWrapper, supplier: StringSupplier, mappings: HashMap<String, String>) {
+    private fun getLocalMappings(clazz: ClassWrapper, factory: SupplierFactory) {
         val toProcess = clazz.methods.filter { it.localVariables != null }
         
         toProcess.forEach { method ->
             if (Renamer.repeatNames) { // Same name for all locals, descriptor can be ignored.
-                val name = supplier.randomString()
+                val name = factory.create(1).randomString()
                 method.localVariables.forEach { local ->
                     mappings[clazz.name + '.' + method.name + method.desc + '.' + local.name + '.' + local.desc] = name
                 }
             } else { // Unique name for every local.
                 val generated = HashSet<String>()
+                val supplier = factory.create(method.localVariables.size)
                 method.localVariables.forEach { local ->
                     val path = clazz.name + '.' + method.name + method.desc + '.' + local.name + '.' + local.desc
                     mappings[path] = supplier.randomStringUnique(generated)
@@ -210,13 +243,66 @@ class MappingsGenerator(private val jar: JavaArchive) {
     private fun <T> getOccurrenceMap(list: List<T>, mapper: (T) -> String): Map<String, Int> =
         list.groupingBy(mapper).eachCount()
     
-    private fun getNeededNames(supplier: StringSupplier, occurrences: Map<String, Int>): List<String> {
+    private fun getNeededNames(factory: SupplierFactory, occurrences: Map<String, Int>): List<String> {
         // Get the maximum amount of names needed.
         val amount = occurrences.values.maxOrNull() ?: return emptyList()
+        val supplier = factory.create(amount)
         
         val names = HashSet<String>()
         repeat(amount) { names += supplier.randomStringUnique(names) }
         return names.toList()
+    }
+    
+    private fun getNeededNames(factory: SupplierFactory, occurrences: Map<String, Int>, clazz: ClassWrapper): List<String> {
+        // Get the maximum amount of names needed.
+        val amount = occurrences.values.maxOrNull() ?: return emptyList()
+        val supplier = factory.create(amount)
+        
+        val names = HashSet<String>()
+        while (names.size < amount) {
+            val name = supplier.randomStringUnique(names)
+            if (isUsableName(name, clazz, null))
+                names += name
+        }
+        return names.toList()
+    }
+    
+    private fun isUsableName(name: String, clazz: ClassWrapper, methodNode: MethodNode?): Boolean {
+        if (methodNode != null) {
+            if (clazz.superClasses
+                    .asSequence()
+                    .flatMap(ClassWrapper::methods)
+                    .any {
+                        it.name == name && it.desc == methodNode.desc
+                            || mappings["${clazz.name}.${it.name + it.desc}"] == name
+                    }) {
+                return false
+            }
+            if (clazz.subClasses
+                    .asSequence()
+                    .flatMap(ClassWrapper::methods)
+                    .any {
+                        it.name == name && it.desc == methodNode.desc
+                            || mappings["${clazz.name}.${it.name + it.desc}"] == name
+                    }) {
+                return false
+            }
+            return true
+        } else {
+            if (clazz.superClasses
+                    .asSequence()
+                    .flatMap(ClassWrapper::methods)
+                    .any { it.name == name || mappings["${clazz.name}.${it.name + it.desc}"] == name }) {
+                return false
+            }
+            if (clazz.subClasses
+                    .asSequence()
+                    .flatMap(ClassWrapper::methods)
+                    .any { it.name == name || mappings["${clazz.name}.${it.name + it.desc}"] == name }) {
+                return false
+            }
+            return true
+        }
     }
     
 }
