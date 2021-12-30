@@ -56,30 +56,6 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  * TODO
  * - better documentation and general cleanup
- * - Fix complex edge-case:
- * ```java
- * public interface A {
- *
- *    public void methodA() // Renamed to a
- *
- * }
- *
- * public interface B {
- *
- *    public void methodB() // Renamed to a as well
- *
- * }
- *
- * public class C implements A, B {
- *   @Override
- *   public void methodA() { // Renamed to a
- *   }
- *   @Override
- *   public void methodB() { // Renamed to a as well -> Illegal class format
- *   }
- * }
- * ```
- *
  *
  * @param jar The jar to generate mappings for.
  */
@@ -187,6 +163,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
     
     private fun getMethodMappings(clazz: ClassWrapper, factory: SupplierFactory) {
         val renamableMethods = clazz.methods.filter { it.isRenamable(clazz, mappings) }
+        val checker = MethodNameChecker(clazz)
         
         if (!Renamer.repeatNames) { // Unique name for every method
             val supplier = factory.create(renamableMethods.size)
@@ -194,7 +171,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
                 var newName: String
                 do {
                     newName = supplier.randomStringUnique()
-                } while (!isUsableName(newName, clazz, method))
+                } while (!checker.isUsable(newName, method.desc))
                 val methodPath = method.name + method.desc
                 mappings[clazz.name + "." + methodPath] = newName
                 clazz.subClasses.forEach { mappings[it.name + "." + methodPath] = newName }
@@ -202,7 +179,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
         } else {
             val occurrences = getOccurrenceMap(renamableMethods, MethodNode::desc)
             val indexMap = occurrences.mapValues { AtomicInteger(0) }
-            val names = getNeededNames(factory, occurrences, clazz)
+            val names = getNeededNames(factory, occurrences, checker)
             
             renamableMethods.forEach { method ->
                 // Get the current index of the descriptor, then increase the index.
@@ -252,7 +229,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
         return names.toList()
     }
     
-    private fun getNeededNames(factory: SupplierFactory, occurrences: Map<String, Int>, clazz: ClassWrapper): List<String> {
+    private fun getNeededNames(factory: SupplierFactory, occurrences: Map<String, Int>, checker: MethodNameChecker): List<String> {
         // Get the maximum amount of names needed.
         val amount = occurrences.values.maxOrNull() ?: return emptyList()
         val supplier = factory.create(amount)
@@ -260,48 +237,41 @@ class MappingsGenerator(private val jar: JavaArchive) {
         val names = HashSet<String>()
         while (names.size < amount) {
             val name = supplier.randomStringUnique(names)
-            if (isUsableName(name, clazz, null))
+            if (checker.isUsable(name))
                 names += name
         }
         return names.toList()
     }
     
-    private fun isUsableName(name: String, clazz: ClassWrapper, methodNode: MethodNode?): Boolean {
-        if (methodNode != null) {
-            if (clazz.superClasses
-                    .asSequence()
-                    .flatMap(ClassWrapper::methods)
-                    .any {
-                        it.name == name && it.desc == methodNode.desc
-                            || mappings["${clazz.name}.${it.name + it.desc}"] == name
-                    }) {
-                return false
-            }
-            if (clazz.subClasses
-                    .asSequence()
-                    .flatMap(ClassWrapper::methods)
-                    .any {
-                        it.name == name && it.desc == methodNode.desc
-                            || mappings["${clazz.name}.${it.name + it.desc}"] == name
-                    }) {
-                return false
-            }
-            return true
-        } else {
-            if (clazz.superClasses
-                    .asSequence()
-                    .flatMap(ClassWrapper::methods)
-                    .any { it.name == name || mappings["${clazz.name}.${it.name + it.desc}"] == name }) {
-                return false
-            }
-            if (clazz.subClasses
-                    .asSequence()
-                    .flatMap(ClassWrapper::methods)
-                    .any { it.name == name || mappings["${clazz.name}.${it.name + it.desc}"] == name }) {
-                return false
-            }
-            return true
+    private inner class MethodNameChecker(clazz: ClassWrapper) {
+        private val methodNames = HashSet<String>()
+        private val methodPaths = HashSet<String>()
+        
+        init {
+            clazz.subClasses.asSequence()
+                .flatMap { it.superClasses + it }
+                .distinctBy(ClassWrapper::name)
+                .forEach { c ->
+                    c.methods.forEach { method ->
+                        val fullPath = clazz.name + "." + method.name + method.desc
+                        if (fullPath in mappings) {
+                            val newName = mappings[fullPath]!!
+                            methodNames += newName
+                            methodPaths += newName + method.desc
+                        } else {
+                            methodNames += method.name
+                            methodPaths += method.name + method.desc
+                        }
+                    }
+                }
         }
+        
+        fun isUsable(name: String) =
+            name !in methodNames
+        
+        fun isUsable(name: String, desc: String) =
+            name + desc !in methodPaths
+        
     }
     
 }
