@@ -1,7 +1,9 @@
 package xyz.xenondevs.vetric
 
 import xyz.xenondevs.bytebase.jvm.JavaArchive
+import xyz.xenondevs.bytebase.jvm.VirtualClassPath
 import xyz.xenondevs.vetric.config.VetricConfig
+import xyz.xenondevs.vetric.jvm.Library
 import xyz.xenondevs.vetric.logging.Logger
 import xyz.xenondevs.vetric.logging.info
 
@@ -15,14 +17,21 @@ object Vetric {
     var logger: Logger? = null
     
     fun run(config: VetricConfig) {
-        val jar = JavaArchive(config.input)
+        val jar = loadJars(config)
         applyTransformers(jar, config)
         saveOutput(jar, config)
     }
     
+    private fun loadJars(config: VetricConfig): JavaArchive {
+        val jar = JavaArchive(config.input)
+        val libraries = config.libraries
+        VirtualClassPath.loadJarWithDependencies(jar, libraries)
+        return jar
+    }
+    
     private fun applyTransformers(jar: JavaArchive, config: VetricConfig) {
+        info("Loading transformer configs...")
         config.transformers.forEach { transformer ->
-            info("Loading transformer configs...")
             transformer.loadConfig(config[transformer])
             transformer.prepare(jar)
         }
@@ -35,6 +44,7 @@ object Vetric {
     
     private fun saveOutput(jar: JavaArchive, config: VetricConfig) {
         info("Saving jar...")
+        config.libraries.filter(Library::isExtracted).forEach { it.extractInto(jar) }
         jar.writeFile(config.output)
     }
     

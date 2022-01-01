@@ -48,7 +48,7 @@ object SupplierFactorySerialization : JsonSerializer<SupplierFactory>, JsonDeser
             }
         }
         
-        failParse("Invalid Json type.")
+        failParse("Invalid Json type. Expected String or JsonObject. Got ${element.javaClass.simpleName}")
     }
     
     private fun failParse(extra: String): Nothing = throw JsonParseException("Invalid supplier factory: $extra")

@@ -1,6 +1,7 @@
 package xyz.xenondevs.vetric.config
 
 import com.google.gson.JsonObject
+import xyz.xenondevs.vetric.jvm.Library
 import xyz.xenondevs.vetric.logging.warn
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerRegistry
@@ -10,6 +11,7 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
     
     var input: File = this["input"] ?: throw IllegalStateException("Input file not set")
     var output: File = this["output"] ?: throw IllegalStateException("Output file not set")
+    val libraries: List<Library> = this["libraries"] ?: emptyList()
     val transformers = mutableListOf<Transformer>()
     
     init {

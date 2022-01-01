@@ -2,7 +2,9 @@ package xyz.xenondevs.vetric.utils
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
+import xyz.xenondevs.vetric.jvm.Library
 import xyz.xenondevs.vetric.serialization.FileSerialization
+import xyz.xenondevs.vetric.serialization.LibraryListDeserializer
 import xyz.xenondevs.vetric.serialization.SupplierFactorySerialization
 import xyz.xenondevs.vetric.supplier.SupplierFactory
 import java.io.File
@@ -12,6 +14,7 @@ val GSON = GsonBuilder()
     .setPrettyPrinting()
     .registerTypeHierarchyAdapter<File>(FileSerialization)
     .registerTypeHierarchyAdapter<SupplierFactory>(SupplierFactorySerialization)
+    .registerTypeHierarchyAdapter<List<Library>>(LibraryListDeserializer)
     .create()!!
 
 operator fun JsonObject.set(property: String, value: JsonElement) = add(property, value)

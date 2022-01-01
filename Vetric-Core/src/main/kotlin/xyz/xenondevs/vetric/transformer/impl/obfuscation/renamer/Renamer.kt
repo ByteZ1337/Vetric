@@ -12,6 +12,7 @@ import xyz.xenondevs.vetric.logging.warn
 import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
+import java.io.File
 
 object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     
@@ -37,12 +38,9 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     var mappings = HashMap<String, String>()
     
     override fun transform(archive: JavaArchive) {
-        VirtualClassPath.loadJar(archive)
         generateMappings(archive)
         applyMappings(archive)
-        VirtualClassPath.classes.clear()
-        VirtualClassPath.inheritanceTrees.clear()
-        VirtualClassPath.loadJar(archive)
+        VirtualClassPath.reload()
     }
     
     private fun generateMappings(archive: JavaArchive) {
