@@ -17,12 +17,14 @@ object Vetric {
     var logger: Logger? = null
     
     fun run(config: VetricConfig) {
+        info("Vetric v$VERSION running on Java " + System.getProperty("java.version"))
         val jar = loadJars(config)
         applyTransformers(jar, config)
         saveOutput(jar, config)
     }
     
     private fun loadJars(config: VetricConfig): JavaArchive {
+        info("Loading input jar and libraries")
         val jar = JavaArchive(config.input)
         val libraries = config.libraries
         VirtualClassPath.loadJarWithDependencies(jar, libraries)
