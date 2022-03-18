@@ -4,24 +4,87 @@ import org.objectweb.asm.Opcodes.ACC_PUBLIC
 import org.objectweb.asm.Opcodes.ACC_STATIC
 import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.LdcInsnNode
+import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.bytebase.asm.buildInsnList
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.util.replace
-import xyz.xenondevs.vetric.supplier.impl.AlphaSupplier
+import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.string.StringTransformer
 import xyz.xenondevs.vetric.utils.filterTypeSub
 
+// TODO chars
 object SingleStringPooler : StringTransformer("SingleStringPooler") {
     
-    // TODO
-    var useArrayPool = false
+    var useArrayPool = true
+    var extraShuffle = true
+    val supplier = DEFAULT_SUPPLIER
     
     override fun transform(clazz: ClassWrapper) {
         val strings = getStrings(clazz)
         if (strings.isEmpty()) return
+        
+        if (useArrayPool) poolStringsArray(clazz, strings)
+        else poolStringsSubstring(clazz, strings)
+    }
+    
+    private fun poolStringsArray(clazz: ClassWrapper, strings: Set<String>) {
+        val supp = supplier.create(2)
+        val overlapped = overlapStrings(strings)
+        val lookupTable = generateIndices(overlapped, strings)
+        val arrayIndices = HashMap<String, Int>()
+        val poolField = FieldNode(ACC_PUBLIC or ACC_STATIC, supp.randomString(), "[Ljava/lang/String;", null, null)
+        val poolFieldInit = MethodNode(ACC_PUBLIC or ACC_STATIC, supp.randomString(), "()[Ljava/lang/String;", null, null)
+        clazz.fields.add(poolField)
+        clazz.methods.add(poolFieldInit)
+        poolFieldInit.instructions = buildInsnList {
+            ldc(overlapped)
+            aStore(1)
+            ldc(strings.size)
+            aNewArray("java/lang/String")
+            var sequence = strings.asSequence().withIndex()
+            if (extraShuffle) sequence = sequence.shuffled()
+            sequence.forEach {
+                val string = it.value
+                val index = it.index
+                val start = lookupTable[string]!!
+                arrayIndices[string] = index
+                dup()
+                ldc(index)
+                if (extraShuffle) {
+                    ldc(0)
+                    ior()
+                }
+                aLoad(1)
+                ldc(start)
+                ldc(start + string.length)
+                invokeVirtual("java/lang/String", "substring", "(II)Ljava/lang/String;")
+                aastore()
+            }
+            areturn()
+        }
+        clazz.getOrCreateClassInit().instructions.insert(buildInsnList {
+            invokeStatic(clazz.name, poolFieldInit.name, "()[Ljava/lang/String;")
+            putStatic(clazz.name, poolField.name, "[Ljava/lang/String;")
+        })
+        clazz.methods.forEach {
+            if (it === poolFieldInit) return@forEach
+            val insnList = it.instructions
+            insnList.filterTypeSub<LdcInsnNode, String>(LdcInsnNode::cst).forEach innerLoop@{ insn ->
+                val value = insn.cst as String
+                insnList.replace(insn, buildInsnList {
+                    getStatic(clazz.name, poolField.name, "[Ljava/lang/String;")
+                    ldc(arrayIndices[value]!!)
+                    aaload()
+                })
+            }
+        }
+    }
+    
+    private fun poolStringsSubstring(clazz: ClassWrapper, strings: Set<String>) {
+        val supp = supplier.create(1)
         val overlapped = overlapStrings(strings)
         val lookupTable = generateIndices(overlapped, strings) // String -> start
-        val pool = FieldNode(ACC_PUBLIC or ACC_STATIC, AlphaSupplier().randomString(), "Ljava/lang/String;", null, overlapped)
+        val pool = FieldNode(ACC_PUBLIC or ACC_STATIC, supp.randomString(), "Ljava/lang/String;", null, overlapped)
         
         clazz.fields.add(pool)
         clazz.methods.forEach {
@@ -29,11 +92,10 @@ object SingleStringPooler : StringTransformer("SingleStringPooler") {
             insnList.filterTypeSub<LdcInsnNode, String>(LdcInsnNode::cst).forEach { insn ->
                 val value = insn.cst as String
                 val start = lookupTable[value]!!
-                val end = start + value.length
                 insnList.replace(insn, buildInsnList {
                     getStatic(clazz.name, pool.name, "Ljava/lang/String;")
                     ldc(start)
-                    ldc(end)
+                    ldc(start + value.length)
                     invokeVirtual("java/lang/String", "substring", "(II)Ljava/lang/String;")
                 })
             }
@@ -47,17 +109,6 @@ object SingleStringPooler : StringTransformer("SingleStringPooler") {
             .filterTypeSub<LdcInsnNode, String> { it.cst }
             .map { it.cst as String }
             .toSet()
-    }
-    
-    private fun generateIndices(overlapped: String, strings: Set<String>): HashMap<String, Int> {
-        val indices = hashMapOf<String, Int>()
-        strings.forEach {
-            val index = overlapped.indexOf(it)
-            if (index == -1)
-                throw IllegalStateException()
-            indices[it] = index
-        }
-        return indices
     }
     
     private fun overlapStrings(set: Set<String>): String {
@@ -104,4 +155,14 @@ object SingleStringPooler : StringTransformer("SingleStringPooler") {
     private fun sortStrings(string1: String, string2: String): Pair<String, String> =
         if (string1.length > string2.length) string1 to string2 else string2 to string1
     
+    private fun generateIndices(overlapped: String, strings: Set<String>): HashMap<String, Int> {
+        val indices = hashMapOf<String, Int>()
+        strings.forEach {
+            val index = overlapped.indexOf(it)
+            if (index == -1)
+                throw IllegalStateException()
+            indices[it] = index
+        }
+        return indices
+    }
 }
