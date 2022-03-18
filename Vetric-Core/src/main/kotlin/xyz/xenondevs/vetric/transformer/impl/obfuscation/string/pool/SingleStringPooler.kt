@@ -69,7 +69,7 @@ object SingleStringPooler : StringTransformer("SingleStringPooler") {
         clazz.methods.forEach {
             if (it === poolFieldInit) return@forEach
             val insnList = it.instructions
-            insnList.filterTypeSub<LdcInsnNode, String>(LdcInsnNode::cst).forEach innerLoop@{ insn ->
+            insnList.filterTypeSub<LdcInsnNode, String>(LdcInsnNode::cst).forEach { insn ->
                 val value = insn.cst as String
                 insnList.replace(insn, buildInsnList {
                     getStatic(clazz.name, poolField.name, "[Ljava/lang/String;")
