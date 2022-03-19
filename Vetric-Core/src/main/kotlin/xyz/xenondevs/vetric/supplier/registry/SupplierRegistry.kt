@@ -6,7 +6,7 @@ import xyz.xenondevs.vetric.supplier.impl.*
 private typealias SupplierConstructor = (config: SupplierConfig, needed: Int) -> StringSupplier
 private typealias NormalConstructor = (min: Int, max: Int) -> StringSupplier
 private typealias CharSupplierConstructor = (min: Int, max: Int, countUp: Boolean) -> CharSupplier
-private typealias DictionarySupplierConstructor = (countUp: Boolean, needed: Int) -> CharSupplier
+private typealias DictionarySupplierConstructor = (countUp: Boolean, needed: Int) -> DictionarySupplier
 
 /**
  * Registry for default supplier implementations
