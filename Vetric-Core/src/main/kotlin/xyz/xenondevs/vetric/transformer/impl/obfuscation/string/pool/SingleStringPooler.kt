@@ -11,8 +11,34 @@ import xyz.xenondevs.bytebase.util.replace
 import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.string.StringTransformer
 import xyz.xenondevs.vetric.utils.filterTypeSub
+import xyz.xenondevs.vetric.utils.getStringPool
 
-// TODO chars
+/**
+ * Combines all strings into a single one and gets strings using [String#substring].
+ *
+ * ## Overlapping Strings
+ * This transformer also automatically combines similar strings. For example, if you have the following strings:
+ * ```
+ * "hello"
+ * "locale"
+ * "cache"
+ * "hell"
+ * ```
+ * Then the transformer will combine them into one string: ``"cachellocale"``.
+ * ```
+ * "hello" = 3..7
+ * "locale" = 6..11
+ * "cache" = 0..4
+ * "hell" = 3..6
+ * ```
+ * ## useArrayPool
+ * If useArrayPool is set to true, the transformer will perform all substring operations in ``<clinit>`` and store
+ * the result in an array. This speeds up the process of getting strings by a lot but is vulnerable to agent attacks.
+ *
+ * ## extraShuffle
+ * If extraShuffle is set to true, the transformer will fill the array in a random order. This can be used to avoid
+ * decompilers from identifying array initialization as a pattern. (only works if useArrayPool is set to true as well)
+ */
 object SingleStringPooler : StringTransformer("SingleStringPooler") {
     
     var useArrayPool = true
@@ -20,7 +46,7 @@ object SingleStringPooler : StringTransformer("SingleStringPooler") {
     val supplier = DEFAULT_SUPPLIER
     
     override fun transform(clazz: ClassWrapper) {
-        val strings = getStrings(clazz)
+        val strings = clazz.getStringPool()
         if (strings.isEmpty()) return
         
         if (useArrayPool) poolStringsArray(clazz, strings)
@@ -100,15 +126,6 @@ object SingleStringPooler : StringTransformer("SingleStringPooler") {
                 })
             }
         }
-    }
-    
-    private fun getStrings(clazz: ClassWrapper): Set<String> {
-        return clazz.methods
-            .asSequence()
-            .flatMap { it.instructions }
-            .filterTypeSub<LdcInsnNode, String> { it.cst }
-            .map { it.cst as String }
-            .toSet()
     }
     
     private fun overlapStrings(set: Set<String>): String {
