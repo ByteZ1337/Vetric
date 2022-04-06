@@ -9,6 +9,7 @@ import xyz.xenondevs.bytebase.asm.buildInsnList
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.util.replace
 import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
+import xyz.xenondevs.vetric.transformer.TransformerPriority
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.string.StringTransformer
 import xyz.xenondevs.vetric.utils.filterTypeSub
 import xyz.xenondevs.vetric.utils.getStringPool
@@ -39,7 +40,7 @@ import xyz.xenondevs.vetric.utils.getStringPool
  * If extraShuffle is set to true, the transformer will fill the array in a random order. This can be used to avoid
  * decompilers from identifying array initialization as a pattern. (only works if useArrayPool is set to true as well)
  */
-object SingleStringPooler : StringTransformer("SingleStringPooler") {
+object SingleStringPooler : StringTransformer("SingleStringPooler", TransformerPriority.LOWEST) {
     
     var useArrayPool = true
     var extraShuffle = true

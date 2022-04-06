@@ -8,12 +8,13 @@ import xyz.xenondevs.bytebase.asm.buildInsnList
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.util.replace
 import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
+import xyz.xenondevs.vetric.transformer.TransformerPriority
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.string.StringTransformer
 import xyz.xenondevs.vetric.utils.filterTypeSub
 import xyz.xenondevs.vetric.utils.getStringPool
 
 // FIXME: interfaces
-object StringPooler : StringTransformer("StringPooler") {
+object StringPooler : StringTransformer("StringPooler", TransformerPriority.LOWEST) {
     
     val supplier = DEFAULT_SUPPLIER
     
