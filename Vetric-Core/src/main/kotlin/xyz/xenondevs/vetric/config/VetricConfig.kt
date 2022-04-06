@@ -5,8 +5,6 @@ import xyz.xenondevs.vetric.jvm.Library
 import xyz.xenondevs.vetric.logging.warn
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerRegistry
-import xyz.xenondevs.vetric.utils.getBoolean
-import xyz.xenondevs.vetric.utils.isBoolean
 import java.io.File
 
 class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = true) {
@@ -20,23 +18,39 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
     init {
         val obj = getElement("transformers")
         if (obj is JsonObject) {
-            val keys = obj.keySet()
             transformers = TransformerRegistry.filter { transformer ->
-                val key = transformer.name
-                val configKey = keys.firstOrNull { key.equals(it, ignoreCase = true) } ?: return@filter false
-                val config = obj[configKey]
-                return@filter (config.isBoolean() && config.asBoolean) || (config is JsonObject && config.getBoolean("enabled", default = true))
+                val config = this[transformer] ?: return@filter false
+                val enabled = config.getBoolean("enabled", default = true)
+                if (enabled) transformer.loadConfig(config, this)
+                return@filter enabled
             }
         }
         if (transformers.isEmpty())
             warn("NO TRANSFORMERS ENABLED")
     }
     
-    operator fun get(transformer: Transformer): JsonConfig {
-        val obj = getElement("transformers") as JsonObject
-        val configName = obj.keySet().firstOrNull { transformer.name.equals(it, true) }!! // Can't be null because of the check above
+    operator fun get(transformer: Transformer): JsonConfig? {
+        val transformers = getElement("transformers") as JsonObject
+        val name = transformer.name
+        val configName = transformers.keySet().firstOrNull { name.equals(it, true) } ?: return null
         val config = getElement("transformers.$configName")!!
-        check(config is JsonObject) { "Transformer config must be a JsonObject" }
+        check(config is JsonObject) { "Transformer config for $transformer must be a JsonObject" }
+        return JsonConfig(config)
+    }
+    
+    operator fun get(parentTransformer: Transformer, transformer: Transformer): JsonConfig? {
+        val transformers = getElement("transformers") as JsonObject
+        val parentName = parentTransformer.name
+        val name = transformer.name
+        
+        var configName = transformers.keySet().firstOrNull { parentName.equals(it, ignoreCase = true) } ?: return null
+        val parentObject = getElement("transformers.$configName.transformers") ?: return null
+        check(parentObject is JsonObject) { "Transformers config for $parentName must be a JsonObject" }
+        
+        configName = parentObject.keySet().firstOrNull { name.equals(it, ignoreCase = true) } ?: return null
+        val config = (parentObject).get("transformers.$configName")!!
+        check(config is JsonObject) { "Transformer config for $name must be a JsonObject" }
+        
         return JsonConfig(config)
     }
     

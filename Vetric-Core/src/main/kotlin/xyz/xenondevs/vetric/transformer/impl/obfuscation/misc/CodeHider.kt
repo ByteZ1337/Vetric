@@ -6,6 +6,7 @@ import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.util.accessWrapper
 import xyz.xenondevs.bytebase.util.hasAnnotations
 import xyz.xenondevs.vetric.config.JsonConfig
+import xyz.xenondevs.vetric.config.VetricConfig
 import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
 
@@ -33,7 +34,7 @@ object CodeHider : ClassTransformer("CodeHider", TransformerPriority.LOWEST) {
             method.accessWrapper.setSynthetic(true)
     }
     
-    override fun loadConfig(config: JsonConfig) {
+    override fun loadConfig(config: JsonConfig, vetricConfig: VetricConfig) {
         hideClasses = config.getBoolean("classes", true)
         hideFields = config.getBoolean("fields", true)
         hideMethods = config.getBoolean("methods", true)

@@ -5,8 +5,8 @@ import xyz.xenondevs.bytebase.jvm.Resource
 
 abstract class ResourceTransformer(name: String, priority: TransformerPriority) : Transformer(name, priority) {
     
-    override fun transform(archive: JavaArchive) {
-        archive.resources.forEach(::transform)
+    override fun transform(jar: JavaArchive) {
+        jar.resources.forEach(::transform)
     }
     
     abstract fun transform(resource: Resource)

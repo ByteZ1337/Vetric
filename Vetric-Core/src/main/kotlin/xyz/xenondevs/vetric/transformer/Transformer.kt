@@ -2,17 +2,18 @@ package xyz.xenondevs.vetric.transformer
 
 import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.vetric.config.JsonConfig
+import xyz.xenondevs.vetric.config.VetricConfig
 
 abstract class Transformer(
     val name: String,
     private val priority: TransformerPriority
 ) : Comparable<Transformer> {
     
-    open fun loadConfig(config: JsonConfig) {}
+    open fun loadConfig(config: JsonConfig, vetricConfig: VetricConfig) {}
     
-    open fun prepare(archive: JavaArchive) {}
+    open fun prepare(jar: JavaArchive) {}
     
-    abstract fun transform(archive: JavaArchive)
+    abstract fun transform(jar: JavaArchive)
     
     override fun hashCode() = name.hashCode()
     
@@ -25,5 +26,7 @@ abstract class Transformer(
         val result = priority.compareTo(other.priority)
         return if (result == 0) 1 else result
     }
+    
+    override fun toString() = "Transformer(name='$name', priority=$priority)"
     
 }

@@ -13,8 +13,8 @@ object LineNumberRemover : ClassTransformer("LineNumberRemover", TransformerPrio
     
     private var totalCounter = 0
     
-    override fun transform(archive: JavaArchive) {
-        super.transform(archive)
+    override fun transform(jar: JavaArchive) {
+        super.transform(jar)
         info("Removed a total of $totalCounter line numbers")
         totalCounter = 0
     }

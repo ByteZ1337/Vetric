@@ -8,6 +8,7 @@ import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.bytebase.jvm.VirtualClassPath
 import xyz.xenondevs.bytebase.util.accessWrapper
 import xyz.xenondevs.vetric.config.JsonConfig
+import xyz.xenondevs.vetric.config.VetricConfig
 import xyz.xenondevs.vetric.logging.warn
 import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
 import xyz.xenondevs.vetric.transformer.Transformer
@@ -37,10 +38,11 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     
     var mappings = HashMap<String, String>()
     
-    override fun transform(archive: JavaArchive) {
-        generateMappings(archive)
-        applyMappings(archive)
+    override fun transform(jar: JavaArchive) {
+        generateMappings(jar)
+        applyMappings(jar)
         VirtualClassPath.reload()
+        File("mappings.txt").writeText(mappings.toList().joinToString("\n") { it.first + " -> " + it.second })
     }
     
     private fun generateMappings(archive: JavaArchive) {
@@ -52,7 +54,7 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
         refactorer.refactor()
     }
     
-    override fun loadConfig(config: JsonConfig) {
+    override fun loadConfig(config: JsonConfig, vetricConfig: VetricConfig) {
         repeatNames = config.getBoolean("repeatnames", true)
         
         renamePackages = config.getBoolean("packages", false)

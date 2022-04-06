@@ -14,9 +14,9 @@ open class ClassTransformer(
     protected lateinit var currentClass: ClassWrapper
     private var skipMembers = false
     
-    override fun transform(archive: JavaArchive) {
-        currentJar = archive
-        archive.classes.forEach { clazz ->
+    override fun transform(jar: JavaArchive) {
+        currentJar = jar
+        jar.classes.forEach { clazz ->
             currentClass = clazz
             transformClass(clazz)
             if (skipMembers) {
