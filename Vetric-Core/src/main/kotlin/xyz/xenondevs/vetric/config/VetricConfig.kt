@@ -5,6 +5,8 @@ import xyz.xenondevs.vetric.jvm.Library
 import xyz.xenondevs.vetric.logging.warn
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerRegistry
+import xyz.xenondevs.vetric.utils.getBoolean
+import xyz.xenondevs.vetric.utils.isBoolean
 import java.io.File
 
 class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = true) {
@@ -12,13 +14,19 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
     var input: File = this["input"] ?: throw IllegalStateException("Input file not set")
     var output: File = this["output"] ?: throw IllegalStateException("Output file not set")
     val libraries: List<Library> = this["libraries"] ?: emptyList()
-    val transformers = mutableListOf<Transformer>()
+    var transformers = emptyList<Transformer>()
+        private set
     
     init {
         val obj = getElement("transformers")
         if (obj is JsonObject) {
-            val keys = obj.keySet().map(String::lowercase)
-            transformers.addAll(TransformerRegistry.filter { it.name.lowercase() in keys })
+            val keys = obj.keySet()
+            transformers = TransformerRegistry.filter { transformer ->
+                val key = transformer.name
+                val configKey = keys.firstOrNull { key.equals(it, ignoreCase = true) } ?: return@filter false
+                val config = obj[configKey]
+                return@filter (config.isBoolean() && config.asBoolean) || (config is JsonObject && config.getBoolean("enabled", default = true))
+            }
         }
         if (transformers.isEmpty())
             warn("NO TRANSFORMERS ENABLED")

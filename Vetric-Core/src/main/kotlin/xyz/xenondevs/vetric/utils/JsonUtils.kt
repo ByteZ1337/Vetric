@@ -43,6 +43,30 @@ fun JsonObject.hasObject(property: String) =
 fun JsonObject.hasArray(property: String) =
     has(property) && this[property] is JsonArray
 
+fun JsonObject.getString(property: String) = if (hasString(property)) get(property).asString else null
+
+fun JsonObject.getNumber(property: String) = if (hasNumber(property)) get(property).asNumber else null
+
+fun JsonObject.getInt(property: String) = if (hasNumber(property)) get(property).asInt else null
+
+fun JsonObject.getLong(property: String) = if (hasNumber(property)) get(property).asLong else null
+
+fun JsonObject.getDouble(property: String) = if (hasNumber(property)) get(property).asDouble else null
+
+fun JsonObject.getFloat(property: String) = if (hasNumber(property)) get(property).asFloat else null
+
+fun JsonObject.getString(property: String, default: String): String = if (hasString(property)) get(property).asString else default
+
+fun JsonObject.getNumber(property: String, default: Number): Number = if (hasNumber(property)) get(property).asNumber else default
+
+fun JsonObject.getInt(property: String, default: Int) = if (hasNumber(property)) get(property).asInt else default
+
+fun JsonObject.getDouble(property: String, default: Double) = if (hasNumber(property)) get(property).asDouble else default
+
+fun JsonObject.getFloat(property: String, default: Float) = if (hasNumber(property)) get(property).asFloat else default
+
+fun JsonObject.getBoolean(property: String, default: Boolean = false) = if (hasBoolean(property)) get(property).asBoolean else default
+
 inline fun <reified T> type(): Type = object : TypeToken<T>() {}.type
 
 inline fun <reified T> GsonBuilder.registerTypeHierarchyAdapter(typeAdapter: Any): GsonBuilder =
