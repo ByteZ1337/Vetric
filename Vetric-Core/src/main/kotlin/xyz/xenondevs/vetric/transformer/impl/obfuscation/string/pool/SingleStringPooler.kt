@@ -92,18 +92,7 @@ object SingleStringPooler : StringTransformer("SingleStringPooler") {
             invokeStatic(clazz.name, poolFieldInit.name, "()[Ljava/lang/String;")
             putStatic(clazz.name, poolField.name, "[Ljava/lang/String;")
         })
-        clazz.methods.forEach {
-            if (it === poolFieldInit) return@forEach
-            val insnList = it.instructions
-            insnList.filterTypeSub<LdcInsnNode, String>(LdcInsnNode::cst).forEach { insn ->
-                val value = insn.cst as String
-                insnList.replace(insn, buildInsnList {
-                    getStatic(clazz.name, poolField.name, "[Ljava/lang/String;")
-                    ldc(arrayIndices[value]!!)
-                    aaload()
-                })
-            }
-        }
+        StringPooler.replaceStrings(clazz, arrayIndices, poolField, poolFieldInit)
     }
     
     private fun poolStringsSubstring(clazz: ClassWrapper, strings: Set<String>) {
