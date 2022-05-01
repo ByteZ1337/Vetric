@@ -48,7 +48,7 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
         check(parentObject is JsonObject) { "Transformers config for $parentName must be a JsonObject" }
         
         configName = parentObject.keySet().firstOrNull { name.equals(it, ignoreCase = true) } ?: return null
-        val config = (parentObject).get("transformers.$configName")!!
+        val config = parentObject.get(configName)!!
         check(config is JsonObject) { "Transformer config for $name must be a JsonObject" }
         
         return JsonConfig(config)
