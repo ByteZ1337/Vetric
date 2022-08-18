@@ -30,20 +30,21 @@ class DictionarySupplier : StringSupplier {
         // For some special cases: supplier returns "getA" but a superclass already has "getA" which would lead to unwanted inheritance
         val actuallyNeeded = min(needed + 50, lineCount)
         
-        val raf = RandomAccessFile(file, "r")
-        val length = raf.length()
-        do {
-            if (!countUp) {
-                val randomLocation = (Math.random() * length).toLong()
-                raf.seek(randomLocation)
-                raf.readLine()
-            }
-            if (raf.filePointer != length) {
-                val name = raf.readLine()
-                if (name !in dictionary)
-                    dictionary += name
-            }
-        } while (dictionary.size < actuallyNeeded)
+        RandomAccessFile(file, "r").use { raf ->
+            val length = raf.length()
+            do {
+                if (!countUp) {
+                    val randomLocation = (Math.random() * length).toLong()
+                    raf.seek(randomLocation)
+                    raf.readLine()
+                }
+                if (raf.filePointer != length) {
+                    val name = raf.readLine()
+                    if (name !in dictionary)
+                        dictionary += name
+                }
+            } while (dictionary.size < actuallyNeeded)
+        }
     }
     
     override fun randomString(): String {
