@@ -5,18 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>xyz.xenondevs.vetric</groupId>
-    <artifactId>Vetric-Parent</artifactId>
+    <artifactId>vetric-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <modules>
-        <module>Vetric-CLI</module>
-        <module>Vetric-Core</module>
+        <module>vetric-cli</module>
+        <module>vetric-core</module>
     </modules>
     <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.code.style>official</kotlin.code.style>
-        <kotlin.compiler.jvmTarget>16</kotlin.compiler.jvmTarget>
+        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.version>1.7.10</kotlin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>

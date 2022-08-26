@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>Vetric-Parent</artifactId>
+        <artifactId>vetric-parent</artifactId>
         <groupId>xyz.xenondevs.vetric</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Vetric-CLI</artifactId>
+    <artifactId>vetric-cli</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -37,8 +37,8 @@
         </dependency>
         <dependency>
             <groupId>xyz.xenondevs.vetric</groupId>
-            <artifactId>Vetric-Core</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <artifactId>vetric-core</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
