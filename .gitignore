@@ -4,8 +4,7 @@
 # Eclipse Metadata
 .metadata
 
-# Gradle temporarily build directory
-*gradle
+vetric-plugin-gradle/*gradle
 
 # Eclipse Build Directory
 bin/

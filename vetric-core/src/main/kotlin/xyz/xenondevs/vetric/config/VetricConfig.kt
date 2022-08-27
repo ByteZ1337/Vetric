@@ -11,7 +11,7 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
     
     var input: File = this["input"] ?: throw IllegalStateException("Input file not set")
     var output: File = this["output"] ?: throw IllegalStateException("Output file not set")
-    val libraries: List<Library> = this["libraries"] ?: emptyList()
+    var libraries: List<Library> = this["libraries"] ?: emptyList()
     var transformers = emptyList<Transformer>()
         private set
     
