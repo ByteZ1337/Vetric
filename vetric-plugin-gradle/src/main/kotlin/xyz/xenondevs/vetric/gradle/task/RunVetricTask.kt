@@ -10,6 +10,7 @@ import org.gradle.api.tasks.TaskAction
 import xyz.xenondevs.vetric.Vetric
 import xyz.xenondevs.vetric.config.FileConfigSupplier
 import xyz.xenondevs.vetric.config.VetricConfig
+import xyz.xenondevs.vetric.gradle.GradleLogger
 import xyz.xenondevs.vetric.jvm.Library
 
 abstract class RunVetricTask : DefaultTask() {
@@ -29,7 +30,8 @@ abstract class RunVetricTask : DefaultTask() {
     
     @TaskAction
     fun runVetric() {
-        val config = VetricConfig(FileConfigSupplier(configFile.get().asFile))
+        val vetric = Vetric(GradleLogger(), true)
+        val config = VetricConfig(FileConfigSupplier(configFile.get().asFile), vetric)
         config.input = inputFile.get().asFile
         config.output = outputFile.get().asFile
         if (autoloadDeps.getOrElse(false)) {
@@ -39,7 +41,7 @@ abstract class RunVetricTask : DefaultTask() {
             }
             config.libraries = libraries
         }
-        Vetric.run(config)
+        vetric.run(config)
     }
     
 }
