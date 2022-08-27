@@ -1,13 +1,20 @@
 package xyz.xenondevs.vetric.transformer
 
 import xyz.xenondevs.bytebase.jvm.JavaArchive
+import xyz.xenondevs.vetric.Vetric
 import xyz.xenondevs.vetric.config.JsonConfig
 import xyz.xenondevs.vetric.config.VetricConfig
 
 abstract class Transformer(
     val name: String,
-    private val priority: TransformerPriority
+    internal var priority: TransformerPriority
 ) : Comparable<Transformer> {
+    
+    lateinit var vetric: Vetric
+    
+    lateinit var upperRegistry: TransformerRegistry<out Transformer>
+    
+    val logger by lazy { vetric.logger }
     
     open fun loadConfig(config: JsonConfig, vetricConfig: VetricConfig) {}
     

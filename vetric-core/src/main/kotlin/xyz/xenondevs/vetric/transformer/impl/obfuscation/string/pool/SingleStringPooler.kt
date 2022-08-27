@@ -40,7 +40,7 @@ import xyz.xenondevs.vetric.utils.getStringPool
  * If extraShuffle is set to true, the transformer will fill the array in a random order. This can be used to avoid
  * decompilers from identifying array initialization as a pattern. (only works if useArrayPool is set to true as well)
  */
-object SingleStringPooler : StringTransformer("SingleStringPooler", TransformerPriority.LOWEST) {
+class SingleStringPooler : StringTransformer("SingleStringPooler", TransformerPriority.LOWEST) {
     
     var useArrayPool = true
     var extraShuffle = true

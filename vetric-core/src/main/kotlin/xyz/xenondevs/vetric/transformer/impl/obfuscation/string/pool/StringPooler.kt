@@ -14,7 +14,7 @@ import xyz.xenondevs.vetric.utils.filterTypeSub
 import xyz.xenondevs.vetric.utils.getStringPool
 
 // FIXME: interfaces
-object StringPooler : StringTransformer("StringPooler", TransformerPriority.LOWEST) {
+class StringPooler : StringTransformer("StringPooler", TransformerPriority.LOWEST) {
     
     val supplier = DEFAULT_SUPPLIER
     
@@ -47,17 +47,20 @@ object StringPooler : StringTransformer("StringPooler", TransformerPriority.LOWE
         replaceStrings(clazz, arrayIndices, poolField, poolFieldInit)
     }
     
-    internal fun replaceStrings(clazz: ClassWrapper, arrayIndices: HashMap<String, Int>, poolField: FieldNode, poolFieldInit: MethodNode) {
-        clazz.methods.forEach {
-            if (it === poolFieldInit) return@forEach
-            val insnList = it.instructions
-            insnList.filterTypeSub<LdcInsnNode, String>(LdcInsnNode::cst).forEach { insn ->
-                val value = insn.cst as String
-                insnList.replace(insn, buildInsnList {
-                    getStatic(clazz.name, poolField.name, "[Ljava/lang/String;")
-                    ldc(arrayIndices[value]!!)
-                    aaload()
-                })
+    
+    companion object {
+        internal fun replaceStrings(clazz: ClassWrapper, arrayIndices: HashMap<String, Int>, poolField: FieldNode, poolFieldInit: MethodNode) {
+            clazz.methods.forEach {
+                if (it === poolFieldInit) return@forEach
+                val insnList = it.instructions
+                insnList.filterTypeSub<LdcInsnNode, String>(LdcInsnNode::cst).forEach { insn ->
+                    val value = insn.cst as String
+                    insnList.replace(insn, buildInsnList {
+                        getStatic(clazz.name, poolField.name, "[Ljava/lang/String;")
+                        ldc(arrayIndices[value]!!)
+                        aaload()
+                    })
+                }
             }
         }
     }

@@ -5,8 +5,11 @@ import xyz.xenondevs.vetric.transformer.TransformerPriority
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.string.pool.SingleStringPooler
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.string.pool.StringPooler
 
-object StringObfuscator : SubTransformerRegistry<StringTransformer>("StringObfuscator", TransformerPriority.HIGHEST) {
+class StringObfuscator : SubTransformerRegistry<StringTransformer>("StringObfuscator", TransformerPriority.HIGHEST) {
     
-    override val transformers = listOf(SingleStringPooler, StringPooler)
+    init {
+        register("StringPooler", ::StringPooler)
+        register("SingleStringPooler", ::SingleStringPooler)
+    }
     
 }

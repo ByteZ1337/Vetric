@@ -1,35 +1,33 @@
 package xyz.xenondevs.vetric.config
 
 import com.google.gson.JsonObject
+import xyz.xenondevs.vetric.Vetric
 import xyz.xenondevs.vetric.jvm.Library
-import xyz.xenondevs.vetric.logging.warn
+import xyz.xenondevs.vetric.transformer.DefaultTransformerRegistry
 import xyz.xenondevs.vetric.transformer.Transformer
-import xyz.xenondevs.vetric.transformer.TransformerRegistry
+import xyz.xenondevs.vetric.transformer.TransformerInfo
 import java.io.File
 
-class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = true) {
+class VetricConfig(supplier: ConfigSupplier, val vetric: Vetric) : JsonConfig(supplier, autoInit = true) {
+    
+    var isDebug: Boolean = false
     
     var input: File = this["input"] ?: throw IllegalStateException("Input file not set")
     var output: File = this["output"] ?: throw IllegalStateException("Output file not set")
     var libraries: List<Library> = this["libraries"] ?: emptyList()
-    var transformers = emptyList<Transformer>()
-        private set
+    val registry = DefaultTransformerRegistry()
     
     init {
-        val obj = getElement("transformers")
-        if (obj is JsonObject) {
-            transformers = TransformerRegistry.filter { transformer ->
-                val config = this[transformer] ?: return@filter false
-                val enabled = config.getBoolean("enabled", default = true)
-                if (enabled) transformer.loadConfig(config, this)
-                return@filter enabled
-            }
+        if (getElement("transformers") !is JsonObject) {
+            vetric.logger.warn("No transformers found in config")
+        } else {
+            registry.loadConfig(this)
+            if (registry.enabled.isEmpty())
+                vetric.logger.warn("NO TRANSFORMERS ENABLED")
         }
-        if (transformers.isEmpty())
-            warn("NO TRANSFORMERS ENABLED")
     }
     
-    operator fun get(transformer: Transformer): JsonConfig? {
+    operator fun get(transformer: TransformerInfo): JsonConfig? {
         val transformers = getElement("transformers") as JsonObject
         val name = transformer.name
         val configName = transformers.keySet().firstOrNull { name.equals(it, true) } ?: return null
@@ -38,9 +36,9 @@ class VetricConfig(supplier: ConfigSupplier) : JsonConfig(supplier, autoInit = t
         return JsonConfig(config)
     }
     
-    operator fun get(parentTransformer: Transformer, transformer: Transformer): JsonConfig? {
+    operator fun get(subRegistry: Transformer, transformer: TransformerInfo): JsonConfig? {
         val transformers = getElement("transformers") as JsonObject
-        val parentName = parentTransformer.name
+        val parentName = subRegistry.name
         val name = transformer.name
         
         var configName = transformers.keySet().firstOrNull { parentName.equals(it, ignoreCase = true) } ?: return null

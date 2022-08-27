@@ -9,13 +9,12 @@ import xyz.xenondevs.bytebase.jvm.VirtualClassPath
 import xyz.xenondevs.bytebase.util.accessWrapper
 import xyz.xenondevs.vetric.config.JsonConfig
 import xyz.xenondevs.vetric.config.VetricConfig
-import xyz.xenondevs.vetric.logging.warn
 import xyz.xenondevs.vetric.supplier.DEFAULT_SUPPLIER
 import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
 import java.io.File
 
-object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
+class Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     
     /**
      * if this is set to true, fields/method with different descriptors will be renamed to the same name
@@ -46,7 +45,7 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
     }
     
     private fun generateMappings(archive: JavaArchive) {
-        mappings = MappingsGenerator(archive).generateMappings()
+        mappings = MappingsGenerator(archive, this).generateMappings()
     }
     
     private fun applyMappings(archive: JavaArchive) {
@@ -77,7 +76,7 @@ object Renamer : Transformer("Renamer", TransformerPriority.LOW) {
             localSupplier = config["supplier.locals"] ?: DEFAULT_SUPPLIER
         
         if (removePackages && renamePackages) {
-            warn("Renaming packages is not supported when removing packages. Defaulting to removing packages.")
+            logger.warn("Renaming packages is not supported when removing packages. Defaulting to removing packages.")
             renamePackages = false
         }
         

@@ -28,7 +28,7 @@ class VetricGradlePlugin : Plugin<Project> {
                 this.configFile.set(extension.configFile.get())
                 this.inputFile.set(extension.inputFile.map(::File).get())
                 this.outputFile.set(extension.outputFile.map(::File).get())
-                this.autoloadDeps.set(extension.autoloadDeps.get())
+                this.autoloadDeps.set(extension.autoloadDeps.getOrElse(false))
             }
         }
         

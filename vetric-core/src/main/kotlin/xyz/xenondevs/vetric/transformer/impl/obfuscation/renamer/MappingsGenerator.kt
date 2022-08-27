@@ -5,17 +5,6 @@ import org.objectweb.asm.tree.MethodNode
 import xyz.xenondevs.bytebase.jvm.ClassWrapper
 import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.vetric.supplier.SupplierFactory
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.classSupplier
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.fieldSupplier
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.localSupplier
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.methodSupplier
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.packageSupplier
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.removePackages
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameClasses
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameFields
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameLocals
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renameMethods
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer.renamePackages
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -59,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  * @param jar The jar to generate mappings for.
  */
-class MappingsGenerator(private val jar: JavaArchive) {
+class MappingsGenerator(private val jar: JavaArchive, private val renamer: Renamer) {
     
     private val mappings = HashMap<String, String>()
     
@@ -68,18 +57,18 @@ class MappingsGenerator(private val jar: JavaArchive) {
      */
     fun generateMappings(): HashMap<String, String> {
         mappings.clear()
-        if (renamePackages)
-            getPackageMappings(jar, packageSupplier)
-        if (renameClasses || renamePackages)
-            getClassMappings(jar, classSupplier)
+        if (renamer.renamePackages)
+            getPackageMappings(jar, renamer.packageSupplier)
+        if (renamer.renameClasses || renamer.renamePackages)
+            getClassMappings(jar, renamer.classSupplier)
         jar.classes.forEach { clazz ->
-            if (renameFields && !clazz.fields.isNullOrEmpty())
-                getFieldMappings(clazz, fieldSupplier)
+            if (renamer.renameFields && !clazz.fields.isNullOrEmpty())
+                getFieldMappings(clazz, renamer.fieldSupplier)
             if (!clazz.methods.isNullOrEmpty()) {
-                if (renameMethods)
-                    getMethodMappings(clazz, methodSupplier)
-                if (renameLocals)
-                    getLocalMappings(clazz, localSupplier)
+                if (renamer.renameMethods)
+                    getMethodMappings(clazz, renamer.methodSupplier)
+                if (renamer.renameLocals)
+                    getLocalMappings(clazz, renamer.localSupplier)
             }
         }
         return mappings
@@ -103,7 +92,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
     }
     
     private fun getClassMappings(jar: JavaArchive, factory: SupplierFactory) {
-        if (removePackages) { // All packages are removed, so we just need a single supplier.
+        if (renamer.removePackages) { // All packages are removed, so we just need a single supplier.
             val supplier = factory.create(jar.classes.size)
             jar.classes.forEach { clazz ->
                 mappings[clazz.name] = supplier.randomStringUnique()
@@ -119,10 +108,10 @@ class MappingsGenerator(private val jar: JavaArchive) {
                 val supplier = packageSuppliers[packageName]
                     ?: error("Missing package supplier for $packageName")
                 
-                if (renamePackages) {
+                if (renamer.renamePackages) {
                     val packageMapping = mappings[packageName]
                         ?: error("Missing package mapping for $packageName")
-                    val className = if (renameClasses) supplier.randomStringUnique() else clazz.className
+                    val className = if (renamer.renameClasses) supplier.randomStringUnique() else clazz.className
                     mappings[clazz.name] = "$packageMapping/$className"
                 } else {
                     mappings[clazz.name] = "$packageName/${supplier.randomStringUnique()}"
@@ -134,7 +123,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
     private fun getFieldMappings(clazz: ClassWrapper, factory: SupplierFactory) {
         val renamableFields = clazz.fields.filter(FieldNode::isRenamable)
         
-        if (!Renamer.repeatNames) { // Unique name for every field.
+        if (!renamer.repeatNames) { // Unique name for every field.
             val supplier = factory.create(renamableFields.size)
             renamableFields.forEach { field ->
                 val newName = supplier.randomStringUnique()
@@ -165,7 +154,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
         val renamableMethods = clazz.methods.filter { it.isRenamable(clazz, mappings) }
         val checker = MethodNameChecker(clazz)
         
-        if (!Renamer.repeatNames) { // Unique name for every method
+        if (!renamer.repeatNames) { // Unique name for every method
             val supplier = factory.create(renamableMethods.size)
             renamableMethods.forEach { method ->
                 var newName: String
@@ -199,7 +188,7 @@ class MappingsGenerator(private val jar: JavaArchive) {
         val toProcess = clazz.methods.filter { it.localVariables != null }
         
         toProcess.forEach { method ->
-            if (Renamer.repeatNames) { // Same name for all locals, descriptor can be ignored.
+            if (renamer.repeatNames) { // Same name for all locals, descriptor can be ignored.
                 val name = factory.create(1).randomString()
                 method.localVariables.forEach { local ->
                     mappings[clazz.name + '.' + method.name + method.desc + '.' + local.name + '.' + local.desc] = name

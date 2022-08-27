@@ -5,7 +5,7 @@ import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
 import org.jline.terminal.TerminalBuilder
 import org.jline.widget.AutosuggestionWidgets
-import xyz.xenondevs.vetric.Vetric
+import xyz.xenondevs.vetric.cli.Launcher
 import xyz.xenondevs.vetric.cli.command.CommandManager.CommandCompleter
 import xyz.xenondevs.vetric.logging.Logger
 import java.text.SimpleDateFormat
@@ -53,7 +53,7 @@ object Terminal : JLineTerminal by TerminalBuilder.terminal(), Logger {
     }
     
     override fun debug(message: String, vararg args: Any) {
-        if (Vetric.debug)
+        if (Launcher.vetric.isDebug)
             log(message.format(args = args), LogLevel.DEBUG)
     }
     

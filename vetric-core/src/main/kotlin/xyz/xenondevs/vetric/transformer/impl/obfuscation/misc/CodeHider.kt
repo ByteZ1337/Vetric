@@ -10,7 +10,7 @@ import xyz.xenondevs.vetric.config.VetricConfig
 import xyz.xenondevs.vetric.transformer.ClassTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
 
-object CodeHider : ClassTransformer("CodeHider", TransformerPriority.LOWEST) {
+class CodeHider : ClassTransformer("CodeHider", TransformerPriority.LOWEST) {
     
     private var hideClasses = true
     private var hideFields = true

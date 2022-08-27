@@ -1,13 +1,23 @@
 package xyz.xenondevs.vetric.transformer
 
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.misc.CodeHider
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.misc.kotlin.KotlinIntrinsicsReplacer
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.ResourceUpdater
-import xyz.xenondevs.vetric.transformer.impl.obfuscation.string.StringObfuscator
-import xyz.xenondevs.vetric.transformer.impl.shrinking.LineNumberRemover
+import kotlin.reflect.KClass
 
-object TransformerRegistry : Iterable<Transformer> by sortedSetOf(
-    LineNumberRemover, CodeHider, Renamer, ResourceUpdater, StringObfuscator,
-    KotlinIntrinsicsReplacer
-)
+interface TransformerRegistry<T : Transformer> {
+    
+    operator fun get(name: String): T?
+    
+    fun getInfo(name: String): TransformerInfo?
+    
+    operator fun <V : Transformer> get(clazz: KClass<V>): V?
+    
+    fun <V : Transformer> getInfo(clazz: KClass<V>): TransformerInfo?
+    
+    fun iterator(): Iterator<T>
+    
+    fun infoIterator(): Iterator<TransformerInfo>
+    
+}
+
+inline fun <reified K : Transformer> TransformerRegistry<out Transformer>.get() = get(K::class)
+
+inline fun <reified K : Transformer> TransformerRegistry<out Transformer>.getInfo() = getInfo(K::class)

@@ -9,7 +9,7 @@ import xyz.xenondevs.vetric.transformer.TransformerPriority
 import xyz.xenondevs.vetric.utils.filterTypeAnd
 
 // TODO: add an option to use mappings instead of removing string
-object KotlinIntrinsicsReplacer : ClassTransformer("KotlinIntrinsicsReplacer", TransformerPriority.NORMAL) {
+class KotlinIntrinsicsReplacer : ClassTransformer("KotlinIntrinsicsReplacer", TransformerPriority.NORMAL) {
     
     override fun transformMethod(method: MethodNode) {
         val instructions = method.instructions
