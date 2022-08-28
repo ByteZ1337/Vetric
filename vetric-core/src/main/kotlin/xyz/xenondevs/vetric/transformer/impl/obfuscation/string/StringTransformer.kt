@@ -23,6 +23,7 @@ open class StringTransformer(
     open fun loadConfig(config: JsonConfig) {}
     
     override fun transform(jar: JavaArchive) {
+        // TODO move to parent for optimization
         jar.classes.forEach { clazz ->
             transform(clazz)
             clazz.methods.asSequence().forEach { method ->
