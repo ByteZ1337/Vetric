@@ -1,5 +1,6 @@
-package xyz.xenondevs.vetric.transformer
+package xyz.xenondevs.vetric.transformer.registry
 
+import xyz.xenondevs.vetric.transformer.Transformer
 import kotlin.reflect.KClass
 
 interface TransformerRegistry<T : Transformer> {

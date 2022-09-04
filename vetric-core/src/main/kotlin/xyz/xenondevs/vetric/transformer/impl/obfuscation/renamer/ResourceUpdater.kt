@@ -3,7 +3,7 @@ package xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer
 import xyz.xenondevs.bytebase.jvm.Resource
 import xyz.xenondevs.vetric.transformer.ResourceTransformer
 import xyz.xenondevs.vetric.transformer.TransformerPriority
-import xyz.xenondevs.vetric.transformer.get
+import xyz.xenondevs.vetric.transformer.registry.get
 
 class ResourceUpdater : ResourceTransformer("ResourceUpdater", TransformerPriority.LOWEST) {
     

@@ -1,9 +1,10 @@
-package xyz.xenondevs.vetric.transformer
+package xyz.xenondevs.vetric.transformer.registry
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import xyz.xenondevs.vetric.config.JsonConfig
 import xyz.xenondevs.vetric.config.VetricConfig
+import xyz.xenondevs.vetric.transformer.Transformer
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.misc.CodeHider
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.misc.kotlin.KotlinIntrinsicsReplacer
 import xyz.xenondevs.vetric.transformer.impl.obfuscation.renamer.Renamer

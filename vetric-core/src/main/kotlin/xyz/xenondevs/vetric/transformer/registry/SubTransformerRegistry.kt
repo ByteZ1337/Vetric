@@ -1,10 +1,12 @@
-package xyz.xenondevs.vetric.transformer
+package xyz.xenondevs.vetric.transformer.registry
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.vetric.config.JsonConfig
 import xyz.xenondevs.vetric.config.VetricConfig
+import xyz.xenondevs.vetric.transformer.Transformer
+import xyz.xenondevs.vetric.transformer.TransformerPriority
 import kotlin.reflect.KClass
 
 /**

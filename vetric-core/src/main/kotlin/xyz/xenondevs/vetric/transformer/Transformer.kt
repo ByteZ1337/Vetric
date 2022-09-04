@@ -4,6 +4,7 @@ import xyz.xenondevs.bytebase.jvm.JavaArchive
 import xyz.xenondevs.vetric.Vetric
 import xyz.xenondevs.vetric.config.JsonConfig
 import xyz.xenondevs.vetric.config.VetricConfig
+import xyz.xenondevs.vetric.transformer.registry.TransformerRegistry
 
 abstract class Transformer(
     val name: String,

@@ -46,7 +46,7 @@
         <dependency>
             <groupId>xyz.xenondevs.bytebase</groupId>
             <artifactId>ByteBase</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.3-SNAPSHOT</version>
         </dependency>
         <!-- ASM -->
         <dependency>

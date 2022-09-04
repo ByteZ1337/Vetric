@@ -3,9 +3,9 @@ package xyz.xenondevs.vetric.config
 import com.google.gson.JsonObject
 import xyz.xenondevs.vetric.Vetric
 import xyz.xenondevs.vetric.jvm.Library
-import xyz.xenondevs.vetric.transformer.DefaultTransformerRegistry
 import xyz.xenondevs.vetric.transformer.Transformer
-import xyz.xenondevs.vetric.transformer.TransformerInfo
+import xyz.xenondevs.vetric.transformer.registry.DefaultTransformerRegistry
+import xyz.xenondevs.vetric.transformer.registry.TransformerInfo
 import java.io.File
 
 class VetricConfig(supplier: ConfigSupplier, val vetric: Vetric) : JsonConfig(supplier, autoInit = true) {
